@@ -1,6 +1,32 @@
 from carreralib import ControlUnit
 
 
+class GUIBridge(object):
+
+    def __init__(self, mainwindow, lock):
+        self.mainwindow = mainwindow
+        self.lock = lock
+        self.running = False
+        self.stop = False
+
+    def run(self):
+        while not self.stop:
+            while not self.running:
+                if self.stop:
+                    break
+            self.lock.acquire()
+            for addr, driver in self.mainwindow.drivers.items():
+                self.mainwindow.grid.updateDriver(addr=addr,
+                    pos=1,
+                    total=self.mainwindow.bridge.drivers[addr].time,
+                    laps=self.mainwindow.bridge.drivers[addr].laps,
+                    laptime=self.mainwindow.bridge.drivers[addr].laptime,
+                    bestlaptime=self.mainwindow.bridge.drivers[addr].bestlap,
+                    fuelbar=self.mainwindow.bridge.drivers[addr].fuel,
+                    pits=self.mainwindow.bridge.drivers[addr].pit)
+            self.lock.release()
+
+
 class CUBridge(object):
 
     class Driver(object):

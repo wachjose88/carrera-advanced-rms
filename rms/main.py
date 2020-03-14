@@ -1,5 +1,6 @@
 #from bridge import CUBridge
 from dummy import CUBridge
+from bridge import GUIBridge
 import contextlib
 from carreralib import ControlUnit
 import threading
@@ -7,7 +8,7 @@ import time
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
                             QVBoxLayout, QWidget
-from gui import Grid
+from gui import Grid, Home
 
 
 class RMS(QMainWindow):
@@ -21,12 +22,12 @@ class RMS(QMainWindow):
         self.bridge = CUBridge(cu=cu, lock=self.lock)
         self.cub_thread = threading.Thread(target=self.bridge.run, args=())
         self.cub_thread.start()
+        self.gui_bridge = GUIBridge(mainwindow=self, lock=self.lock)
+        self.gui_bridge_thread = threading.Thread(target=self.gui_bridge.run, args=())
+        self.gui_bridge_thread.start()
         self.grid = Grid(parent=self)
+        self.home = Home(parent=self)
         self.drivers = {
-            2: {
-                'pos': 1,
-                'name': 'Josef'
-            },
             3: {
                 'pos': 4,
                 'name': 'Josef'
@@ -37,11 +38,6 @@ class RMS(QMainWindow):
             }
         }
         self.initUI()
-        self.grid.addDriver(2, self.drivers[2])
-        self.grid.addDriver(1, self.drivers[1])
-        self.grid.reset()
-        self.grid.addDriver(2, self.drivers[2])
-        self.grid.driver_ui[2]['pits'].setText('1')
 
     def initUI(self):
 
@@ -49,8 +45,32 @@ class RMS(QMainWindow):
 
         self.showMaximized()
         self.setWindowTitle('RMS')
-        self.setCentralWidget(self.grid)
+        self.showHome()
         self.show()
+
+    def showHome(self):
+        for i in range(0, 6):
+            try:
+                n = self.drivers[i]['name']
+                self.home.setOk(i, True)
+                self.home.setName(i, n)
+            except KeyError:
+                self.home.setOk(i, False)
+                self.home.setName(i, '')
+
+        self.setCentralWidget(self.home)
+
+    def showGrid(self):
+        self.grid.resetDrivers()
+        for addr, driver in self.drivers.items():
+            self.grid.addDriver(addr, driver)
+
+        self.setCentralWidget(self.grid)
+
+    def startTraining(self):
+        print(self.drivers)
+        self.showGrid()
+        self.gui_bridge.running = True
 
     def closeEvent(self, event):
         result = QMessageBox.question(self,
@@ -63,6 +83,8 @@ class RMS(QMainWindow):
             event.accept()
             self.bridge.stop = True
             self.cub_thread.join()
+            self.gui_bridge.stop = True
+            self.gui_bridge_thread.join()
 
 
 if __name__ == '__main__':

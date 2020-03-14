@@ -2,9 +2,84 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, \
                             QLabel, QVBoxLayout, QSizePolicy, QProgressBar, \
-                            QLCDNumber
-from PyQt5.QtCore import Qt
+                            QCheckBox, QLineEdit, QPushButton, QHBoxLayout
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QColor
+
+
+class Home(QWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.initUI()
+
+    def initUI(self):
+        self.controller = QGridLayout()
+        self.controller_ok = []
+        self.controller_name = []
+        for i in range(0, 6):
+            ok = QCheckBox()
+            ok.setText('Controller ' + str(i+1))
+            self.controller.addWidget(ok, 0, i)
+            self.controller_ok.append(ok)
+            name = QLineEdit()
+            self.controller.addWidget(name, 1, i)
+            self.controller_name.append(name)
+        self.vml = QVBoxLayout()
+        self.vml.setSpacing(10)
+        self.headFont = QFont()
+        self.headFont.setPointSize(45)
+        self.headFont.setBold(True)
+        self.headline = QLabel('Carrera RMS')
+        self.headline.setFont(self.headFont)
+        self.vml.addWidget(self.headline)
+        self.vml.addLayout(self.controller)
+        self.starts = QHBoxLayout()
+        self.vml.addLayout(self.starts)
+        self.start_training = QPushButton()
+        self.start_training.setText('Training')
+        self.start_training.clicked.connect(self.startTraining_click)
+        self.start_training.setSizePolicy(QSizePolicy.Expanding,
+                                          QSizePolicy.Expanding)
+        self.starts.addWidget(self.start_training)
+        self.start_qualifying = QPushButton()
+        self.start_qualifying.setText('Qualifying')
+        self.start_qualifying.setSizePolicy(QSizePolicy.Expanding,
+                                            QSizePolicy.Expanding)
+        self.starts.addWidget(self.start_qualifying)
+        self.start_race = QPushButton()
+        self.start_race.setText('Race')
+        self.start_race.setSizePolicy(QSizePolicy.Expanding,
+                                      QSizePolicy.Expanding)
+        self.starts.addWidget(self.start_race)
+        self.statistics = QPushButton()
+        self.statistics.setText('Statistics')
+        self.vml.addWidget(self.statistics)
+        self.settings = QPushButton()
+        self.settings.setText('Settings')
+        self.vml.addWidget(self.settings)
+        self.setLayout(self.vml)
+
+    def startTraining_click(self):
+        d = {}
+        for i in range(0, 5):
+            if self.getOk(i):
+                p = {'pos': 0, 'name': self.getName(i)}
+                d[i] = p
+        self.parent().drivers = d
+        self.parent().startTraining()
+
+    def getOk(self, addr):
+        return self.controller_ok[addr].isChecked()
+
+    def getName(self, addr):
+        return self.controller_name[addr].text()
+
+    def setOk(self, addr, checked):
+        self.controller_ok[addr].setChecked(checked)
+
+    def setName(self, addr, name):
+        self.controller_name[addr].setText(name)
 
 
 class Grid(QWidget):
@@ -14,7 +89,6 @@ class Grid(QWidget):
         self.driver_ui = {}
         self.initUI()
         self.initDriverUI()
-        #self.driver_ui[3]['pits'].setText('1')
 
     def initUI(self):
         self.mainLayout = QGridLayout()
@@ -117,7 +191,7 @@ class Grid(QWidget):
         }
         self.num_row += 1
 
-    def reset(self):
+    def resetDrivers(self):
         for addr, row in self.driver_ui.items():
             for name, widget in row.items():
                 self.mainLayout.removeWidget(widget)
@@ -126,9 +200,33 @@ class Grid(QWidget):
         self.driver_ui = {}
         self.num_row = 1
 
+    def updateDriver(self, addr, pos=None, name=None, total=None,
+                     laps=None, laptime=None, bestlaptime=None,
+                     fuelbar=None, pits=None):
+        try:
+            r = self.driver_ui[addr]
+            if pos is not None:
+                r['pos'].setText(str(pos))
+            if name is not None:
+                r['name'].setText(str(name))
+            if total is not None:
+                r['total'].setText(str(total))
+            if laps is not None:
+                r['laps'].setText(str(laps))
+            if laptime is not None:
+                r['laptime'].setText(str(laptime))
+            if bestlaptime is not None:
+                r['bestlaptime'].setText(str(bestlaptime))
+            if fuelbar is not None:
+                r['fuelbar'].setValue(fuelbar)
+            if pits is not None:
+                r['pits'].setText(str(pits))
+        except KeyError:
+            print('wrong addr', addr)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Grid()
+    ex = Home()
     ex.show()
     sys.exit(app.exec_())
