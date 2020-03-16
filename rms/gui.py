@@ -4,8 +4,67 @@ from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, \
                             QLabel, QVBoxLayout, QSizePolicy, QProgressBar, \
                             QCheckBox, QLineEdit, QPushButton, QHBoxLayout
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtGui import QFont, QColor
+from PyQt5.QtGui import QFont, QColor, QPainter
+from utils import formattime
 
+
+class StartLight(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.onVal = False
+        self.update()
+
+    def setOn(self):
+        self.onVal = True
+        self.update()
+
+    def paintEvent(self, e):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        if not self.onVal:
+            painter.setBrush(QColor(40, 40, 40))
+        else:
+            painter.setBrush(Qt.red)
+        painter.drawEllipse(0, 0, 50,50)
+
+
+class StartLights(QWidget):
+
+    def __init__(self, parent = None):
+        super().__init__(parent)
+        self.headFont = QFont()
+        self.headFont.setPointSize(50)
+        self.headFont.setBold(True)
+        hbox = QHBoxLayout(self)
+        self.lightOne = StartLight()
+        self.lightTwo = StartLight()
+        self.lightThree = StartLight()
+        self.lightFour = StartLight()
+        self.lightFive = StartLight()
+        self.starttext = QLabel('Starting... ')
+        self.starttext.setFont(self.headFont)
+        hbox.addWidget(self.starttext)
+        hbox.addWidget(self.lightOne)
+        hbox.addWidget(self.lightTwo)
+        hbox.addWidget(self.lightThree)
+        hbox.addWidget(self.lightFour)
+        hbox.addWidget(self.lightFive)
+
+    @pyqtSlot(int)
+    def showLight(self, number):
+        if number == 2:
+            self.lightOne.setOn()
+        elif number == 3:
+            self.lightTwo.setOn()
+        elif number == 4:
+            self.lightThree.setOn()
+        elif number == 5:
+            self.lightFour.setOn()
+        elif number == 6:
+            self.lightFive.setOn()
+            self.starttext.setText('Racing')
+        elif number == 0:
+            self.starttext.setText('False Start')
 
 class Home(QWidget):
 
@@ -60,6 +119,7 @@ class Home(QWidget):
         self.vml.addWidget(self.settings)
         self.setLayout(self.vml)
 
+    @pyqtSlot()
     def startTraining_click(self):
         d = {}
         for i in range(0, 5):
@@ -111,9 +171,11 @@ class Grid(QWidget):
         self.mainLayout.setColumnStretch(5, 3)
         self.mainLayout.setColumnStretch(6, 2)
         self.mainLayout.setColumnStretch(7, 1)
+        self.start_signal = StartLights()
         self.vml = QVBoxLayout()
         self.vml.addLayout(self.mainLayout)
         self.vml.addStretch(1)
+        self.vml.addWidget(self.start_signal)
         self.setLayout(self.vml)
 
     def initDriverUI(self):
@@ -200,6 +262,27 @@ class Grid(QWidget):
         self.driver_ui = {}
         self.num_row = 1
 
+    @pyqtSlot(list)
+    def driver_change(self, cu_drivers):
+        for addr, driver in self.driver_ui.items():
+            try:
+                di = cu_drivers[addr]
+                p = str(di.pits)
+                if di.pit:
+                    p += ' (in)'
+                self.updateDriver(
+                    addr=addr,
+                    pos=1,
+                    total=di.time,
+                    laps=di.laps,
+                    laptime=di.laptime,
+                    bestlaptime=di.bestlap,
+                    fuelbar=di.fuel,
+                    pits=p)
+            except KeyError:
+                pass
+
+
     def updateDriver(self, addr, pos=None, name=None, total=None,
                      laps=None, laptime=None, bestlaptime=None,
                      fuelbar=None, pits=None):
@@ -210,13 +293,13 @@ class Grid(QWidget):
             if name is not None:
                 r['name'].setText(str(name))
             if total is not None:
-                r['total'].setText(str(total))
+                r['total'].setText(str(formattime(total)))
             if laps is not None:
                 r['laps'].setText(str(laps))
             if laptime is not None:
-                r['laptime'].setText(str(laptime))
+                r['laptime'].setText(str(formattime(laptime)))
             if bestlaptime is not None:
-                r['bestlaptime'].setText(str(bestlaptime))
+                r['bestlaptime'].setText(str(formattime(bestlaptime)))
             if fuelbar is not None:
                 r['fuelbar'].setValue(fuelbar)
             if pits is not None:

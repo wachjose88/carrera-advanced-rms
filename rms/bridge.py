@@ -1,33 +1,44 @@
 from carreralib import ControlUnit
+from PyQt5.QtCore import QThread, pyqtSignal
+import time
 
 
-class GUIBridge(object):
+class StartSignal(QThread):
 
-    def __init__(self, mainwindow, lock):
-        self.mainwindow = mainwindow
-        self.lock = lock
-        self.running = False
-        self.stop = False
+    ready_to_run = pyqtSignal()
+    show_lights = pyqtSignal(int)
+
+    def __init__(self, cu):
+        QThread.__init__(self)
+        self.cu = cu
 
     def run(self):
-        while not self.stop:
-            while not self.running:
-                if self.stop:
+        self.cu.start()
+        status = self.cu.request()
+        time.sleep(2.0)
+        self.cu.start()
+        finished = False
+        last = None
+        while True:
+            status = self.cu.request()
+            if status == last:
+                continue
+            print(status)
+            if isinstance(status, ControlUnit.Status):
+                if status.start > 1 and status.start < 7:
+                    self.show_lights.emit(status.start)
+                if status.start == 7:
+                    finished = True
+                if status.start > 7:
+                    self.show_lights.emit(0)
+                if status.start == 0 and finished is True:
+                    self.ready_to_run.emit()
                     break
-            self.lock.acquire()
-            for addr, driver in self.mainwindow.drivers.items():
-                self.mainwindow.grid.updateDriver(addr=addr,
-                    pos=1,
-                    total=self.mainwindow.bridge.drivers[addr].time,
-                    laps=self.mainwindow.bridge.drivers[addr].laps,
-                    laptime=self.mainwindow.bridge.drivers[addr].laptime,
-                    bestlaptime=self.mainwindow.bridge.drivers[addr].bestlap,
-                    fuelbar=self.mainwindow.bridge.drivers[addr].fuel,
-                    pits=self.mainwindow.bridge.drivers[addr].pit)
-            self.lock.release()
 
 
-class CUBridge(object):
+class CUBridge(QThread):
+
+    update_grid = pyqtSignal(list)
 
     class Driver(object):
         def __init__(self, num):
@@ -51,17 +62,17 @@ class CUBridge(object):
         def dump(self):
             print('num: ' + str(self.num) + ' time: ' + str(self.time))
 
-    def __init__(self, cu, lock):
+    def __init__(self, cu):
+        QThread.__init__(self)
         self.cu = cu
-        self.lock = lock
-        self.running = True
+        self.running = False
         self.stop = False
         self.reset()
 
     def reset(self):
         self.drivers = [self.Driver(num) for num in range(1, 9)]
         self.maxlaps = 0
-        self.start = None
+        self.starttime = None
         # discard remaining timer messages
         status = self.cu.request()
         while not isinstance(status, ControlUnit.Status):
@@ -75,13 +86,11 @@ class CUBridge(object):
     def run(self):
         last = None
         while not self.stop:
-            while not self.running:
-                if self.stop:
-                    break
-            self.lock.acquire()
+            #self.lock.acquire()
             try:
                 data = self.cu.request()
                 # prevent counting duplicate laps
+                print(data)
                 if data == last:
                     continue
                 elif isinstance(data, ControlUnit.Status):
@@ -89,9 +98,10 @@ class CUBridge(object):
                 elif isinstance(data, ControlUnit.Timer):
                     self.handle_timer(data)
                 last = data
+                self.update_grid.emit(self.drivers)
             except:
                 pass
-            self.lock.release()
+            #self.lock.release()
 
     def handle_status(self, status):
         for driver, fuel in zip(self.drivers, status.fuel):
@@ -109,5 +119,5 @@ class CUBridge(object):
             self.maxlaps = driver.laps
             # position tower only handles 250 laps
             self.cu.setlap(self.maxlaps % 250)
-        if self.start is None:
-            self.start = timer.timestamp
+        if self.starttime is None:
+            self.starttime = timer.timestamp

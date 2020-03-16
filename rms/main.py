@@ -1,11 +1,10 @@
-#from bridge import CUBridge
-from dummy import CUBridge
-from bridge import GUIBridge
+from bridge import CUBridge, StartSignal
+#from dummy import CUBridge
 import contextlib
 from carreralib import ControlUnit
-import threading
 import time
 import sys
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
                             QVBoxLayout, QWidget
 from gui import Grid, Home
@@ -13,18 +12,10 @@ from gui import Grid, Home
 
 class RMS(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, cu):
         super().__init__()
-    #with contextlib.closing(ControlUnit('/dev/ttyUSB0', timeout=1.0)) as cu:
-        #print('CU version %s' % cu.version())
-        cu = 5
-        self.lock = threading.Lock()
-        self.bridge = CUBridge(cu=cu, lock=self.lock)
-        self.cub_thread = threading.Thread(target=self.bridge.run, args=())
-        self.cub_thread.start()
-        self.gui_bridge = GUIBridge(mainwindow=self, lock=self.lock)
-        self.gui_bridge_thread = threading.Thread(target=self.gui_bridge.run, args=())
-        self.gui_bridge_thread.start()
+        self.bridge = CUBridge(cu=cu)
+        self.start_signal = StartSignal(cu=cu)
         self.grid = Grid(parent=self)
         self.home = Home(parent=self)
         self.drivers = {
@@ -38,12 +29,15 @@ class RMS(QMainWindow):
             }
         }
         self.initUI()
+        self.bridge.update_grid.connect(self.grid.driver_change)
+        self.start_signal.ready_to_run.connect(self.startAfterSignal)
+        self.start_signal.show_lights.connect(self.grid.start_signal.showLight)
 
     def initUI(self):
 
         self.statusBar().showMessage('Ready')
 
-        self.showMaximized()
+        #self.showMaximized()
         self.setWindowTitle('RMS')
         self.showHome()
         self.show()
@@ -66,11 +60,17 @@ class RMS(QMainWindow):
             self.grid.addDriver(addr, driver)
 
         self.setCentralWidget(self.grid)
+        print(5)
 
     def startTraining(self):
         print(self.drivers)
         self.showGrid()
-        self.gui_bridge.running = True
+        self.bridge.reset()
+        self.start_signal.start()
+
+    @pyqtSlot()
+    def startAfterSignal(self):
+        self.bridge.start()
 
     def closeEvent(self, event):
         result = QMessageBox.question(self,
@@ -82,12 +82,13 @@ class RMS(QMainWindow):
         if result == QMessageBox.Yes:
             event.accept()
             self.bridge.stop = True
-            self.cub_thread.join()
-            self.gui_bridge.stop = True
-            self.gui_bridge_thread.join()
+            self.bridge.wait()
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = RMS()
-    sys.exit(app.exec_())
+
+    with contextlib.closing(ControlUnit('/dev/ttyUSB0', timeout=1.0)) as cu:
+        print('CU version %s' % cu.version())
+        ex = RMS(cu)
+        sys.exit(app.exec_())
