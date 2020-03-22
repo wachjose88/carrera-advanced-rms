@@ -11,21 +11,26 @@ from utils import formattime
 class StartLight(QWidget):
     def __init__(self):
         super().__init__()
-        self.onVal = False
+        self.onVal = QColor(40, 40, 40)
         self.update()
 
     def setOn(self):
-        self.onVal = True
+        self.onVal = Qt.red
+        self.update()
+
+    def setGreen(self):
+        self.onVal = Qt.green
+        self.update()
+
+    def setOff(self):
+        self.onVal = QColor(40, 40, 40)
         self.update()
 
     def paintEvent(self, e):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        if not self.onVal:
-            painter.setBrush(QColor(40, 40, 40))
-        else:
-            painter.setBrush(Qt.red)
-        painter.drawEllipse(0, 0, 50,50)
+        painter.setBrush(self.onVal)
+        painter.drawEllipse(0, 0, 50, 50)
 
 
 class StartLights(QWidget):
@@ -62,9 +67,15 @@ class StartLights(QWidget):
             self.lightFour.setOn()
         elif number == 6:
             self.lightFive.setOn()
-            self.starttext.setText('Racing')
         elif number == 0:
             self.starttext.setText('False Start')
+        elif number == 100:
+            self.starttext.setText('Racing')
+            self.lightOne.setGreen()
+            self.lightTwo.setGreen()
+            self.lightThree.setGreen()
+            self.lightFour.setGreen()
+            self.lightFive.setGreen()
 
 class Home(QWidget):
 
@@ -264,6 +275,10 @@ class Grid(QWidget):
 
     @pyqtSlot(list)
     def driver_change(self, cu_drivers):
+        rank = []
+        for addr, driver in self.driver_ui.items():
+            rank.append(cu_drivers[addr])
+        rank.sort(key=lambda dr: 0 if dr.bestlap is None else dr.bestlap)
         for addr, driver in self.driver_ui.items():
             try:
                 di = cu_drivers[addr]
@@ -272,7 +287,7 @@ class Grid(QWidget):
                     p += ' (in)'
                 self.updateDriver(
                     addr=addr,
-                    pos=1,
+                    pos=rank.index(di)+1,
                     total=di.time,
                     laps=di.laps,
                     laptime=di.laptime,
@@ -280,6 +295,8 @@ class Grid(QWidget):
                     fuelbar=di.fuel,
                     pits=p)
             except KeyError:
+                pass
+            except ValueError:
                 pass
 
 

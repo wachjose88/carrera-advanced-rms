@@ -1,12 +1,9 @@
-from bridge import CUBridge, StartSignal
-#from dummy import CUBridge
+from bridge import CUBridge, StartSignal, IdleMonitor
 import contextlib
 from carreralib import ControlUnit
-import time
 import sys
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
-                            QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from gui import Grid, Home
 
 
@@ -14,6 +11,8 @@ class RMS(QMainWindow):
 
     def __init__(self, cu):
         super().__init__()
+        self.cuv = cu.version()
+        self.idle = IdleMonitor(cu=cu)
         self.bridge = CUBridge(cu=cu)
         self.start_signal = StartSignal(cu=cu)
         self.grid = Grid(parent=self)
@@ -32,6 +31,8 @@ class RMS(QMainWindow):
         self.bridge.update_grid.connect(self.grid.driver_change)
         self.start_signal.ready_to_run.connect(self.startAfterSignal)
         self.start_signal.show_lights.connect(self.grid.start_signal.showLight)
+        self.idle.update_state.connect(self.show_state)
+        self.idle.start()
 
     def initUI(self):
 
@@ -63,6 +64,8 @@ class RMS(QMainWindow):
         print(5)
 
     def startTraining(self):
+        self.idle.stop = True
+        self.idle.wait()
         print(self.drivers)
         self.showGrid()
         self.bridge.reset()
@@ -71,6 +74,10 @@ class RMS(QMainWindow):
     @pyqtSlot()
     def startAfterSignal(self):
         self.bridge.start()
+
+    @pyqtSlot(int)
+    def show_state(self, mode):
+        self.statusBar().showMessage('CU version: ' + str(self.cuv) + ', mode: ' + str(mode))
 
     def closeEvent(self, event):
         result = QMessageBox.question(self,
@@ -83,6 +90,10 @@ class RMS(QMainWindow):
             event.accept()
             self.bridge.stop = True
             self.bridge.wait()
+            self.idle.stop = True
+            self.idle.wait()
+            self.start_signal.stop = True
+            self.start_signal.wait()
 
 
 if __name__ == '__main__':

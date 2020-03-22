@@ -3,6 +3,33 @@ from PyQt5.QtCore import QThread, pyqtSignal
 import time
 
 
+class IdleMonitor(QThread):
+
+    update_state = pyqtSignal(int)
+
+    def __init__(self, cu):
+        QThread.__init__(self)
+        self.cu = cu
+        self.stop = False
+
+    def run(self):
+        last = None
+        while not self.stop:
+            try:
+                data = self.cu.request()
+                # prevent counting duplicate laps
+                #print(data)
+                if data == last:
+                    continue
+                elif isinstance(data, ControlUnit.Status):
+                    self.update_state.emit(data.mode)
+                elif isinstance(data, ControlUnit.Timer):
+                    pass
+                last = data
+            except:
+                pass
+
+
 class StartSignal(QThread):
 
     ready_to_run = pyqtSignal()
@@ -32,6 +59,7 @@ class StartSignal(QThread):
                 if status.start > 7:
                     self.show_lights.emit(0)
                 if status.start == 0 and finished is True:
+                    self.show_lights.emit(100)
                     self.ready_to_run.emit()
                     break
 
