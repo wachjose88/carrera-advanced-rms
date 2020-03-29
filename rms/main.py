@@ -1,9 +1,14 @@
-from bridge import CUBridge, StartSignal, IdleMonitor
+
 import contextlib
-from carreralib import ControlUnit
 import sys
+
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
+
+# from carreralib import ControlUnit
+from dummy import ControlUnit
+
+from bridge import CUBridge, StartSignal, IdleMonitor
 from gui import Grid, Home
 
 

@@ -1,6 +1,8 @@
-from carreralib import ControlUnit
-from PyQt5.QtCore import QThread, pyqtSignal
+
 import time
+from PyQt5.QtCore import QThread, pyqtSignal
+# from carreralib import ControlUnit
+from dummy import ControlUnit
 
 
 class IdleMonitor(QThread):
