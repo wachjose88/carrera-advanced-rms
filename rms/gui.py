@@ -137,8 +137,8 @@ class Home(QWidget):
             if self.getOk(i):
                 p = {'pos': 0, 'name': self.getName(i)}
                 d[i] = p
-        self.parent().drivers = d
-        self.parent().startTraining()
+        self.parent().parent().drivers = d
+        self.parent().parent().startTraining()
 
     def getOk(self, addr):
         return self.controller_ok[addr].isChecked()
@@ -187,6 +187,10 @@ class Grid(QWidget):
         self.vml.addLayout(self.mainLayout)
         self.vml.addStretch(1)
         self.vml.addWidget(self.start_signal)
+        self.stop_live = QPushButton()
+        self.stop_live.setText('Stop')
+        self.stop_live.clicked.connect(self.stop_live_click)
+        self.vml.addWidget(self.stop_live)
         self.setLayout(self.vml)
 
     def initDriverUI(self):
@@ -299,6 +303,18 @@ class Grid(QWidget):
             except ValueError:
                 pass
 
+
+    @pyqtSlot()
+    def stop_live_click(self):
+        if self.parent().parent().bridge.stop is False:
+            self.parent().parent().bridge.stop = True
+            self.parent().parent().bridge.wait()
+            self.parent().parent().start_signal.stop = True
+            self.parent().parent().start_signal.wait()
+        else:
+            self.parent().parent().idle.stop = False
+            self.parent().parent().idle.start()
+            self.parent().setCurrentWidget(self.parent().parent().home)
 
     def updateDriver(self, addr, pos=None, name=None, total=None,
                      laps=None, laptime=None, bestlaptime=None,
