@@ -83,7 +83,12 @@ class ControlUnit(object):
         return self.last
 
     def reset(self):
-        pass
+        self.time = time.time()
+        self.start_press = 0
+        self.started = None
+        n = time.time()
+        self.drivers = [n, n, n, n, n, n]
+        self._status()
 
     def setbrake(self, address, value):
         pass

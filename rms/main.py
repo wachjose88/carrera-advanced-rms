@@ -34,13 +34,12 @@ class RMS(QMainWindow):
         }
         self.main_stack.addWidget(self.home)
         self.main_stack.addWidget(self.grid)
-        self.initUI()
         self.bridge.update_grid.connect(self.grid.driver_change)
         self.start_signal.ready_to_run.connect(self.startAfterSignal)
         self.start_signal.show_lights.connect(self.grid.start_signal.showLight)
         self.idle.update_state.connect(self.show_state)
         self.setCentralWidget(self.main_stack)
-        self.idle.start()
+        self.initUI()
 
     def initUI(self):
 
@@ -50,6 +49,32 @@ class RMS(QMainWindow):
         self.setWindowTitle('RMS')
         self.showHome()
         self.show()
+
+    def startBridgeThread(self):
+        if not self.bridge.isRunning():
+            self.bridge.stop = False
+            self.bridge.start()
+
+    def startIdleThread(self):
+        if not self.idle.isRunning():
+            self.idle.stop = False
+            self.idle.start()
+
+    def startStartSignalThread(self):
+        if not self.start_signal.isRunning():
+            self.start_signal.stop = False
+            self.start_signal.start()
+
+    def stopAllThreads(self):
+        if self.bridge.isRunning():
+            self.bridge.stop = True
+            self.bridge.wait()
+        if self.idle.isRunning():
+            self.idle.stop = True
+            self.idle.wait()
+        if self.start_signal.isRunning():
+            self.start_signal.stop = True
+            self.start_signal.wait()
 
     def showHome(self):
         for i in range(0, 6):
@@ -62,6 +87,8 @@ class RMS(QMainWindow):
                 self.home.setName(i, '')
 
         self.main_stack.setCurrentWidget(self.home)
+        self.stopAllThreads()
+        self.startIdleThread()
 
     def showGrid(self):
         self.grid.resetDrivers()
@@ -69,18 +96,16 @@ class RMS(QMainWindow):
             self.grid.addDriver(addr, driver)
 
         self.main_stack.setCurrentWidget(self.grid)
+        self.stopAllThreads()
 
     def startTraining(self):
-        self.idle.stop = True
-        self.idle.wait()
-        print(self.drivers)
         self.showGrid()
         self.bridge.reset()
-        self.start_signal.start()
+        self.startStartSignalThread()
 
     @pyqtSlot()
     def startAfterSignal(self):
-        self.bridge.start()
+        self.startBridgeThread()
 
     @pyqtSlot(int)
     def show_state(self, mode):
@@ -96,12 +121,7 @@ class RMS(QMainWindow):
 
         if result == QMessageBox.Yes:
             event.accept()
-            self.bridge.stop = True
-            self.bridge.wait()
-            self.idle.stop = True
-            self.idle.wait()
-            self.start_signal.stop = True
-            self.start_signal.wait()
+            self.stopAllThreads()
 
 
 if __name__ == '__main__':

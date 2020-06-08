@@ -20,7 +20,8 @@ class IdleMonitor(QThread):
             try:
                 data = self.cu.request()
                 # prevent counting duplicate laps
-                #print(data)
+
+                print('IdleMonitor: ', data)
                 if data == last:
                     continue
                 elif isinstance(data, ControlUnit.Status):
@@ -42,6 +43,7 @@ class StartSignal(QThread):
         self.cu = cu
 
     def run(self):
+        self.show_lights.emit(101)
         self.cu.start()
         status = self.cu.request()
         time.sleep(2.0)
@@ -52,7 +54,7 @@ class StartSignal(QThread):
             status = self.cu.request()
             if status == last:
                 continue
-            print(status)
+            print('StartSignal: ', status)
             if isinstance(status, ControlUnit.Status):
                 if status.start > 1 and status.start < 7:
                     self.show_lights.emit(status.start)
@@ -120,7 +122,7 @@ class CUBridge(QThread):
             try:
                 data = self.cu.request()
                 # prevent counting duplicate laps
-                print(data)
+                print('CUBridge: ', data)
                 if data == last:
                     continue
                 elif isinstance(data, ControlUnit.Status):

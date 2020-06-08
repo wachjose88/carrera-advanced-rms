@@ -68,14 +68,21 @@ class StartLights(QWidget):
         elif number == 6:
             self.lightFive.setOn()
         elif number == 0:
-            self.starttext.setText('False Start')
+            self.starttext.setText('False Start ')
         elif number == 100:
-            self.starttext.setText('Racing')
+            self.starttext.setText('Racing ')
             self.lightOne.setGreen()
             self.lightTwo.setGreen()
             self.lightThree.setGreen()
             self.lightFour.setGreen()
             self.lightFive.setGreen()
+        elif number == 101:
+            self.starttext.setText('Starting... ')
+            self.lightOne.setOff()
+            self.lightTwo.setOff()
+            self.lightThree.setOff()
+            self.lightFour.setOff()
+            self.lightFive.setOff()
 
 class Home(QWidget):
 
@@ -307,14 +314,11 @@ class Grid(QWidget):
     @pyqtSlot()
     def stop_live_click(self):
         if self.parent().parent().bridge.stop is False:
-            self.parent().parent().bridge.stop = True
-            self.parent().parent().bridge.wait()
-            self.parent().parent().start_signal.stop = True
-            self.parent().parent().start_signal.wait()
+            self.parent().parent().stopAllThreads()
+            self.stop_live.setText('Back')
         else:
-            self.parent().parent().idle.stop = False
-            self.parent().parent().idle.start()
-            self.parent().setCurrentWidget(self.parent().parent().home)
+            self.stop_live.setText('Stop')
+            self.parent().parent().showHome()
 
     def updateDriver(self, addr, pos=None, name=None, total=None,
                      laps=None, laptime=None, bestlaptime=None,
