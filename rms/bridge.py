@@ -1,17 +1,16 @@
 
 import time
 from PyQt5.QtCore import QThread, pyqtSignal
-# from carreralib import ControlUnit
-from dummy import ControlUnit
 
 
 class IdleMonitor(QThread):
 
     update_state = pyqtSignal(int)
 
-    def __init__(self, cu):
+    def __init__(self, cu, cu_instance):
         QThread.__init__(self)
         self.cu = cu
+        self.cu_instance = cu_instance
         self.stop = False
 
     def run(self):
@@ -24,9 +23,9 @@ class IdleMonitor(QThread):
                 print('IdleMonitor: ', data)
                 if data == last:
                     continue
-                elif isinstance(data, ControlUnit.Status):
+                elif isinstance(data, self.cu_instance.Status):
                     self.update_state.emit(data.mode)
-                elif isinstance(data, ControlUnit.Timer):
+                elif isinstance(data, self.cu_instance.Timer):
                     pass
                 last = data
             except:
@@ -38,9 +37,10 @@ class StartSignal(QThread):
     ready_to_run = pyqtSignal()
     show_lights = pyqtSignal(int)
 
-    def __init__(self, cu):
+    def __init__(self, cu, cu_instance):
         QThread.__init__(self)
         self.cu = cu
+        self.cu_instance = cu_instance
 
     def run(self):
         self.show_lights.emit(101)
@@ -55,7 +55,7 @@ class StartSignal(QThread):
             if status == last:
                 continue
             print('StartSignal: ', status)
-            if isinstance(status, ControlUnit.Status):
+            if isinstance(status, self.cu_instance.Status):
                 if status.start > 1 and status.start < 7:
                     self.show_lights.emit(status.start)
                 if status.start == 7:
@@ -94,9 +94,10 @@ class CUBridge(QThread):
         def dump(self):
             print('num: ' + str(self.num) + ' time: ' + str(self.time))
 
-    def __init__(self, cu):
+    def __init__(self, cu, cu_instance):
         QThread.__init__(self)
         self.cu = cu
+        self.cu_instance = cu_instance
         self.running = False
         self.stop = False
         self.reset()
@@ -107,9 +108,10 @@ class CUBridge(QThread):
         self.starttime = None
         # discard remaining timer messages
         status = self.cu.request()
-        while not isinstance(status, ControlUnit.Status):
+        while not isinstance(status, self.cu_instance.Status):
             status = self.cu.request()
         self.status = status
+        print("5")
         # reset cu timer
         self.cu.reset()
         # reset position tower
@@ -125,9 +127,9 @@ class CUBridge(QThread):
                 print('CUBridge: ', data)
                 if data == last:
                     continue
-                elif isinstance(data, ControlUnit.Status):
+                elif isinstance(data, self.cu_instance.Status):
                     self.handle_status(data)
-                elif isinstance(data, ControlUnit.Timer):
+                elif isinstance(data, self.cu_instance.Timer):
                     self.handle_timer(data)
                 last = data
                 self.update_grid.emit(self.drivers)

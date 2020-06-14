@@ -13,13 +13,13 @@ from gui import Grid, Home
 
 class RMS(QMainWindow):
 
-    def __init__(self, cu):
+    def __init__(self, cu, cu_instance):
         super().__init__()
         self.cuv = cu.version()
         self.main_stack = QStackedWidget(self)
-        self.idle = IdleMonitor(cu=cu)
-        self.bridge = CUBridge(cu=cu)
-        self.start_signal = StartSignal(cu=cu)
+        self.idle = IdleMonitor(cu=cu, cu_instance=cu_instance)
+        self.bridge = CUBridge(cu=cu, cu_instance=cu_instance)
+        self.start_signal = StartSignal(cu=cu, cu_instance=cu_instance)
         self.grid = Grid(parent=self)
         self.home = Home(parent=self)
         self.drivers = {
@@ -135,7 +135,8 @@ if __name__ == '__main__':
         from dummy import ControlUnit
     else:
         from carreralib import ControlUnit
-    with contextlib.closing(ControlUnit(args.controlunit, timeout=1.0)) as cu:
+        print(args.controlunit)
+    with contextlib.closing(ControlUnit(str(args.controlunit), timeout=3.0)) as cu:
         print('CU version %s' % cu.version())
-        ex = RMS(cu)
+        ex = RMS(cu, ControlUnit)
         sys.exit(app.exec_())
