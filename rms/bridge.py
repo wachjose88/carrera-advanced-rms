@@ -59,12 +59,12 @@ class StartSignal(QThread):
                 if status.start > 1 and status.start < 7:
                     self.show_lights.emit(status.start)
                 if status.start == 7:
-                    finished = True
+                    self.show_lights.emit(100)
+                    self.ready_to_run.emit()
+                    break
                 if status.start > 7:
                     self.show_lights.emit(0)
                 if status.start == 0 and finished is True:
-                    self.show_lights.emit(100)
-                    self.ready_to_run.emit()
                     break
 
 
