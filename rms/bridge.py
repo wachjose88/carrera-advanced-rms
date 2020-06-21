@@ -17,8 +17,8 @@ class IdleMonitor(QThread):
         last = None
         while not self.stop:
             try:
+                time.sleep(0.01)
                 data = self.cu.request()
-                # prevent counting duplicate laps
 
                 print('IdleMonitor: ', data)
                 if data == last:
@@ -51,6 +51,7 @@ class StartSignal(QThread):
         finished = False
         last = None
         while True:
+            time.sleep(0.01)
             status = self.cu.request()
             if status == last:
                 continue
@@ -109,6 +110,7 @@ class CUBridge(QThread):
         # discard remaining timer messages
         status = self.cu.request()
         while not isinstance(status, self.cu_instance.Status):
+            time.sleep(0.01)
             status = self.cu.request()
         self.status = status
         print("5")
@@ -122,6 +124,7 @@ class CUBridge(QThread):
         while not self.stop:
             #self.lock.acquire()
             try:
+                time.sleep(0.01)
                 data = self.cu.request()
                 # prevent counting duplicate laps
                 print('CUBridge: ', data)

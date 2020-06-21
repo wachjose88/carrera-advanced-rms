@@ -162,8 +162,12 @@ class Home(QWidget):
 
 class Grid(QWidget):
 
+    SORT_MODE__LAPS = 0
+    SORT_MODE__LAPTIME = 1
+
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.sort_mode = self.SORT_MODE__LAPS
         self.driver_ui = {}
         self.initUI()
         self.initDriverUI()
@@ -208,7 +212,7 @@ class Grid(QWidget):
         self.nameFont.setPointSize(20)
         self.nameFont.setBold(True)
         self.timeFont = QFont()
-        self.timeFont.setPointSize(25)
+        self.timeFont.setPointSize(36)
         self.timeFont.setBold(True)
         self.timeFont.setStyleHint(QFont.TypeWriter)
         self.timeFont.setFamily('monospace')
@@ -289,7 +293,11 @@ class Grid(QWidget):
         rank = []
         for addr, driver in self.driver_ui.items():
             rank.append(cu_drivers[addr])
-        rank.sort(key=lambda dr: 0 if dr.bestlap is None else dr.bestlap)
+        if self.sort_mode == self.SORT_MODE__LAPS:
+            rank.sort(key=lambda dr: 0 if dr.bestlap is None else (-dr.laps,
+                                                                   dr.time))
+        if self.sort_mode == self.SORT_MODE__LAPTIME:
+            rank.sort(key=lambda dr: 0 if dr.bestlap is None else dr.bestlap)
         for addr, driver in self.driver_ui.items():
             try:
                 di = cu_drivers[addr]

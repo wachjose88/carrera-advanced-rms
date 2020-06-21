@@ -99,6 +99,7 @@ class RMS(QMainWindow):
         self.stopAllThreads()
 
     def startTraining(self):
+        self.grid.sort_mode = self.grid.SORT_MODE__LAPTIME
         self.showGrid()
         self.bridge.reset()
         self.startStartSignalThread()
