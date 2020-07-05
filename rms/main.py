@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
 
 from bridge import CUBridge, StartSignal, IdleMonitor
 from gui import Grid, Home
+from tts import TTSHandler
 
 
 class RMS(QMainWindow):
@@ -16,27 +17,30 @@ class RMS(QMainWindow):
     def __init__(self, cu, cu_instance):
         super().__init__()
         self.cuv = cu.version()
-        self.main_stack = QStackedWidget(self)
-        self.idle = IdleMonitor(cu=cu, cu_instance=cu_instance)
-        self.bridge = CUBridge(cu=cu, cu_instance=cu_instance)
-        self.start_signal = StartSignal(cu=cu, cu_instance=cu_instance)
-        self.grid = Grid(parent=self)
-        self.home = Home(parent=self)
         self.drivers = {
-            3: {
+            0: {
                 'pos': 4,
                 'name': 'Josef'
             },
             1: {
                 'pos': 2,
-                'name': 'Mario'
+                'name': 'Papa'
             }
         }
+        self.tts = TTSHandler()
+        self.tts.start()
+        self.main_stack = QStackedWidget(self)
+        self.idle = IdleMonitor(cu=cu, cu_instance=cu_instance)
+        self.bridge = CUBridge(cu=cu, cu_instance=cu_instance, selected_drivers=self.drivers, tts=self.tts)
+        self.start_signal = StartSignal(cu=cu, cu_instance=cu_instance)
+        self.grid = Grid(parent=self)
+        self.home = Home(parent=self)
         self.main_stack.addWidget(self.home)
         self.main_stack.addWidget(self.grid)
         self.bridge.update_grid.connect(self.grid.driver_change)
+        self.bridge.race_state.connect(self.grid.race_state.showText)
         self.start_signal.ready_to_run.connect(self.startAfterSignal)
-        self.start_signal.show_lights.connect(self.grid.start_signal.showLight)
+        self.start_signal.show_lights.connect(self.grid.showLight)
         self.idle.update_state.connect(self.show_state)
         self.setCentralWidget(self.main_stack)
         self.initUI()
@@ -101,7 +105,7 @@ class RMS(QMainWindow):
     def startTraining(self):
         self.grid.sort_mode = self.grid.SORT_MODE__LAPTIME
         self.showGrid()
-        self.bridge.reset()
+        self.bridge.reset(self.drivers)
         self.startStartSignalThread()
 
     @pyqtSlot()
@@ -123,6 +127,8 @@ class RMS(QMainWindow):
         if result == QMessageBox.Yes:
             event.accept()
             self.stopAllThreads()
+            self.tts.stop = True
+            self.tts.wait()
 
 
 if __name__ == '__main__':

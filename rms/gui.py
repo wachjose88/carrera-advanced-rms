@@ -2,7 +2,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, \
                             QLabel, QVBoxLayout, QSizePolicy, QProgressBar, \
-                            QCheckBox, QLineEdit, QPushButton, QHBoxLayout
+                            QCheckBox, QLineEdit, QPushButton, QHBoxLayout, \
+                            QStackedWidget
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QColor, QPainter
 from utils import formattime
@@ -37,52 +38,50 @@ class StartLights(QWidget):
 
     def __init__(self, parent = None):
         super().__init__(parent)
-        self.headFont = QFont()
-        self.headFont.setPointSize(50)
-        self.headFont.setBold(True)
         hbox = QHBoxLayout(self)
         self.lightOne = StartLight()
         self.lightTwo = StartLight()
         self.lightThree = StartLight()
         self.lightFour = StartLight()
         self.lightFive = StartLight()
-        self.starttext = QLabel('Starting... ')
-        self.starttext.setFont(self.headFont)
-        hbox.addWidget(self.starttext)
         hbox.addWidget(self.lightOne)
         hbox.addWidget(self.lightTwo)
         hbox.addWidget(self.lightThree)
         hbox.addWidget(self.lightFour)
         hbox.addWidget(self.lightFive)
 
-    @pyqtSlot(int)
-    def showLight(self, number):
-        if number == 2:
-            self.lightOne.setOn()
-        elif number == 3:
-            self.lightTwo.setOn()
-        elif number == 4:
-            self.lightThree.setOn()
-        elif number == 5:
-            self.lightFour.setOn()
-        elif number == 6:
-            self.lightFive.setOn()
-        elif number == 0:
-            self.starttext.setText('False Start ')
-        elif number == 100:
-            self.starttext.setText('Racing ')
-            self.lightOne.setGreen()
-            self.lightTwo.setGreen()
-            self.lightThree.setGreen()
-            self.lightFour.setGreen()
-            self.lightFive.setGreen()
-        elif number == 101:
-            self.starttext.setText('Starting... ')
-            self.lightOne.setOff()
-            self.lightTwo.setOff()
-            self.lightThree.setOff()
-            self.lightFour.setOff()
-            self.lightFive.setOff()
+
+class RaceState(QWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.headFont = QFont()
+        self.headFont.setPointSize(50)
+        self.headFont.setBold(True)
+        hbox = QHBoxLayout(self)
+        self.starttext = QLabel('Racing')
+        self.starttext.setFont(self.headFont)
+        hbox.addWidget(self.starttext)
+        self.setLayout(hbox)
+
+    @pyqtSlot(str)
+    def showText(self, text):
+        self.starttext.setText(text)
+
+
+class FalseStart(QWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.headFont = QFont()
+        self.headFont.setPointSize(50)
+        self.headFont.setBold(True)
+        hbox = QHBoxLayout(self)
+        self.starttext = QLabel('False Start')
+        self.starttext.setFont(self.headFont)
+        hbox.addWidget(self.starttext)
+        self.setLayout(hbox)
+
 
 class Home(QWidget):
 
@@ -140,7 +139,7 @@ class Home(QWidget):
     @pyqtSlot()
     def startTraining_click(self):
         d = {}
-        for i in range(0, 5):
+        for i in range(0, 6):
             if self.getOk(i):
                 p = {'pos': 0, 'name': self.getName(i)}
                 d[i] = p
@@ -193,11 +192,17 @@ class Grid(QWidget):
         self.mainLayout.setColumnStretch(5, 3)
         self.mainLayout.setColumnStretch(6, 2)
         self.mainLayout.setColumnStretch(7, 1)
+        self.stateStack = QStackedWidget()
         self.start_signal = StartLights()
+        self.false_start = FalseStart()
+        self.race_state = RaceState()
+        self.stateStack.addWidget(self.false_start)
+        self.stateStack.addWidget(self.start_signal)
+        self.stateStack.addWidget(self.race_state)
         self.vml = QVBoxLayout()
         self.vml.addLayout(self.mainLayout)
         self.vml.addStretch(1)
-        self.vml.addWidget(self.start_signal)
+        self.vml.addWidget(self.stateStack)
         self.stop_live = QPushButton()
         self.stop_live.setText('Stop')
         self.stop_live.clicked.connect(self.stop_live_click)
@@ -342,15 +347,44 @@ class Grid(QWidget):
             if laps is not None:
                 r['laps'].setText(str(laps))
             if laptime is not None:
-                r['laptime'].setText(str(formattime(laptime)))
+                r['laptime'].setText(str(formattime(laptime, longfmt=False)))
             if bestlaptime is not None:
-                r['bestlaptime'].setText(str(formattime(bestlaptime)))
+                r['bestlaptime'].setText(str(formattime(bestlaptime, longfmt=False)))
             if fuelbar is not None:
                 r['fuelbar'].setValue(fuelbar)
             if pits is not None:
                 r['pits'].setText(str(pits))
         except KeyError:
             print('wrong addr', addr)
+
+    @pyqtSlot(int)
+    def showLight(self, number):
+        self.stateStack.setCurrentWidget(self.start_signal)
+        if number == 2:
+            self.start_signal.lightOne.setOn()
+        elif number == 3:
+            self.start_signal.lightTwo.setOn()
+        elif number == 4:
+            self.start_signal.lightThree.setOn()
+        elif number == 5:
+            self.start_signal.lightFour.setOn()
+        elif number == 6:
+            self.start_signal.lightFive.setOn()
+        elif number == 0:
+            self.stateStack.setCurrentWidget(self.false_start)
+        elif number == 100:
+            self.start_signal.lightOne.setGreen()
+            self.start_signal.lightTwo.setGreen()
+            self.start_signal.lightThree.setGreen()
+            self.start_signal.lightFour.setGreen()
+            self.start_signal.lightFive.setGreen()
+            self.stateStack.setCurrentWidget(self.race_state)
+        elif number == 101:
+            self.start_signal.lightOne.setOff()
+            self.start_signal.lightTwo.setOff()
+            self.start_signal.lightThree.setOff()
+            self.start_signal.lightFour.setOff()
+            self.start_signal.lightFive.setOff()
 
 
 if __name__ == '__main__':

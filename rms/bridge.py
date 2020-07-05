@@ -1,6 +1,7 @@
 
 import time
 from PyQt5.QtCore import QThread, pyqtSignal
+from utils import formattime
 
 
 class IdleMonitor(QThread):
@@ -73,6 +74,8 @@ class CUBridge(QThread):
 
     update_grid = pyqtSignal(list)
 
+    race_state = pyqtSignal(str)
+
     class Driver(object):
         def __init__(self, num):
             self.num = num
@@ -83,6 +86,7 @@ class CUBridge(QThread):
             self.pits = 0
             self.fuel = 0
             self.pit = False
+            self.name = ''
 
         def newlap(self, timer):
             if self.time is not None:
@@ -95,16 +99,19 @@ class CUBridge(QThread):
         def dump(self):
             print('num: ' + str(self.num) + ' time: ' + str(self.time))
 
-    def __init__(self, cu, cu_instance):
+    def __init__(self, cu, cu_instance, selected_drivers, tts):
         QThread.__init__(self)
         self.cu = cu
         self.cu_instance = cu_instance
+        self.tts = tts
         self.running = False
         self.stop = False
-        self.reset()
+        self.reset(selected_drivers)
 
-    def reset(self):
+    def reset(self, selected_drivers):
         self.drivers = [self.Driver(num) for num in range(1, 9)]
+        for addr, driver in selected_drivers.items():
+            self.drivers[addr].name = driver['name']
         self.maxlaps = 0
         self.starttime = None
         # discard remaining timer messages
@@ -121,8 +128,11 @@ class CUBridge(QThread):
 
     def run(self):
         last = None
+        race_start = time.time()
+        self.tts.say("Let's Go")
         while not self.stop:
-            #self.lock.acquire()
+            rt = time.time() - race_start
+            self.race_state.emit('Training: ' + str(formattime(rt*1000)))
             try:
                 time.sleep(0.01)
                 data = self.cu.request()
@@ -151,6 +161,7 @@ class CUBridge(QThread):
 
     def handle_timer(self, timer):
         driver = self.drivers[timer.address]
+        bl = driver.bestlap
         driver.newlap(timer)
         if self.maxlaps < driver.laps:
             self.maxlaps = driver.laps
@@ -158,3 +169,6 @@ class CUBridge(QThread):
             self.cu.setlap(self.maxlaps % 250)
         if self.starttime is None:
             self.starttime = timer.timestamp
+        nbl = self.drivers[timer.address].bestlap
+        if bl is not None and nbl is not None and nbl < bl:
+            self.tts.say(driver.name + ': ' + str(formattime(nbl, longfmt=False)))
