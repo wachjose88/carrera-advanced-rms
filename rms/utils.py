@@ -7,7 +7,7 @@ def formattime(time, longfmt=True):
     ms = time % 1000
 
     if not longfmt:
-        return '%d.%03d' % (s, ms)
+        return '%d,%03d' % (s, ms)
     elif s < 3600:
         return '%d:%02d.%03d' % (s // 60, s % 60, ms)
     else:

@@ -128,6 +128,10 @@ class Home(QWidget):
         self.start_race.setSizePolicy(QSizePolicy.Expanding,
                                       QSizePolicy.Expanding)
         self.starts.addWidget(self.start_race)
+        self.fullscreen = QPushButton()
+        self.fullscreen.setText('Fullscreen')
+        self.fullscreen.clicked.connect(self.fullscreen_click)
+        self.vml.addWidget(self.fullscreen)
         self.statistics = QPushButton()
         self.statistics.setText('Statistics')
         self.vml.addWidget(self.statistics)
@@ -135,6 +139,15 @@ class Home(QWidget):
         self.settings.setText('Settings')
         self.vml.addWidget(self.settings)
         self.setLayout(self.vml)
+
+    @pyqtSlot()
+    def fullscreen_click(self):
+        if self.parent().parent().windowState() & Qt.WindowFullScreen:
+            self.parent().parent().showNormal()
+            self.fullscreen.setText('Fullscreen')
+        else:
+            self.parent().parent().showFullScreen()
+            self.fullscreen.setText('Exit Fullscreen')
 
     @pyqtSlot()
     def startTraining_click(self):

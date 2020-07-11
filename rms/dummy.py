@@ -79,7 +79,7 @@ class ControlUnit(object):
                 if dnd > r:
                     dnn = dn + r
                     self.drivers[i] = dnn
-                    return self._timer(i, int((dnn-self.started)*1000.0))
+                    return self._timer(i, int((dnn-self.started)*1000))
         return self.last
 
     def reset(self):

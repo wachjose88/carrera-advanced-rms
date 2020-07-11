@@ -1,5 +1,6 @@
 
 import time
+import copy
 from PyQt5.QtCore import QThread, pyqtSignal
 from utils import formattime
 
@@ -21,7 +22,7 @@ class IdleMonitor(QThread):
                 time.sleep(0.01)
                 data = self.cu.request()
 
-                print('IdleMonitor: ', data)
+                # print('IdleMonitor: ', data)
                 if data == last:
                     continue
                 elif isinstance(data, self.cu_instance.Status):
@@ -56,7 +57,7 @@ class StartSignal(QThread):
             status = self.cu.request()
             if status == last:
                 continue
-            print('StartSignal: ', status)
+            # print('StartSignal: ', status)
             if isinstance(status, self.cu_instance.Status):
                 if status.start > 1 and status.start < 7:
                     self.show_lights.emit(status.start)
@@ -137,7 +138,7 @@ class CUBridge(QThread):
                 time.sleep(0.01)
                 data = self.cu.request()
                 # prevent counting duplicate laps
-                print('CUBridge: ', data)
+                # print('CUBridge: ', data)
                 if data == last:
                     continue
                 elif isinstance(data, self.cu_instance.Status):
@@ -161,7 +162,7 @@ class CUBridge(QThread):
 
     def handle_timer(self, timer):
         driver = self.drivers[timer.address]
-        bl = driver.bestlap
+        old = copy.deepcopy(self.drivers)
         driver.newlap(timer)
         if self.maxlaps < driver.laps:
             self.maxlaps = driver.laps
@@ -169,6 +170,4 @@ class CUBridge(QThread):
             self.cu.setlap(self.maxlaps % 250)
         if self.starttime is None:
             self.starttime = timer.timestamp
-        nbl = self.drivers[timer.address].bestlap
-        if bl is not None and nbl is not None and nbl < bl:
-            self.tts.say(driver.name + ': ' + str(formattime(nbl, longfmt=False)))
+        self.tts.say_on_timer(old, copy.deepcopy(self.drivers), timer.address)
