@@ -2,8 +2,9 @@
 import contextlib
 import sys
 import argparse
+import locale
 
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, QTranslator, QLibraryInfo
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
     QStackedWidget
 
@@ -119,8 +120,8 @@ class RMS(QMainWindow):
 
     def closeEvent(self, event):
         result = QMessageBox.question(self,
-                                      "Confirm Exit...",
-                                      "Are you sure you want to exit ?",
+                                      self.tr("Confirm Exit..."),
+                                      self.tr("Are you sure you want to exit ?"),
                                       QMessageBox.Yes | QMessageBox.No)
         event.ignore()
 
@@ -133,6 +134,17 @@ class RMS(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    qtbase_translator = QTranslator()
+    qtbase_translator.load("qtbase_" + locale.getlocale()[0][0:2],
+        QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+    app.installTranslator(qtbase_translator)
+    qt_translator = QTranslator()
+    qt_translator.load("qt_" + locale.getlocale()[0][0:2],
+        QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+    app.installTranslator(qt_translator)
+    translator = QTranslator()
+    translator.load("locales/carrera_" + locale.getlocale()[0][0:2])
+    app.installTranslator(translator)
     parser = argparse.ArgumentParser(
         description='Advanced Race Management for Carrera Digital')
     parser.add_argument('-cu', '--controlunit',

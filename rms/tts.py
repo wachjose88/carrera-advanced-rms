@@ -15,7 +15,7 @@ class TTSHandler(QThread):
         voices = self.engine.getProperty('voices')
         usev = 'english'
         for voice in voices:
-            if lang in voice.languages[0].decode("utf-8") :
+            if lang in voice.languages[0].decode("utf-8"):
                 usev = voice.id
         self.engine.setProperty('voice', usev)
         rate = self.engine.getProperty('rate')
