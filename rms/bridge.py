@@ -75,7 +75,9 @@ class CUBridge(QThread):
 
     update_grid = pyqtSignal(list)
 
-    race_state = pyqtSignal(str)
+    comp_finished = pyqtSignal(int, list)
+
+    comp_state = pyqtSignal(int)
 
     class Driver(object):
         def __init__(self, num):
@@ -88,23 +90,26 @@ class CUBridge(QThread):
             self.fuel = 0
             self.pit = False
             self.name = ''
+            self.racing = True
 
         def newlap(self, timer):
-            if self.time is not None:
-                self.laptime = timer.timestamp - self.time
-                if self.bestlap is None or self.laptime < self.bestlap:
-                    self.bestlap = self.laptime
-                self.laps += 1
-            self.time = timer.timestamp
+            if self.racing:
+                if self.time is not None:
+                    self.laptime = timer.timestamp - self.time
+                    if self.bestlap is None or self.laptime < self.bestlap:
+                        self.bestlap = self.laptime
+                    self.laps += 1
+                self.time = timer.timestamp
 
         def dump(self):
             print('num: ' + str(self.num) + ' time: ' + str(self.time))
 
-    def __init__(self, cu, cu_instance, selected_drivers, tts):
+    def __init__(self, cu, cu_instance, selected_drivers, tts, threadtranslation):
         QThread.__init__(self)
         self.cu = cu
         self.cu_instance = cu_instance
         self.tts = tts
+        self.threadtranslation = threadtranslation
         self.running = False
         self.stop = False
         self.reset(selected_drivers)
@@ -130,10 +135,10 @@ class CUBridge(QThread):
     def run(self):
         last = None
         race_start = time.time()
-        self.tts.say("Let's Go")
+        self.tts.say(self.threadtranslation.letsgo.text())
         while not self.stop:
             rt = time.time() - race_start
-            self.race_state.emit('Training: ' + str(formattime(rt*1000)))
+            self.comp_state.emit(int(rt*1000))
             try:
                 time.sleep(0.01)
                 data = self.cu.request()
@@ -149,7 +154,14 @@ class CUBridge(QThread):
                 self.update_grid.emit(self.drivers)
             except:
                 pass
-            #self.lock.release()
+            racing = False
+            for driver in self.drivers:
+                if driver.racing is True:
+                    racing = True
+            if racing is False:
+                self.comp_finished.emit(int(rt*1000), copy.deepcopy(self.drivers))
+                while not self.stop:
+                    time.sleep(0.01)
 
     def handle_status(self, status):
         for driver, fuel in zip(self.drivers, status.fuel):

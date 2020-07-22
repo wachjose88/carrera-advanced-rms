@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
     QStackedWidget
 
 from bridge import CUBridge, StartSignal, IdleMonitor
-from gui import Grid, Home
+from gui import Grid, Home, ThreadTranslation
 from tts import TTSHandler
 
 
@@ -31,15 +31,20 @@ class RMS(QMainWindow):
         self.tts = TTSHandler()
         self.tts.start()
         self.main_stack = QStackedWidget(self)
+        self.threadtranslation = ThreadTranslation()
+        self.main_stack.addWidget(self.threadtranslation)
         self.idle = IdleMonitor(cu=cu, cu_instance=cu_instance)
-        self.bridge = CUBridge(cu=cu, cu_instance=cu_instance, selected_drivers=self.drivers, tts=self.tts)
+        self.bridge = CUBridge(cu=cu, cu_instance=cu_instance,
+                               selected_drivers=self.drivers, tts=self.tts,
+                               threadtranslation=self.threadtranslation)
         self.start_signal = StartSignal(cu=cu, cu_instance=cu_instance)
         self.grid = Grid(parent=self)
         self.home = Home(parent=self)
         self.main_stack.addWidget(self.home)
         self.main_stack.addWidget(self.grid)
         self.bridge.update_grid.connect(self.grid.driver_change)
-        self.bridge.race_state.connect(self.grid.race_state.showText)
+        self.bridge.comp_state.connect(self.comp_state_update)
+        self.bridge.comp_finished.connect(self.comp_finished_all)
         self.start_signal.ready_to_run.connect(self.startAfterSignal)
         self.start_signal.show_lights.connect(self.grid.showLight)
         self.idle.update_state.connect(self.show_state)
@@ -113,10 +118,19 @@ class RMS(QMainWindow):
     def startAfterSignal(self):
         self.startBridgeThread()
 
+    @pyqtSlot(int, list)
+    def comp_finished_all(self, rtime, drivers):
+        self.stopAllThreads()
+        self.showHome()
+
+    @pyqtSlot(int)
+    def comp_state_update(self, rtime):
+        self.grid.training_state.showTime(rtime=rtime)
+
     @pyqtSlot(int)
     def show_state(self, mode):
         self.statusBar().showMessage(
-            'CU version: ' + str(self.cuv) + ', mode: ' + str(mode))
+            self.tr('CU version: ') + str(self.cuv) + self.tr(', mode: ') + str(mode))
 
     def closeEvent(self, event):
         result = QMessageBox.question(self,

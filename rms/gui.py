@@ -9,6 +9,15 @@ from PyQt5.QtGui import QFont, QColor, QPainter
 from utils import formattime
 
 
+class ThreadTranslation(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.hbox = QHBoxLayout()
+        self.letsgo = QLabel(self.tr("let's go!"))
+        self.hbox.addWidget(self.letsgo)
+        self.setLayout(self.hbox)
+
+
 class StartLight(QWidget):
     def __init__(self):
         super().__init__()
@@ -51,22 +60,30 @@ class StartLights(QWidget):
         hbox.addWidget(self.lightFive)
 
 
-class RaceState(QWidget):
+class TrainingState(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.headFont = QFont()
         self.headFont.setPointSize(50)
         self.headFont.setBold(True)
-        hbox = QHBoxLayout(self)
-        self.starttext = QLabel('Racing')
+        self.hbox = QVBoxLayout(self)
+        self.starttext = QLabel(self.tr('Training'))
         self.starttext.setFont(self.headFont)
-        hbox.addWidget(self.starttext)
-        self.setLayout(hbox)
+        self.hbox.addWidget(self.starttext)
+        self.stop_live = QPushButton()
+        self.stop_live.setText(self.tr('Stop'))
+        self.stop_live.clicked.connect(self.stop_live_click)
+        self.hbox.addWidget(self.stop_live)
+        self.setLayout(self.hbox)
 
-    @pyqtSlot(str)
-    def showText(self, text):
-        self.starttext.setText(text)
+    def showTime(self, rtime):
+        self.starttext.setText('Training: ' + str(formattime(rtime)))
+
+    @pyqtSlot()
+    def stop_live_click(self):
+        for driver in self.parent().parent().parent().parent().bridge.drivers:
+            driver.racing = False
 
 
 class FalseStart(QWidget):
@@ -95,7 +112,7 @@ class Home(QWidget):
         self.controller_name = []
         for i in range(0, 6):
             ok = QCheckBox()
-            ok.setText('Controller ' + str(i+1))
+            ok.setText(self.tr('Controller ') + str(i+1))
             self.controller.addWidget(ok, 0, i)
             self.controller_ok.append(ok)
             name = QLineEdit()
@@ -106,37 +123,37 @@ class Home(QWidget):
         self.headFont = QFont()
         self.headFont.setPointSize(45)
         self.headFont.setBold(True)
-        self.headline = QLabel('Carrera RMS')
+        self.headline = QLabel(self.tr('Carrera RMS'))
         self.headline.setFont(self.headFont)
         self.vml.addWidget(self.headline)
         self.vml.addLayout(self.controller)
         self.starts = QHBoxLayout()
         self.vml.addLayout(self.starts)
         self.start_training = QPushButton()
-        self.start_training.setText('Training')
+        self.start_training.setText(self.tr('Training'))
         self.start_training.clicked.connect(self.startTraining_click)
         self.start_training.setSizePolicy(QSizePolicy.Expanding,
                                           QSizePolicy.Expanding)
         self.starts.addWidget(self.start_training)
         self.start_qualifying = QPushButton()
-        self.start_qualifying.setText('Qualifying')
+        self.start_qualifying.setText(self.tr('Qualifying'))
         self.start_qualifying.setSizePolicy(QSizePolicy.Expanding,
                                             QSizePolicy.Expanding)
         self.starts.addWidget(self.start_qualifying)
         self.start_race = QPushButton()
-        self.start_race.setText('Race')
+        self.start_race.setText(self.tr('Race'))
         self.start_race.setSizePolicy(QSizePolicy.Expanding,
                                       QSizePolicy.Expanding)
         self.starts.addWidget(self.start_race)
         self.fullscreen = QPushButton()
-        self.fullscreen.setText('Fullscreen')
+        self.fullscreen.setText(self.tr('Fullscreen'))
         self.fullscreen.clicked.connect(self.fullscreen_click)
         self.vml.addWidget(self.fullscreen)
         self.statistics = QPushButton()
-        self.statistics.setText('Statistics')
+        self.statistics.setText(self.tr('Statistics'))
         self.vml.addWidget(self.statistics)
         self.settings = QPushButton()
-        self.settings.setText('Settings')
+        self.settings.setText(self.tr('Settings'))
         self.vml.addWidget(self.settings)
         self.setLayout(self.vml)
 
@@ -144,10 +161,10 @@ class Home(QWidget):
     def fullscreen_click(self):
         if self.parent().parent().windowState() & Qt.WindowFullScreen:
             self.parent().parent().showNormal()
-            self.fullscreen.setText('Fullscreen')
+            self.fullscreen.setText(self.tr('Fullscreen'))
         else:
             self.parent().parent().showFullScreen()
-            self.fullscreen.setText('Exit Fullscreen')
+            self.fullscreen.setText(self.tr('Exit Fullscreen'))
 
     @pyqtSlot()
     def startTraining_click(self):
@@ -191,8 +208,10 @@ class Grid(QWidget):
         self.headerFont = QFont()
         self.headerFont.setPointSize(14)
         self.headerFont.setBold(True)
-        self.labelArr = ['Pos', 'Driver', 'Total', 'Laps',
-                         'Laptime', 'Best Lap', 'Fuel', 'Pits']
+        self.labelArr = [self.tr('Pos'), self.tr('Driver'), self.tr('Total'),
+                         self.tr('Laps'),
+                         self.tr('Laptime'), self.tr('Best Lap'),
+                         self.tr('Fuel'), self.tr('Pits')]
         for index, label in enumerate(self.labelArr):
             self.headerLabel = QLabel(label)
             self.headerLabel.setFont(self.headerFont)
@@ -208,18 +227,14 @@ class Grid(QWidget):
         self.stateStack = QStackedWidget()
         self.start_signal = StartLights()
         self.false_start = FalseStart()
-        self.race_state = RaceState()
+        self.training_state = TrainingState()
         self.stateStack.addWidget(self.false_start)
         self.stateStack.addWidget(self.start_signal)
-        self.stateStack.addWidget(self.race_state)
+        self.stateStack.addWidget(self.training_state)
         self.vml = QVBoxLayout()
         self.vml.addLayout(self.mainLayout)
         self.vml.addStretch(1)
         self.vml.addWidget(self.stateStack)
-        self.stop_live = QPushButton()
-        self.stop_live.setText('Stop')
-        self.stop_live.clicked.connect(self.stop_live_click)
-        self.vml.addWidget(self.stop_live)
         self.setLayout(self.vml)
 
     def initDriverUI(self):
@@ -321,7 +336,7 @@ class Grid(QWidget):
                 di = cu_drivers[addr]
                 p = str(di.pits)
                 if di.pit:
-                    p += ' (in)'
+                    p += self.tr(' (in)')
                 self.updateDriver(
                     addr=addr,
                     pos=rank.index(di)+1,
@@ -337,14 +352,6 @@ class Grid(QWidget):
                 pass
 
 
-    @pyqtSlot()
-    def stop_live_click(self):
-        if self.parent().parent().bridge.stop is False:
-            self.parent().parent().stopAllThreads()
-            self.stop_live.setText('Back')
-        else:
-            self.stop_live.setText('Stop')
-            self.parent().parent().showHome()
 
     def updateDriver(self, addr, pos=None, name=None, total=None,
                      laps=None, laptime=None, bestlaptime=None,
@@ -391,7 +398,7 @@ class Grid(QWidget):
             self.start_signal.lightThree.setGreen()
             self.start_signal.lightFour.setGreen()
             self.start_signal.lightFive.setGreen()
-            self.stateStack.setCurrentWidget(self.race_state)
+            self.stateStack.setCurrentWidget(self.training_state)
         elif number == 101:
             self.start_signal.lightOne.setOff()
             self.start_signal.lightTwo.setOff()
