@@ -139,6 +139,15 @@ class CUBridge(QThread):
         while not self.stop:
             rt = time.time() - race_start
             self.comp_state.emit(int(rt*1000))
+            racing = False
+            for driver in self.drivers:
+                if driver.racing is True:
+                    racing = True
+            if racing is False:
+                self.comp_finished.emit(int(rt*1000), copy.deepcopy(self.drivers))
+                while not self.stop:
+                    time.sleep(0.01)
+                continue
             try:
                 time.sleep(0.01)
                 data = self.cu.request()
@@ -154,14 +163,6 @@ class CUBridge(QThread):
                 self.update_grid.emit(self.drivers)
             except:
                 pass
-            racing = False
-            for driver in self.drivers:
-                if driver.racing is True:
-                    racing = True
-            if racing is False:
-                self.comp_finished.emit(int(rt*1000), copy.deepcopy(self.drivers))
-                while not self.stop:
-                    time.sleep(0.01)
 
     def handle_status(self, status):
         for driver, fuel in zip(self.drivers, status.fuel):

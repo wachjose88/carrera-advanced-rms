@@ -155,7 +155,15 @@ class Home(QWidget):
         self.settings = QPushButton()
         self.settings.setText(self.tr('Settings'))
         self.vml.addWidget(self.settings)
+        self.exitrms = QPushButton()
+        self.exitrms.setText(self.tr('Exit'))
+        self.exitrms.clicked.connect(self.exitrms_click)
+        self.vml.addWidget(self.exitrms)
         self.setLayout(self.vml)
+
+    @pyqtSlot()
+    def exitrms_click(self):
+        self.parent().parent().close()
 
     @pyqtSlot()
     def fullscreen_click(self):
@@ -200,7 +208,13 @@ class ResultList(QWidget):
         self.initUI()
 
     def initUI(self):
+        self.posFont = QFont()
+        self.posFont.setPointSize(35)
+        self.posFont.setBold(True)
+        self.headline = QLabel(self.tr('Ranking'))
+        self.headline.setFont(self.posFont)
         self.vbox = QVBoxLayout()
+        self.vbox.addWidget(self.headline)
         self.mainLayout = QGridLayout()
         self.mainLayout.setSpacing(10)
         self.mainLayout.setHorizontalSpacing(10)
@@ -218,9 +232,6 @@ class ResultList(QWidget):
         self.mainLayout.setColumnStretch(1, 1)
         self.mainLayout.setColumnStretch(2, 1)
         self.mainLayout.setColumnStretch(3, 2)
-        self.posFont = QFont()
-        self.posFont.setPointSize(35)
-        self.posFont.setBold(True)
         self.nameFont = QFont()
         self.nameFont.setPointSize(20)
         self.nameFont.setBold(True)

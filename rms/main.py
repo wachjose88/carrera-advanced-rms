@@ -57,7 +57,8 @@ class RMS(QMainWindow):
 
         self.statusBar().showMessage('Ready')
 
-        #self.showMaximized()
+        if self.cuv not in ['d', 'dummy']:
+            self.showMaximized()
         self.setWindowTitle('RMS')
         self.showHome()
         self.show()
