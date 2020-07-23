@@ -189,6 +189,131 @@ class Home(QWidget):
         self.controller_name[addr].setText(name)
 
 
+class ResultList(QWidget):
+
+    SORT_MODE__LAPS = 0
+    SORT_MODE__LAPTIME = 1
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.driver_ui = {}
+        self.initUI()
+
+    def initUI(self):
+        self.vbox = QVBoxLayout()
+        self.mainLayout = QGridLayout()
+        self.mainLayout.setSpacing(10)
+        self.mainLayout.setHorizontalSpacing(10)
+        self.headerFont = QFont()
+        self.headerFont.setPointSize(14)
+        self.headerFont.setBold(True)
+        self.labelArr = [self.tr('Pos'), self.tr('Driver'),
+                         self.tr('Laps'),
+                         self.tr('Time'), self.tr('Difference')]
+        for index, label in enumerate(self.labelArr):
+            self.headerLabel = QLabel(label)
+            self.headerLabel.setFont(self.headerFont)
+            self.mainLayout.addWidget(self.headerLabel, 0,
+                                      index, Qt.AlignHCenter)
+        self.mainLayout.setColumnStretch(1, 1)
+        self.mainLayout.setColumnStretch(2, 1)
+        self.mainLayout.setColumnStretch(3, 2)
+        self.posFont = QFont()
+        self.posFont.setPointSize(35)
+        self.posFont.setBold(True)
+        self.nameFont = QFont()
+        self.nameFont.setPointSize(20)
+        self.nameFont.setBold(True)
+        self.timeFont = QFont()
+        self.timeFont.setPointSize(36)
+        self.timeFont.setBold(True)
+        self.timeFont.setStyleHint(QFont.TypeWriter)
+        self.timeFont.setFamily('monospace')
+        self.posCss = "QLabel{ border-radius: 10px; border-color: black; border: 5px solid black; background-color: white}"
+        self.lcdCss = "QLCDNumber{ border-radius: 10px; background-color: black}"
+        self.lcdColor = QColor(255, 0, 0)
+        self.num_row = 1
+        self.vbox.addLayout(self.mainLayout)
+        self.vbox.addStretch(1)
+        self.back = QPushButton()
+        self.back.setText(self.tr('Back'))
+        self.back.clicked.connect(self.back_click)
+        self.vbox.addWidget(self.back)
+        self.setLayout(self.vbox)
+
+    def addDrivers(self, drivers, cu_drivers, sort_mode):
+        rank = []
+        for addr, driver in drivers.items():
+            rank.append(cu_drivers[addr])
+        if sort_mode == self.SORT_MODE__LAPS:
+            rank.sort(key=lambda dr: 0 if dr.bestlap is None else (-dr.laps,
+                                                                   dr.time))
+        if sort_mode == self.SORT_MODE__LAPTIME:
+            rank.sort(key=lambda dr: 0 if dr.bestlap is None else dr.bestlap)
+
+        for crank in rank:
+            addr = crank.num
+            drank = rank.index(crank) + 1
+            driverPos = QLabel(str(drank))
+            driverPos.setStyleSheet(self.posCss)
+            driverPos.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+            driverPos.setFont(self.posFont)
+            self.mainLayout.addWidget(driverPos, self.num_row, 0)
+            name = QLabel(str(crank.name))
+            name.setStyleSheet(self.posCss)
+            name.setFont(self.nameFont)
+            self.mainLayout.addWidget(name, self.num_row, 1)
+            laps = QLabel(str(crank.laps))
+            laps.setStyleSheet(self.posCss)
+            laps.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+            laps.setFont(self.timeFont)
+            self.mainLayout.addWidget(laps, self.num_row, 2)
+            dtime = 0
+            ftime = ''
+            if sort_mode == self.SORT_MODE__LAPS:
+                ftime = formattime(crank.time, longfmt=False)
+                if drank == 1:
+                    dtime = ' '
+                else:
+                    dtime = '+' + formattime(crank.time - rank[0].time, longfmt=False)
+            if sort_mode == self.SORT_MODE__LAPTIME:
+                ftime = formattime(crank.bestlap, longfmt=False)
+                if drank == 1:
+                    dtime = ' '
+                else:
+                    dtime = '+' + formattime(crank.bestlap - rank[0].bestlap, longfmt=False)
+            fotime = QLabel(str(ftime))
+            fotime.setStyleSheet(self.posCss)
+            fotime.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+            fotime.setFont(self.timeFont)
+            self.mainLayout.addWidget(fotime, self.num_row, 3)
+            otime = QLabel(str(dtime))
+            otime.setStyleSheet(self.posCss)
+            otime.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+            otime.setFont(self.timeFont)
+            self.mainLayout.addWidget(otime, self.num_row, 4)
+            self.driver_ui[addr] = {
+                'pos': driverPos,
+                'name': name,
+                'laps': laps,
+                'otime': otime
+            }
+            self.num_row += 1
+
+    def resetDrivers(self):
+        for addr, row in self.driver_ui.items():
+            for name, widget in row.items():
+                self.mainLayout.removeWidget(widget)
+                widget.deleteLater()
+                del widget
+        self.driver_ui = {}
+        self.num_row = 1
+
+    @pyqtSlot()
+    def back_click(self):
+        self.parent().parent().showHome()
+
+
 class Grid(QWidget):
 
     SORT_MODE__LAPS = 0
@@ -409,6 +534,6 @@ class Grid(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Home()
+    ex = ResultList()
     ex.show()
     sys.exit(app.exec_())

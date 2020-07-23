@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
     QStackedWidget
 
 from bridge import CUBridge, StartSignal, IdleMonitor
-from gui import Grid, Home, ThreadTranslation
+from gui import Grid, Home, ThreadTranslation, ResultList
 from tts import TTSHandler
 
 
@@ -40,8 +40,10 @@ class RMS(QMainWindow):
         self.start_signal = StartSignal(cu=cu, cu_instance=cu_instance)
         self.grid = Grid(parent=self)
         self.home = Home(parent=self)
+        self.resultlist = ResultList(parent=self)
         self.main_stack.addWidget(self.home)
         self.main_stack.addWidget(self.grid)
+        self.main_stack.addWidget(self.resultlist)
         self.bridge.update_grid.connect(self.grid.driver_change)
         self.bridge.comp_state.connect(self.comp_state_update)
         self.bridge.comp_finished.connect(self.comp_finished_all)
@@ -100,6 +102,12 @@ class RMS(QMainWindow):
         self.stopAllThreads()
         self.startIdleThread()
 
+    def showResultList(self, cu_drivers):
+        self.stopAllThreads()
+        self.resultlist.resetDrivers()
+        self.resultlist.addDrivers(self.drivers, cu_drivers, self.resultlist.SORT_MODE__LAPTIME)
+        self.main_stack.setCurrentWidget(self.resultlist)
+
     def showGrid(self):
         self.grid.resetDrivers()
         for addr, driver in self.drivers.items():
@@ -121,7 +129,7 @@ class RMS(QMainWindow):
     @pyqtSlot(int, list)
     def comp_finished_all(self, rtime, drivers):
         self.stopAllThreads()
-        self.showHome()
+        self.showResultList(drivers)
 
     @pyqtSlot(int)
     def comp_state_update(self, rtime):
