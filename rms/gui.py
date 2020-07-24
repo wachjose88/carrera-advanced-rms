@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, \
                             QLabel, QVBoxLayout, QSizePolicy, QProgressBar, \
                             QCheckBox, QLineEdit, QPushButton, QHBoxLayout, \
-                            QStackedWidget
+                            QStackedWidget, QFrame, QSpinBox, QTabWidget
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QColor, QPainter
 from utils import formattime
@@ -58,6 +58,77 @@ class StartLights(QWidget):
         hbox.addWidget(self.lightThree)
         hbox.addWidget(self.lightFour)
         hbox.addWidget(self.lightFive)
+
+
+class CompTime(QWidget):
+
+    def __init__(self, parent = None):
+        super().__init__(parent)
+        self.vbox = QVBoxLayout(self)
+        self.dtext = QLabel(self.tr('Duration in minutes:'))
+        self.vbox.addWidget(self.dtext)
+        self.duration = QSpinBox()
+        self.vbox.addWidget(self.duration)
+        self.setLayout(self.vbox)
+
+
+class CompLaps(QWidget):
+
+    def __init__(self, parent = None):
+        super().__init__(parent)
+        self.vbox = QVBoxLayout(self)
+        self.dtext = QLabel(self.tr('Duration in Laps'))
+        self.vbox.addWidget(self.dtext)
+        self.duration = QSpinBox()
+        self.vbox.addWidget(self.duration)
+        self.setLayout(self.vbox)
+
+
+class RaceParams(QWidget):
+
+    def __init__(self, parent = None):
+        super().__init__(parent)
+        self.vbox = QVBoxLayout(self)
+        self.modetab = QTabWidget()
+        self.vbox.addWidget(self.modetab)
+        self.complaps = CompLaps()
+        self.modetab.addTab(self.complaps, self.tr('Laps'))
+        self.comptime = CompTime()
+        self.modetab.addTab(self.comptime, self.tr('Time'))
+        self.setLayout(self.vbox)
+
+
+class QualifyingParams(QWidget):
+
+    def __init__(self, parent = None):
+        super().__init__(parent)
+        self.vbox = QVBoxLayout(self)
+        self.modetab = QTabWidget()
+        self.vbox.addWidget(self.modetab)
+        self.complaps = CompLaps()
+        self.modetab.addTab(self.complaps, self.tr('Laps'))
+        self.comptime = CompTime()
+        self.modetab.addTab(self.comptime, self.tr('Time'))
+        self.sequential = QCheckBox()
+        self.sequential.setText(self.tr('Sequential'))
+        self.vbox.addWidget(self.sequential)
+        self.setLayout(self.vbox)
+
+
+class HSep(QFrame):
+
+    def __init__(self, parent = None):
+        super().__init__(parent)
+        self.setFrameShape(QFrame.HLine)
+        self.setLineWidth(1)
+
+
+class VSep(QFrame):
+
+    def __init__(self, parent = None):
+        super().__init__(parent)
+        self.setFrameShape(QFrame.VLine)
+        self.setLineWidth(1)
 
 
 class TrainingState(QWidget):
@@ -126,25 +197,42 @@ class Home(QWidget):
         self.headline = QLabel(self.tr('Carrera RMS'))
         self.headline.setFont(self.headFont)
         self.vml.addWidget(self.headline)
+        self.vml.addWidget(HSep())
         self.vml.addLayout(self.controller)
+        self.vml.addWidget(HSep())
         self.starts = QHBoxLayout()
         self.vml.addLayout(self.starts)
+        self.vml.addWidget(HSep())
         self.start_training = QPushButton()
         self.start_training.setText(self.tr('Training'))
         self.start_training.clicked.connect(self.startTraining_click)
         self.start_training.setSizePolicy(QSizePolicy.Expanding,
                                           QSizePolicy.Expanding)
         self.starts.addWidget(self.start_training)
+        self.starts.addWidget(VSep())
+        self.qualifyingparams = QualifyingParams()
+        self.qualifyingparams.setSizePolicy(QSizePolicy.Expanding,
+                                      QSizePolicy.Maximum)
+        self.qhbox = QVBoxLayout()
+        self.qhbox.addWidget(self.qualifyingparams)
         self.start_qualifying = QPushButton()
         self.start_qualifying.setText(self.tr('Qualifying'))
         self.start_qualifying.setSizePolicy(QSizePolicy.Expanding,
                                             QSizePolicy.Expanding)
-        self.starts.addWidget(self.start_qualifying)
+        self.qhbox.addWidget(self.start_qualifying)
+        self.starts.addLayout(self.qhbox)
+        self.starts.addWidget(VSep())
+        self.raceparams = RaceParams()
+        self.raceparams.setSizePolicy(QSizePolicy.Expanding,
+                                      QSizePolicy.Maximum)
+        self.rhbox = QVBoxLayout()
+        self.rhbox.addWidget(self.raceparams)
         self.start_race = QPushButton()
         self.start_race.setText(self.tr('Race'))
         self.start_race.setSizePolicy(QSizePolicy.Expanding,
                                       QSizePolicy.Expanding)
-        self.starts.addWidget(self.start_race)
+        self.rhbox.addWidget(self.start_race)
+        self.starts.addLayout(self.rhbox)
         self.fullscreen = QPushButton()
         self.fullscreen.setText(self.tr('Fullscreen'))
         self.fullscreen.clicked.connect(self.fullscreen_click)
@@ -282,7 +370,7 @@ class ResultList(QWidget):
             dtime = 0
             ftime = ''
             if sort_mode == self.SORT_MODE__LAPS:
-                ftime = formattime(crank.time, longfmt=False)
+                ftime = formattime(crank.time)
                 if drank == 1:
                     dtime = ' '
                 else:
