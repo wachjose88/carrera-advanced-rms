@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
 from bridge import CUBridge, StartSignal, IdleMonitor
 from gui import Grid, Home, ThreadTranslation, ResultList
 from tts import TTSHandler
+from constants import *
 
 
 class RMS(QMainWindow):
@@ -28,6 +29,8 @@ class RMS(QMainWindow):
                 'name': 'Papa'
             }
         }
+        self.comp_mode = COMP_MODE__TRAINING
+        self.comp_duration = 0
         self.tts = TTSHandler()
         self.tts.start()
         self.main_stack = QStackedWidget(self)
@@ -106,7 +109,7 @@ class RMS(QMainWindow):
     def showResultList(self, cu_drivers):
         self.stopAllThreads()
         self.resultlist.resetDrivers()
-        self.resultlist.addDrivers(self.drivers, cu_drivers, self.resultlist.SORT_MODE__LAPTIME)
+        self.resultlist.addDrivers(self.drivers, cu_drivers, self.grid.sort_mode)
         self.main_stack.setCurrentWidget(self.resultlist)
 
     def showGrid(self):
@@ -117,8 +120,17 @@ class RMS(QMainWindow):
         self.main_stack.setCurrentWidget(self.grid)
         self.stopAllThreads()
 
+    def startRace(self, mode, duration):
+        self.comp_mode = mode
+        self.comp_duration = duration
+        self.grid.sort_mode = SORT_MODE__LAPS
+        self.showGrid()
+        self.bridge.reset(self.drivers)
+        self.startStartSignalThread()
+
     def startTraining(self):
-        self.grid.sort_mode = self.grid.SORT_MODE__LAPTIME
+        self.comp_mode = COMP_MODE__TRAINING
+        self.grid.sort_mode = SORT_MODE__LAPTIME
         self.showGrid()
         self.bridge.reset(self.drivers)
         self.startStartSignalThread()
@@ -132,9 +144,18 @@ class RMS(QMainWindow):
         self.stopAllThreads()
         self.showResultList(drivers)
 
-    @pyqtSlot(int)
-    def comp_state_update(self, rtime):
-        self.grid.training_state.showTime(rtime=rtime)
+    @pyqtSlot(int, list)
+    def comp_state_update(self, rtime, cu_drivers):
+        if self.comp_mode == COMP_MODE__TRAINING:
+            self.grid.training_state.showTime(rtime=rtime)
+        elif self.comp_mode == COMP_MODE__RACE_LAPS:
+            self.grid.race_state.handleUpdateLaps(rtime=rtime,
+                                                  laps=self.comp_duration,
+                                                  cu_drivers=cu_drivers)
+        elif self.comp_mode == COMP_MODE__RACE_TIME:
+            self.grid.race_state.handleUpdateTime(rtime=rtime,
+                                                  minutes=self.comp_duration,
+                                                  cu_drivers=cu_drivers)
 
     @pyqtSlot(int)
     def show_state(self, mode):

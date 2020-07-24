@@ -77,7 +77,7 @@ class CUBridge(QThread):
 
     comp_finished = pyqtSignal(int, list)
 
-    comp_state = pyqtSignal(int)
+    comp_state = pyqtSignal(int, list)
 
     class Driver(object):
         def __init__(self, num):
@@ -126,7 +126,6 @@ class CUBridge(QThread):
             time.sleep(0.01)
             status = self.cu.request()
         self.status = status
-        print("5")
         # reset cu timer
         self.cu.reset()
         # reset position tower
@@ -138,7 +137,7 @@ class CUBridge(QThread):
         self.tts.say(self.threadtranslation.letsgo.text())
         while not self.stop:
             rt = time.time() - race_start
-            self.comp_state.emit(int(rt*1000))
+            self.comp_state.emit(int(rt*1000), self.drivers)
             racing = False
             for driver in self.drivers:
                 if driver.racing is True:

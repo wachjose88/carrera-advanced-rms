@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, \
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QColor, QPainter
 from utils import formattime
+from constants import *
 
 
 class ThreadTranslation(QWidget):
@@ -68,6 +69,8 @@ class CompTime(QWidget):
         self.dtext = QLabel(self.tr('Duration in minutes:'))
         self.vbox.addWidget(self.dtext)
         self.duration = QSpinBox()
+        self.duration.setSuffix(self.tr(' Minutes'))
+        self.duration.setValue(10)
         self.vbox.addWidget(self.duration)
         self.setLayout(self.vbox)
 
@@ -77,9 +80,11 @@ class CompLaps(QWidget):
     def __init__(self, parent = None):
         super().__init__(parent)
         self.vbox = QVBoxLayout(self)
-        self.dtext = QLabel(self.tr('Duration in Laps'))
+        self.dtext = QLabel(self.tr('Duration in laps'))
         self.vbox.addWidget(self.dtext)
         self.duration = QSpinBox()
+        self.duration.setSuffix(self.tr(' Laps'))
+        self.duration.setValue(20)
         self.vbox.addWidget(self.duration)
         self.setLayout(self.vbox)
 
@@ -96,6 +101,18 @@ class RaceParams(QWidget):
         self.comptime = CompTime()
         self.modetab.addTab(self.comptime, self.tr('Time'))
         self.setLayout(self.vbox)
+
+    def getCompMode(self):
+        if self.modetab.currentWidget() == self.complaps:
+            return COMP_MODE__RACE_LAPS
+        if self.modetab.currentWidget() == self.comptime:
+            return COMP_MODE__RACE_TIME
+
+    def getDuration(self):
+        if self.modetab.currentWidget() == self.complaps:
+            return self.complaps.duration.value()
+        if self.modetab.currentWidget() == self.comptime:
+            return self.comptime.duration.value()
 
 
 class QualifyingParams(QWidget):
@@ -129,6 +146,31 @@ class VSep(QFrame):
         super().__init__(parent)
         self.setFrameShape(QFrame.VLine)
         self.setLineWidth(1)
+
+
+class RaceState(QWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.headFont = QFont()
+        self.headFont.setPointSize(50)
+        self.headFont.setBold(True)
+        self.hbox = QVBoxLayout(self)
+        self.starttext = QLabel(self.tr('Race'))
+        self.starttext.setFont(self.headFont)
+        self.hbox.addWidget(self.starttext)
+        self.setLayout(self.hbox)
+        self.duration = 0
+
+    def handleUpdateLaps(self, rtime, laps, cu_drivers):
+        self.starttext.setText(self.tr('Race: ') + str(formattime(rtime)))
+
+    def handleUpdateTime(self, rtime, minutes, cu_drivers):
+        cd = (minutes * 60 * 1000) - rtime
+        self.starttext.setText(self.tr('Race: ') + str(formattime(cd)))
+        if cd <= 0:
+            for driver in cu_drivers:
+                driver.racing = False
 
 
 class TrainingState(QWidget):
@@ -229,6 +271,7 @@ class Home(QWidget):
         self.rhbox.addWidget(self.raceparams)
         self.start_race = QPushButton()
         self.start_race.setText(self.tr('Race'))
+        self.start_race.clicked.connect(self.startRace_click)
         self.start_race.setSizePolicy(QSizePolicy.Expanding,
                                       QSizePolicy.Expanding)
         self.rhbox.addWidget(self.start_race)
@@ -262,14 +305,23 @@ class Home(QWidget):
             self.parent().parent().showFullScreen()
             self.fullscreen.setText(self.tr('Exit Fullscreen'))
 
-    @pyqtSlot()
-    def startTraining_click(self):
+    def getDrivers(self):
         d = {}
         for i in range(0, 6):
             if self.getOk(i):
                 p = {'pos': 0, 'name': self.getName(i)}
                 d[i] = p
-        self.parent().parent().drivers = d
+        return d
+
+    @pyqtSlot()
+    def startRace_click(self):
+        self.parent().parent().drivers = self.getDrivers()
+        self.parent().parent().startRace(self.raceparams.getCompMode(),
+                                         self.raceparams.getDuration())
+
+    @pyqtSlot()
+    def startTraining_click(self):
+        self.parent().parent().drivers = self.getDrivers()
         self.parent().parent().startTraining()
 
     def getOk(self, addr):
@@ -286,9 +338,6 @@ class Home(QWidget):
 
 
 class ResultList(QWidget):
-
-    SORT_MODE__LAPS = 0
-    SORT_MODE__LAPTIME = 1
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -344,10 +393,10 @@ class ResultList(QWidget):
         rank = []
         for addr, driver in drivers.items():
             rank.append(cu_drivers[addr])
-        if sort_mode == self.SORT_MODE__LAPS:
-            rank.sort(key=lambda dr: 0 if dr.bestlap is None else (-dr.laps,
+        if sort_mode == SORT_MODE__LAPS:
+            rank.sort(key=lambda dr: (0, 0) if dr.bestlap is None else (-dr.laps,
                                                                    dr.time))
-        if sort_mode == self.SORT_MODE__LAPTIME:
+        if sort_mode == SORT_MODE__LAPTIME:
             rank.sort(key=lambda dr: 0 if dr.bestlap is None else dr.bestlap)
 
         for crank in rank:
@@ -369,13 +418,13 @@ class ResultList(QWidget):
             self.mainLayout.addWidget(laps, self.num_row, 2)
             dtime = 0
             ftime = ''
-            if sort_mode == self.SORT_MODE__LAPS:
+            if sort_mode == SORT_MODE__LAPS:
                 ftime = formattime(crank.time)
                 if drank == 1:
                     dtime = ' '
                 else:
                     dtime = '+' + formattime(crank.time - rank[0].time, longfmt=False)
-            if sort_mode == self.SORT_MODE__LAPTIME:
+            if sort_mode == SORT_MODE__LAPTIME:
                 ftime = formattime(crank.bestlap, longfmt=False)
                 if drank == 1:
                     dtime = ' '
@@ -403,7 +452,7 @@ class ResultList(QWidget):
         for addr, row in self.driver_ui.items():
             for name, widget in row.items():
                 self.mainLayout.removeWidget(widget)
-                widget.deleteLater()
+                #widget.deleteLater()
                 del widget
         self.driver_ui = {}
         self.num_row = 1
@@ -415,12 +464,9 @@ class ResultList(QWidget):
 
 class Grid(QWidget):
 
-    SORT_MODE__LAPS = 0
-    SORT_MODE__LAPTIME = 1
-
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.sort_mode = self.SORT_MODE__LAPS
+        self.sort_mode = SORT_MODE__LAPS
         self.driver_ui = {}
         self.initUI()
         self.initDriverUI()
@@ -452,9 +498,11 @@ class Grid(QWidget):
         self.start_signal = StartLights()
         self.false_start = FalseStart()
         self.training_state = TrainingState()
+        self.race_state = RaceState()
         self.stateStack.addWidget(self.false_start)
         self.stateStack.addWidget(self.start_signal)
         self.stateStack.addWidget(self.training_state)
+        self.stateStack.addWidget(self.race_state)
         self.vml = QVBoxLayout()
         self.vml.addLayout(self.mainLayout)
         self.vml.addStretch(1)
@@ -550,10 +598,10 @@ class Grid(QWidget):
         rank = []
         for addr, driver in self.driver_ui.items():
             rank.append(cu_drivers[addr])
-        if self.sort_mode == self.SORT_MODE__LAPS:
-            rank.sort(key=lambda dr: 0 if dr.bestlap is None else (-dr.laps,
+        if self.sort_mode == SORT_MODE__LAPS:
+            rank.sort(key=lambda dr: (0, 0) if dr.bestlap is None else (-dr.laps,
                                                                    dr.time))
-        if self.sort_mode == self.SORT_MODE__LAPTIME:
+        if self.sort_mode == SORT_MODE__LAPTIME:
             rank.sort(key=lambda dr: 0 if dr.bestlap is None else dr.bestlap)
         for addr, driver in self.driver_ui.items():
             try:
@@ -574,8 +622,6 @@ class Grid(QWidget):
                 pass
             except ValueError:
                 pass
-
-
 
     def updateDriver(self, addr, pos=None, name=None, total=None,
                      laps=None, laptime=None, bestlaptime=None,
@@ -622,7 +668,12 @@ class Grid(QWidget):
             self.start_signal.lightThree.setGreen()
             self.start_signal.lightFour.setGreen()
             self.start_signal.lightFive.setGreen()
-            self.stateStack.setCurrentWidget(self.training_state)
+            if self.parent().parent().comp_mode == COMP_MODE__TRAINING:
+                self.stateStack.setCurrentWidget(self.training_state)
+            elif self.parent().parent().comp_mode == COMP_MODE__RACE_LAPS:
+                self.stateStack.setCurrentWidget(self.race_state)
+            elif self.parent().parent().comp_mode == COMP_MODE__RACE_TIME:
+                self.stateStack.setCurrentWidget(self.race_state)
         elif number == 101:
             self.start_signal.lightOne.setOff()
             self.start_signal.lightTwo.setOff()
