@@ -163,7 +163,15 @@ class RaceState(QWidget):
         self.duration = 0
 
     def handleUpdateLaps(self, rtime, laps, cu_drivers):
-        self.starttext.setText(self.tr('Race: ') + str(formattime(rtime)))
+        mlaps = 0
+        for driver in cu_drivers:
+            if driver.laps > mlaps:
+                mlaps = driver.laps
+            if driver.laps >= laps:
+                driver.racing = False
+        self.starttext.setText(self.tr('Race: ')
+                               + str(formattime(rtime))
+                               + self.tr(', %n Lap(s) remaining', '', laps-mlaps))
 
     def handleUpdateTime(self, rtime, minutes, cu_drivers):
         cd = (minutes * 60 * 1000) - rtime
@@ -444,6 +452,7 @@ class ResultList(QWidget):
                 'pos': driverPos,
                 'name': name,
                 'laps': laps,
+                'fotime': fotime,
                 'otime': otime
             }
             self.num_row += 1
@@ -452,10 +461,11 @@ class ResultList(QWidget):
         for addr, row in self.driver_ui.items():
             for name, widget in row.items():
                 self.mainLayout.removeWidget(widget)
-                #widget.deleteLater()
+                widget.deleteLater()
                 del widget
         self.driver_ui = {}
         self.num_row = 1
+        self.update()
 
     @pyqtSlot()
     def back_click(self):

@@ -90,7 +90,7 @@ class CUBridge(QThread):
             self.fuel = 0
             self.pit = False
             self.name = ''
-            self.racing = True
+            self.racing = False
 
         def newlap(self, timer):
             if self.racing:
@@ -118,6 +118,7 @@ class CUBridge(QThread):
         self.drivers = [self.Driver(num) for num in range(1, 9)]
         for addr, driver in selected_drivers.items():
             self.drivers[addr].name = driver['name']
+            self.drivers[addr].racing = True
         self.maxlaps = 0
         self.starttime = None
         # discard remaining timer messages

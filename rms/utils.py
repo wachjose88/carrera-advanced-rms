@@ -1,5 +1,4 @@
 
-
 def formattime(time, longfmt=True):
     if time is None:
         return 'n/a'
