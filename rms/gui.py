@@ -214,11 +214,19 @@ class FalseStart(QWidget):
         self.headFont = QFont()
         self.headFont.setPointSize(50)
         self.headFont.setBold(True)
-        hbox = QHBoxLayout(self)
-        self.starttext = QLabel('False Start')
+        self.hbox = QHBoxLayout(self)
+        self.starttext = QLabel(self.tr('False Start'))
         self.starttext.setFont(self.headFont)
-        hbox.addWidget(self.starttext)
-        self.setLayout(hbox)
+        self.hbox.addWidget(self.starttext)
+        self.stop_live = QPushButton()
+        self.stop_live.setText(self.tr('Back'))
+        self.stop_live.clicked.connect(self.stop_live_click)
+        self.hbox.addWidget(self.stop_live)
+        self.setLayout(self.hbox)
+
+    @pyqtSlot()
+    def stop_live_click(self):
+        self.parent().parent().parent().parent().showHome()
 
 
 class Home(QWidget):
@@ -424,20 +432,22 @@ class ResultList(QWidget):
             laps.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
             laps.setFont(self.timeFont)
             self.mainLayout.addWidget(laps, self.num_row, 2)
-            dtime = 0
+            dtime = ''
             ftime = ''
             if sort_mode == SORT_MODE__LAPS:
                 ftime = formattime(crank.time)
                 if drank == 1:
                     dtime = ' '
-                else:
-                    dtime = '+' + formattime(crank.time - rank[0].time, longfmt=False)
+                else: 
+                    if rank[0].time is not None:
+                        dtime = '+' + formattime(crank.time - rank[0].time, longfmt=False)
             if sort_mode == SORT_MODE__LAPTIME:
                 ftime = formattime(crank.bestlap, longfmt=False)
                 if drank == 1:
                     dtime = ' '
                 else:
-                    dtime = '+' + formattime(crank.bestlap - rank[0].bestlap, longfmt=False)
+                    if rank[0].bestlap is not None:
+                        dtime = '+' + formattime(crank.bestlap - rank[0].bestlap, longfmt=False)
             fotime = QLabel(str(ftime))
             fotime.setStyleSheet(self.posCss)
             fotime.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
