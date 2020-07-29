@@ -120,6 +120,14 @@ class RMS(QMainWindow):
         self.main_stack.setCurrentWidget(self.grid)
         self.stopAllThreads()
 
+    def startQualifying(self, mode, duration):
+        self.comp_mode = mode
+        self.comp_duration = duration
+        self.grid.sort_mode = SORT_MODE__LAPTIME
+        self.showGrid()
+        self.bridge.reset(self.drivers)
+        self.startStartSignalThread()
+
     def startRace(self, mode, duration):
         self.comp_mode = mode
         self.comp_duration = duration
@@ -156,6 +164,22 @@ class RMS(QMainWindow):
             self.grid.race_state.handleUpdateTime(rtime=rtime,
                                                   minutes=self.comp_duration,
                                                   cu_drivers=cu_drivers)
+        elif self.comp_mode == COMP_MODE__QUALIFYING_LAPS:
+            self.grid.qualifying_state.handleUpdateLaps(rtime=rtime,
+                                                        laps=self.comp_duration,
+                                                        cu_drivers=cu_drivers)
+        elif self.comp_mode == COMP_MODE__QUALIFYING_TIME:
+            self.grid.qualifying_state.handleUpdateTime(rtime=rtime,
+                                                        minutes=self.comp_duration,
+                                                        cu_drivers=cu_drivers)
+        elif self.comp_mode == COMP_MODE__QUALIFYING_LAPS_SEQ:
+            self.grid.qualifying_state.handleUpdateLapsSeq(rtime=rtime,
+                                                        laps=self.comp_duration,
+                                                        cu_drivers=cu_drivers)
+        elif self.comp_mode == COMP_MODE__QUALIFYING_TIME_SEQ:
+            self.grid.qualifying_state.handleUpdateTime(rtime=rtime,
+                                                        minutes=self.comp_duration,
+                                                        cu_drivers=cu_drivers)
 
     @pyqtSlot(int)
     def show_state(self, mode):

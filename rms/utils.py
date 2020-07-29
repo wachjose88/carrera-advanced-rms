@@ -1,3 +1,5 @@
+import locale
+
 
 def formattime(time, longfmt=True):
     if time is None:
@@ -6,8 +8,13 @@ def formattime(time, longfmt=True):
     ms = time % 1000
 
     if not longfmt:
-        return '%d,%03d' % (s, ms)
+        sms = float(str(s)+'.'+str(ms))
+        return locale.format_string('%.3f', sms)
     elif s < 3600:
-        return '%d:%02d.%03d' % (s // 60, s % 60, ms)
+        sms = float(str(s % 60) + '.' + str(ms))
+        t = '%d:' % (s // 60)
+        return t + locale.format_string('%06.3f', sms)
     else:
-        return '%d:%02d:%02d.%03d' % (s // 3600, (s // 60) % 60, s % 60, ms)
+        sms = float(str(s % 60) + '.' + str(ms))
+        t = '%d:%02d:' % (s // 3600, (s // 60) % 60)
+        return t + locale.format_string('%06.3f', sms)

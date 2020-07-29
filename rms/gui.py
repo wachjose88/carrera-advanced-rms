@@ -131,6 +131,22 @@ class QualifyingParams(QWidget):
         self.vbox.addWidget(self.sequential)
         self.setLayout(self.vbox)
 
+    def getCompMode(self):
+        if self.modetab.currentWidget() == self.complaps:
+            if self.sequential.isChecked():
+                return COMP_MODE__QUALIFYING_LAPS_SEQ
+            return COMP_MODE__QUALIFYING_LAPS
+        if self.modetab.currentWidget() == self.comptime:
+            if self.sequential.isChecked():
+                return COMP_MODE__QUALIFYING_TIME_SEQ
+            return COMP_MODE__QUALIFYING_TIME
+
+    def getDuration(self):
+        if self.modetab.currentWidget() == self.complaps:
+            return self.complaps.duration.value()
+        if self.modetab.currentWidget() == self.comptime:
+            return self.comptime.duration.value()
+
 
 class HSep(QFrame):
 
@@ -181,6 +197,56 @@ class RaceState(QWidget):
                 driver.racing = False
 
 
+class QualifyingState(QWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.headFont = QFont()
+        self.headFont.setPointSize(50)
+        self.headFont.setBold(True)
+        self.hbox = QVBoxLayout(self)
+        self.starttext = QLabel(self.tr('Qualifying'))
+        self.starttext.setFont(self.headFont)
+        self.hbox.addWidget(self.starttext)
+        self.setLayout(self.hbox)
+        self.duration = 0
+        self.current_addr = -1
+
+    def handleUpdateLapsSeq(self, rtime, laps, cu_drivers):
+        for driver in cu_drivers:
+            if self.current_addr == -1 and driver.racing is True:
+                self.current_addr = driver.num
+            else:
+                driver.racing = False
+        mlaps = 0
+        for driver in cu_drivers:
+            if driver.laps > mlaps:
+                mlaps = driver.laps
+            if driver.laps >= laps:
+                driver.racing = False
+        self.starttext.setText(self.tr('Qualifying: ')
+                               + str(formattime(rtime))
+                               + self.tr(', %n Lap(s) remaining', '', laps-mlaps))
+
+    def handleUpdateLaps(self, rtime, laps, cu_drivers):
+        mlaps = 0
+        for driver in cu_drivers:
+            if driver.laps > mlaps:
+                mlaps = driver.laps
+            if driver.laps >= laps:
+                driver.racing = False
+        self.starttext.setText(self.tr('Qualifying: ')
+                               + str(formattime(rtime))
+                               + self.tr(', %n Lap(s) remaining', '', laps-mlaps))
+
+    def handleUpdateTime(self, rtime, minutes, cu_drivers):
+        cd = (minutes * 60 * 1000) - rtime
+        self.starttext.setText(self.tr('Qualifying: ') + str(formattime(cd)))
+        if cd <= 0:
+            for driver in cu_drivers:
+                driver.racing = False
+
+
 class TrainingState(QWidget):
 
     def __init__(self, parent=None):
@@ -214,7 +280,7 @@ class FalseStart(QWidget):
         self.headFont = QFont()
         self.headFont.setPointSize(50)
         self.headFont.setBold(True)
-        self.hbox = QHBoxLayout(self)
+        self.hbox = QVBoxLayout(self)
         self.starttext = QLabel(self.tr('False Start'))
         self.starttext.setFont(self.headFont)
         self.hbox.addWidget(self.starttext)
@@ -275,6 +341,7 @@ class Home(QWidget):
         self.qhbox.addWidget(self.qualifyingparams)
         self.start_qualifying = QPushButton()
         self.start_qualifying.setText(self.tr('Qualifying'))
+        self.start_qualifying.clicked.connect(self.startQualifying_click)
         self.start_qualifying.setSizePolicy(QSizePolicy.Expanding,
                                             QSizePolicy.Expanding)
         self.qhbox.addWidget(self.start_qualifying)
@@ -334,6 +401,12 @@ class Home(QWidget):
         self.parent().parent().drivers = self.getDrivers()
         self.parent().parent().startRace(self.raceparams.getCompMode(),
                                          self.raceparams.getDuration())
+
+    @pyqtSlot()
+    def startQualifying_click(self):
+        self.parent().parent().drivers = self.getDrivers()
+        self.parent().parent().startQualifying(self.qualifyingparams.getCompMode(),
+                                               self.qualifyingparams.getDuration())
 
     @pyqtSlot()
     def startTraining_click(self):
@@ -438,7 +511,7 @@ class ResultList(QWidget):
                 ftime = formattime(crank.time)
                 if drank == 1:
                     dtime = ' '
-                else: 
+                else:
                     if rank[0].time is not None:
                         dtime = '+' + formattime(crank.time - rank[0].time, longfmt=False)
             if sort_mode == SORT_MODE__LAPTIME:
@@ -506,7 +579,7 @@ class Grid(QWidget):
             self.headerLabel = QLabel(label)
             self.headerLabel.setFont(self.headerFont)
             self.mainLayout.addWidget(self.headerLabel, 0,
-                                    index, Qt.AlignHCenter)
+                                      index, Qt.AlignHCenter)
         self.mainLayout.setColumnStretch(1, 1)
         self.mainLayout.setColumnStretch(2, 1)
         self.mainLayout.setColumnStretch(3, 2)
@@ -518,10 +591,12 @@ class Grid(QWidget):
         self.start_signal = StartLights()
         self.false_start = FalseStart()
         self.training_state = TrainingState()
+        self.qualifying_state = QualifyingState()
         self.race_state = RaceState()
         self.stateStack.addWidget(self.false_start)
         self.stateStack.addWidget(self.start_signal)
         self.stateStack.addWidget(self.training_state)
+        self.stateStack.addWidget(self.qualifying_state)
         self.stateStack.addWidget(self.race_state)
         self.vml = QVBoxLayout()
         self.vml.addLayout(self.mainLayout)
@@ -694,6 +769,14 @@ class Grid(QWidget):
                 self.stateStack.setCurrentWidget(self.race_state)
             elif self.parent().parent().comp_mode == COMP_MODE__RACE_TIME:
                 self.stateStack.setCurrentWidget(self.race_state)
+            elif self.parent().parent().comp_mode == COMP_MODE__QUALIFYING_LAPS:
+                self.stateStack.setCurrentWidget(self.qualifying_state)
+            elif self.parent().parent().comp_mode == COMP_MODE__QUALIFYING_TIME:
+                self.stateStack.setCurrentWidget(self.qualifying_state)
+            elif self.parent().parent().comp_mode == COMP_MODE__QUALIFYING_LAPS_SEQ:
+                self.stateStack.setCurrentWidget(self.qualifying_state)
+            elif self.parent().parent().comp_mode == COMP_MODE__QUALIFYING_TIME_SEQ:
+                self.stateStack.setCurrentWidget(self.qualifying_state)
         elif number == 101:
             self.start_signal.lightOne.setOff()
             self.start_signal.lightTwo.setOff()

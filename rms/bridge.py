@@ -43,6 +43,7 @@ class StartSignal(QThread):
         QThread.__init__(self)
         self.cu = cu
         self.cu_instance = cu_instance
+        self.stop = False
 
     def run(self):
         self.show_lights.emit(101)
@@ -52,7 +53,7 @@ class StartSignal(QThread):
         self.cu.start()
         finished = False
         last = None
-        while True:
+        while not self.stop:
             time.sleep(0.01)
             status = self.cu.request()
             if status == last:
