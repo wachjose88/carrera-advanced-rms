@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="de_AT" sourcelanguage="">
+<!DOCTYPE TS>
+<TS version="2.1" language="de_AT">
 <context>
     <name>CompLaps</name>
     <message>
@@ -37,12 +38,12 @@
 <context>
     <name>FalseStart</name>
     <message>
-        <location filename="../gui.py" line="262"/>
+        <location filename="../gui.py" line="285"/>
         <source>False Start</source>
         <translation>Fehlstart</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="266"/>
+        <location filename="../gui.py" line="289"/>
         <source>Back</source>
         <translation>Zurück</translation>
     </message>
@@ -50,42 +51,42 @@
 <context>
     <name>Grid</name>
     <message>
-        <location filename="../gui.py" line="552"/>
+        <location filename="../gui.py" line="621"/>
         <source>Pos</source>
         <translation>Pos</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="552"/>
+        <location filename="../gui.py" line="621"/>
         <source>Driver</source>
         <translation>Fahrer</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="552"/>
+        <location filename="../gui.py" line="621"/>
         <source>Total</source>
         <translation>Gesamt</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="553"/>
+        <location filename="../gui.py" line="622"/>
         <source>Laps</source>
         <translation>Runden</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="554"/>
+        <location filename="../gui.py" line="623"/>
         <source>Laptime</source>
         <translation>Rundenzeit</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="554"/>
+        <location filename="../gui.py" line="623"/>
         <source>Best Lap</source>
         <translation>Beste Runde</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="555"/>
+        <location filename="../gui.py" line="624"/>
         <source>Fuel</source>
         <translation>Treibstoff</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="555"/>
+        <location filename="../gui.py" line="624"/>
         <source>Pits</source>
         <translation>Boxenstopps</translation>
     </message>
@@ -95,7 +96,7 @@
         <translation type="obsolete">Stopp</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="684"/>
+        <location filename="../gui.py" line="753"/>
         <source> (in)</source>
         <translation> (in)</translation>
     </message>
@@ -108,52 +109,52 @@
 <context>
     <name>Home</name>
     <message>
-        <location filename="../gui.py" line="288"/>
+        <location filename="../gui.py" line="352"/>
         <source>Controller </source>
         <translation>Regler</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="299"/>
+        <location filename="../gui.py" line="363"/>
         <source>Carrera RMS</source>
         <translation>Carrera RMS</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="309"/>
+        <location filename="../gui.py" line="373"/>
         <source>Training</source>
         <translation>Training</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="321"/>
+        <location filename="../gui.py" line="385"/>
         <source>Qualifying</source>
         <translation>Qualifikation</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="334"/>
+        <location filename="../gui.py" line="398"/>
         <source>Race</source>
         <translation>Rennen</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="364"/>
+        <location filename="../gui.py" line="428"/>
         <source>Fullscreen</source>
         <translation>Vollbild</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="345"/>
+        <location filename="../gui.py" line="409"/>
         <source>Statistics</source>
         <translation>Statistik</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="348"/>
+        <location filename="../gui.py" line="412"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="367"/>
+        <location filename="../gui.py" line="431"/>
         <source>Exit Fullscreen</source>
         <translation>Vollbild beenden</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="351"/>
+        <location filename="../gui.py" line="415"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -177,19 +178,52 @@
     </message>
 </context>
 <context>
+    <name>QualifyingSeq</name>
+    <message>
+        <location filename="../gui.py" line="310"/>
+        <source>Qualifying Driver Change</source>
+        <translation>Qualifikation Fahrerwechsel</translation>
+    </message>
+    <message>
+        <location filename="../gui.py" line="314"/>
+        <source>Last: </source>
+        <translation>Vorheriger: </translation>
+    </message>
+    <message>
+        <location filename="../gui.py" line="318"/>
+        <source>Next: </source>
+        <translation>Nächster: </translation>
+    </message>
+    <message>
+        <location filename="../gui.py" line="324"/>
+        <source>Start Next Driver</source>
+        <translation>Nächsten Fahrer starten</translation>
+    </message>
+    <message>
+        <location filename="../gui.py" line="330"/>
+        <source>Last Driver (best laptime): </source>
+        <translation>Vorheriger Fahrer (beste Rundenzeit): </translation>
+    </message>
+    <message>
+        <location filename="../gui.py" line="332"/>
+        <source>Next Driver: </source>
+        <translation>Nächster Fahrer: </translation>
+    </message>
+</context>
+<context>
     <name>QualifyingState</name>
     <message>
-        <location filename="../gui.py" line="203"/>
+        <location filename="../gui.py" line="207"/>
         <source>Qualifying</source>
         <translation>Qualifikation</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="222"/>
+        <location filename="../gui.py" line="245"/>
         <source>Qualifying: </source>
         <translation>Qualifikation: </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui.py" line="216"/>
+        <location filename="../gui.py" line="232"/>
         <source>, %n Lap(s) remaining</source>
         <translation>
             <numerusform>, %n Runde verbleibend</numerusform>
@@ -200,22 +234,22 @@
 <context>
     <name>RMS</name>
     <message>
-        <location filename="../main.py" line="181"/>
+        <location filename="../main.py" line="216"/>
         <source>Confirm Exit...</source>
         <translation>Beenden bestätigen...</translation>
     </message>
     <message>
-        <location filename="../main.py" line="181"/>
+        <location filename="../main.py" line="216"/>
         <source>Are you sure you want to exit ?</source>
         <translation>Willst du wirklich beenden?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="177"/>
+        <location filename="../main.py" line="212"/>
         <source>CU version: </source>
         <translation>CU version: </translation>
     </message>
     <message>
-        <location filename="../main.py" line="177"/>
+        <location filename="../main.py" line="212"/>
         <source>, mode: </source>
         <translation>, mode: </translation>
     </message>
@@ -236,17 +270,17 @@
 <context>
     <name>RaceState</name>
     <message>
-        <location filename="../gui.py" line="170"/>
+        <location filename="../gui.py" line="174"/>
         <source>Race</source>
         <translation>Rennen</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="189"/>
+        <location filename="../gui.py" line="193"/>
         <source>Race: </source>
         <translation>Rennen: </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui.py" line="183"/>
+        <location filename="../gui.py" line="187"/>
         <source>, %n Lap(s) remaining</source>
         <translation>
             <numerusform>, %n Runde verbleibend</numerusform>
@@ -257,37 +291,37 @@
 <context>
     <name>ResultList</name>
     <message>
-        <location filename="../gui.py" line="418"/>
+        <location filename="../gui.py" line="485"/>
         <source>Ranking</source>
         <translation>Ergebniss</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="428"/>
+        <location filename="../gui.py" line="495"/>
         <source>Pos</source>
         <translation>Pos</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="428"/>
+        <location filename="../gui.py" line="495"/>
         <source>Driver</source>
         <translation>Fahrer</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="429"/>
+        <location filename="../gui.py" line="496"/>
         <source>Laps</source>
         <translation>Runden</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="430"/>
+        <location filename="../gui.py" line="497"/>
         <source>Time</source>
         <translation>Zeit</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="430"/>
+        <location filename="../gui.py" line="497"/>
         <source>Difference</source>
         <translation>Differenz</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="454"/>
+        <location filename="../gui.py" line="521"/>
         <source>Back</source>
         <translation>Zurück</translation>
     </message>
@@ -303,12 +337,12 @@
 <context>
     <name>TrainingState</name>
     <message>
-        <location filename="../gui.py" line="236"/>
+        <location filename="../gui.py" line="259"/>
         <source>Training</source>
         <translation>Training</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="240"/>
+        <location filename="../gui.py" line="263"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>

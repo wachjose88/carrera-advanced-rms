@@ -3,6 +3,7 @@ import time
 import copy
 from PyQt5.QtCore import QThread, pyqtSignal
 from utils import formattime
+from constants import *
 
 
 class IdleMonitor(QThread):
@@ -115,11 +116,18 @@ class CUBridge(QThread):
         self.stop = False
         self.reset(selected_drivers)
 
-    def reset(self, selected_drivers):
+    def reset(self, selected_drivers, mode=-1):
         self.drivers = [self.Driver(num) for num in range(1, 9)]
+        seq_found = None
         for addr, driver in selected_drivers.items():
             self.drivers[addr].name = driver['name']
-            self.drivers[addr].racing = True
+            if mode in [COMP_MODE__QUALIFYING_LAPS_SEQ, COMP_MODE__QUALIFYING_TIME_SEQ]:
+                if seq_found is None and driver['qualifying_cu_driver'] is None:
+                    self.drivers[addr].racing = True
+                    seq_found = addr
+                    driver['qualifying_cu_driver'] = self.drivers[addr]
+            else:
+                self.drivers[addr].racing = True
         self.maxlaps = 0
         self.starttime = None
         # discard remaining timer messages

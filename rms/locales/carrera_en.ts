@@ -29,12 +29,12 @@
 <context>
     <name>FalseStart</name>
     <message>
-        <location filename="../gui.py" line="262"/>
+        <location filename="../gui.py" line="285"/>
         <source>False Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="266"/>
+        <location filename="../gui.py" line="289"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
@@ -42,47 +42,47 @@
 <context>
     <name>Grid</name>
     <message>
-        <location filename="../gui.py" line="552"/>
+        <location filename="../gui.py" line="621"/>
         <source>Pos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="552"/>
+        <location filename="../gui.py" line="621"/>
         <source>Driver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="552"/>
+        <location filename="../gui.py" line="621"/>
         <source>Total</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="553"/>
+        <location filename="../gui.py" line="622"/>
         <source>Laps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="554"/>
+        <location filename="../gui.py" line="623"/>
         <source>Laptime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="554"/>
+        <location filename="../gui.py" line="623"/>
         <source>Best Lap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="555"/>
+        <location filename="../gui.py" line="624"/>
         <source>Fuel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="555"/>
+        <location filename="../gui.py" line="624"/>
         <source>Pits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="684"/>
+        <location filename="../gui.py" line="753"/>
         <source> (in)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -90,52 +90,52 @@
 <context>
     <name>Home</name>
     <message>
-        <location filename="../gui.py" line="288"/>
+        <location filename="../gui.py" line="352"/>
         <source>Controller </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="299"/>
+        <location filename="../gui.py" line="363"/>
         <source>Carrera RMS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="309"/>
+        <location filename="../gui.py" line="373"/>
         <source>Training</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="321"/>
+        <location filename="../gui.py" line="385"/>
         <source>Qualifying</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="334"/>
+        <location filename="../gui.py" line="398"/>
         <source>Race</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="364"/>
+        <location filename="../gui.py" line="428"/>
         <source>Fullscreen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="345"/>
+        <location filename="../gui.py" line="409"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="348"/>
+        <location filename="../gui.py" line="412"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="351"/>
+        <location filename="../gui.py" line="415"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="367"/>
+        <location filename="../gui.py" line="431"/>
         <source>Exit Fullscreen</source>
         <translation type="unfinished"></translation>
     </message>
@@ -159,19 +159,52 @@
     </message>
 </context>
 <context>
+    <name>QualifyingSeq</name>
+    <message>
+        <location filename="../gui.py" line="310"/>
+        <source>Qualifying Driver Change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui.py" line="314"/>
+        <source>Last: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui.py" line="318"/>
+        <source>Next: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui.py" line="324"/>
+        <source>Start Next Driver</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui.py" line="330"/>
+        <source>Last Driver (best laptime): </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui.py" line="332"/>
+        <source>Next Driver: </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>QualifyingState</name>
     <message>
-        <location filename="../gui.py" line="203"/>
+        <location filename="../gui.py" line="207"/>
         <source>Qualifying</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="222"/>
+        <location filename="../gui.py" line="245"/>
         <source>Qualifying: </source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui.py" line="216"/>
+        <location filename="../gui.py" line="232"/>
         <source>, %n Lap(s) remaining</source>
         <translation>
             <numerusform>, %n Lap remaining</numerusform>
@@ -182,22 +215,22 @@
 <context>
     <name>RMS</name>
     <message>
-        <location filename="../main.py" line="177"/>
+        <location filename="../main.py" line="212"/>
         <source>CU version: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="177"/>
+        <location filename="../main.py" line="212"/>
         <source>, mode: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="181"/>
+        <location filename="../main.py" line="216"/>
         <source>Confirm Exit...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="181"/>
+        <location filename="../main.py" line="216"/>
         <source>Are you sure you want to exit ?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -218,17 +251,17 @@
 <context>
     <name>RaceState</name>
     <message>
-        <location filename="../gui.py" line="170"/>
+        <location filename="../gui.py" line="174"/>
         <source>Race</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="189"/>
+        <location filename="../gui.py" line="193"/>
         <source>Race: </source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui.py" line="183"/>
+        <location filename="../gui.py" line="187"/>
         <source>, %n Lap(s) remaining</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -239,37 +272,37 @@
 <context>
     <name>ResultList</name>
     <message>
-        <location filename="../gui.py" line="418"/>
+        <location filename="../gui.py" line="485"/>
         <source>Ranking</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="428"/>
+        <location filename="../gui.py" line="495"/>
         <source>Pos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="428"/>
+        <location filename="../gui.py" line="495"/>
         <source>Driver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="429"/>
+        <location filename="../gui.py" line="496"/>
         <source>Laps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="430"/>
+        <location filename="../gui.py" line="497"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="430"/>
+        <location filename="../gui.py" line="497"/>
         <source>Difference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="454"/>
+        <location filename="../gui.py" line="521"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
@@ -285,12 +318,12 @@
 <context>
     <name>TrainingState</name>
     <message>
-        <location filename="../gui.py" line="236"/>
+        <location filename="../gui.py" line="259"/>
         <source>Training</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="240"/>
+        <location filename="../gui.py" line="263"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>

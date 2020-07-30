@@ -169,7 +169,7 @@ class RaceState(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.headFont = QFont()
-        self.headFont.setPointSize(50)
+        self.headFont.setPointSize(45)
         self.headFont.setBold(True)
         self.hbox = QVBoxLayout(self)
         self.starttext = QLabel(self.tr('Race'))
@@ -202,7 +202,7 @@ class QualifyingState(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.headFont = QFont()
-        self.headFont.setPointSize(50)
+        self.headFont.setPointSize(45)
         self.headFont.setBold(True)
         self.hbox = QVBoxLayout(self)
         self.starttext = QLabel(self.tr('Qualifying'))
@@ -213,11 +213,6 @@ class QualifyingState(QWidget):
         self.current_addr = -1
 
     def handleUpdateLapsSeq(self, rtime, laps, cu_drivers):
-        for driver in cu_drivers:
-            if self.current_addr == -1 and driver.racing is True:
-                self.current_addr = driver.num
-            else:
-                driver.racing = False
         mlaps = 0
         for driver in cu_drivers:
             if driver.laps > mlaps:
@@ -239,6 +234,13 @@ class QualifyingState(QWidget):
                                + str(formattime(rtime))
                                + self.tr(', %n Lap(s) remaining', '', laps-mlaps))
 
+    def handleUpdateTimeSeq(self, rtime, minutes, cu_drivers):
+        cd = (minutes * 60 * 1000) - rtime
+        self.starttext.setText(self.tr('Qualifying: ') + str(formattime(cd)))
+        if cd <= 0:
+            for driver in cu_drivers:
+                driver.racing = False
+
     def handleUpdateTime(self, rtime, minutes, cu_drivers):
         cd = (minutes * 60 * 1000) - rtime
         self.starttext.setText(self.tr('Qualifying: ') + str(formattime(cd)))
@@ -252,7 +254,7 @@ class TrainingState(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.headFont = QFont()
-        self.headFont.setPointSize(50)
+        self.headFont.setPointSize(45)
         self.headFont.setBold(True)
         self.hbox = QVBoxLayout(self)
         self.starttext = QLabel(self.tr('Training'))
@@ -278,7 +280,7 @@ class FalseStart(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.headFont = QFont()
-        self.headFont.setPointSize(50)
+        self.headFont.setPointSize(45)
         self.headFont.setBold(True)
         self.hbox = QVBoxLayout(self)
         self.starttext = QLabel(self.tr('False Start'))
@@ -293,6 +295,47 @@ class FalseStart(QWidget):
     @pyqtSlot()
     def stop_live_click(self):
         self.parent().parent().parent().parent().showHome()
+
+
+class QualifyingSeq(QWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.headFont = QFont()
+        self.headFont.setPointSize(50)
+        self.headFont.setBold(True)
+        self.posFont = QFont()
+        self.posFont.setPointSize(35)
+        self.posFont.setBold(True)
+        self.hbox = QVBoxLayout(self)
+        self.starttext = QLabel(self.tr('Qualifying Driver Change'))
+        self.starttext.setFont(self.headFont)
+        self.hbox.addWidget(self.starttext)
+        self.hbox.addWidget(HSep())
+        self.lasttext = QLabel(self.tr('Last: '))
+        self.lasttext.setFont(self.posFont)
+        self.hbox.addWidget(self.lasttext)
+        self.hbox.addWidget(HSep())
+        self.nexttext = QLabel(self.tr('Next: '))
+        self.nexttext.setFont(self.posFont)
+        self.hbox.addWidget(self.nexttext)
+        self.hbox.addWidget(HSep())
+        self.hbox.addStretch(1)
+        self.start_next = QPushButton()
+        self.start_next.setText(self.tr('Start Next Driver'))
+        self.start_next.clicked.connect(self.start_next_click)
+        self.hbox.addWidget(self.start_next)
+        self.setLayout(self.hbox)
+
+    def setDrivers(self, last, next):
+        self.lasttext.setText(self.tr('Last Driver (best laptime): ') + '\n' + last['name'] + ': '
+                              + formattime(last['qualifying_cu_driver'].bestlap, longfmt=False))
+        self.nexttext.setText(self.tr('Next Driver: ') + next['name'])
+
+    @pyqtSlot()
+    def start_next_click(self):
+        self.parent().parent().startQualifying(self.parent().parent().comp_mode,
+                                               self.parent().parent().comp_duration)
 
 
 class Home(QWidget):
@@ -393,6 +436,9 @@ class Home(QWidget):
         for i in range(0, 6):
             if self.getOk(i):
                 p = {'pos': 0, 'name': self.getName(i)}
+                if self.qualifyingparams.getCompMode() in [COMP_MODE__QUALIFYING_LAPS_SEQ,
+                                                           COMP_MODE__QUALIFYING_TIME_SEQ]:
+                    p['qualifying_cu_driver'] = None
                 d[i] = p
         return d
 
@@ -513,6 +559,7 @@ class ResultList(QWidget):
                     dtime = ' '
                 else:
                     if rank[0].time is not None:
+                        #dtime = '+' + str(crank.time - rank[0].time)
                         dtime = '+' + formattime(crank.time - rank[0].time, longfmt=False)
             if sort_mode == SORT_MODE__LAPTIME:
                 ftime = formattime(crank.bestlap, longfmt=False)
@@ -520,7 +567,8 @@ class ResultList(QWidget):
                     dtime = ' '
                 else:
                     if rank[0].bestlap is not None:
-                        dtime = '+' + formattime(crank.bestlap - rank[0].bestlap, longfmt=False)
+                        #dtime = '+' + str((crank.bestlap - rank[0].bestlap)/1000.0)
+                        dtime = '+' + formattime((int(crank.bestlap) - float(rank[0].bestlap)) , longfmt=False)
             fotime = QLabel(str(ftime))
             fotime.setStyleSheet(self.posCss)
             fotime.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)

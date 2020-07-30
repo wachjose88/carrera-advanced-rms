@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
     QStackedWidget
 
 from bridge import CUBridge, StartSignal, IdleMonitor
-from gui import Grid, Home, ThreadTranslation, ResultList
+from gui import Grid, Home, ThreadTranslation, ResultList, QualifyingSeq
 from tts import TTSHandler
 from constants import *
 
@@ -34,6 +34,8 @@ class RMS(QMainWindow):
         self.tts = TTSHandler()
         self.tts.start()
         self.main_stack = QStackedWidget(self)
+        self.qualifyingseq = QualifyingSeq(self)
+        self.main_stack.addWidget(self.qualifyingseq)
         self.threadtranslation = ThreadTranslation()
         self.main_stack.addWidget(self.threadtranslation)
         self.idle = IdleMonitor(cu=cu, cu_instance=cu_instance)
@@ -114,8 +116,14 @@ class RMS(QMainWindow):
 
     def showGrid(self):
         self.grid.resetDrivers()
+        seq_found = None
         for addr, driver in self.drivers.items():
-            self.grid.addDriver(addr, driver)
+            if self.comp_mode in [COMP_MODE__QUALIFYING_LAPS_SEQ, COMP_MODE__QUALIFYING_TIME_SEQ]:
+                if seq_found is None and driver['qualifying_cu_driver'] is None:
+                    self.grid.addDriver(addr, driver)
+                    seq_found = addr
+            else:
+                self.grid.addDriver(addr, driver)
 
         self.main_stack.setCurrentWidget(self.grid)
         self.stopAllThreads()
@@ -125,7 +133,7 @@ class RMS(QMainWindow):
         self.comp_duration = duration
         self.grid.sort_mode = SORT_MODE__LAPTIME
         self.showGrid()
-        self.bridge.reset(self.drivers)
+        self.bridge.reset(self.drivers, mode)
         self.startStartSignalThread()
 
     def startRace(self, mode, duration):
@@ -133,14 +141,14 @@ class RMS(QMainWindow):
         self.comp_duration = duration
         self.grid.sort_mode = SORT_MODE__LAPS
         self.showGrid()
-        self.bridge.reset(self.drivers)
+        self.bridge.reset(self.drivers, mode)
         self.startStartSignalThread()
 
     def startTraining(self):
         self.comp_mode = COMP_MODE__TRAINING
         self.grid.sort_mode = SORT_MODE__LAPTIME
         self.showGrid()
-        self.bridge.reset(self.drivers)
+        self.bridge.reset(self.drivers, self.comp_mode)
         self.startStartSignalThread()
 
     @pyqtSlot()
@@ -149,8 +157,27 @@ class RMS(QMainWindow):
 
     @pyqtSlot(int, list)
     def comp_finished_all(self, rtime, drivers):
+        tdrivers = drivers
         self.stopAllThreads()
-        self.showResultList(drivers)
+        if self.comp_mode in [COMP_MODE__QUALIFYING_LAPS_SEQ, COMP_MODE__QUALIFYING_TIME_SEQ]:
+            seq_found = []
+            next = None
+            for addr, driver in self.drivers.items():
+                if driver['qualifying_cu_driver'] is not None:
+                    seq_found.append(driver)
+                    if tdrivers[addr].time is not None:
+                        driver['qualifying_cu_driver'] = tdrivers[addr]
+                elif next is None:
+                    next = driver
+            if len(seq_found) == len(self.drivers):
+                for addr, driver in self.drivers.items():
+                    tdrivers[addr] = driver['qualifying_cu_driver']
+                self.showResultList(tdrivers)
+            else:
+                self.qualifyingseq.setDrivers(seq_found[-1], next)  
+                self.main_stack.setCurrentWidget(self.qualifyingseq)
+        else:
+            self.showResultList(drivers)
 
     @pyqtSlot(int, list)
     def comp_state_update(self, rtime, cu_drivers):
@@ -174,12 +201,12 @@ class RMS(QMainWindow):
                                                         cu_drivers=cu_drivers)
         elif self.comp_mode == COMP_MODE__QUALIFYING_LAPS_SEQ:
             self.grid.qualifying_state.handleUpdateLapsSeq(rtime=rtime,
-                                                        laps=self.comp_duration,
-                                                        cu_drivers=cu_drivers)
+                                                           laps=self.comp_duration,
+                                                           cu_drivers=cu_drivers)
         elif self.comp_mode == COMP_MODE__QUALIFYING_TIME_SEQ:
-            self.grid.qualifying_state.handleUpdateTime(rtime=rtime,
-                                                        minutes=self.comp_duration,
-                                                        cu_drivers=cu_drivers)
+            self.grid.qualifying_state.handleUpdateTimeSeq(rtime=rtime,
+                                                           minutes=self.comp_duration,
+                                                           cu_drivers=cu_drivers)
 
     @pyqtSlot(int)
     def show_state(self, mode):
