@@ -42,47 +42,47 @@
 <context>
     <name>Grid</name>
     <message>
-        <location filename="../gui.py" line="621"/>
+        <location filename="../gui.py" line="624"/>
         <source>Pos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="621"/>
+        <location filename="../gui.py" line="624"/>
         <source>Driver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="621"/>
+        <location filename="../gui.py" line="624"/>
         <source>Total</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="622"/>
+        <location filename="../gui.py" line="625"/>
         <source>Laps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="623"/>
+        <location filename="../gui.py" line="626"/>
         <source>Laptime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="623"/>
+        <location filename="../gui.py" line="626"/>
         <source>Best Lap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="624"/>
+        <location filename="../gui.py" line="627"/>
         <source>Fuel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="624"/>
+        <location filename="../gui.py" line="627"/>
         <source>Pits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui.py" line="753"/>
+        <location filename="../gui.py" line="756"/>
         <source> (in)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -305,6 +305,14 @@
         <location filename="../gui.py" line="521"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../gui.py" line="565"/>
+        <source>+%n Lap(s)</source>
+        <translation>
+            <numerusform>+%n Lap</numerusform>
+            <numerusform>+%n Laps</numerusform>
+        </translation>
     </message>
 </context>
 <context>

@@ -31,6 +31,7 @@ class ControlUnit(object):
         self.started = None
         n = time.time()
         self.drivers = [n, n, n, n, n, n]
+        self.driversc = [0, 0, 0, 0, 0, 0]
         self._status()
 
     def _status(self,
@@ -77,6 +78,9 @@ class ControlUnit(object):
             for i, dn in enumerate(self.drivers):
                 dnd = n - dn
                 if dnd > r:
+                    self.driversc[i] = self.driversc[i] + 1
+                    if i in [2, 3] and self.driversc[i] % 2:
+                        continue
                     dnn = dn + r
                     self.drivers[i] = dnn
                     return self._timer(i, int((dnn-self.started)*1000))

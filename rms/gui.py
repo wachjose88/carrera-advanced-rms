@@ -559,8 +559,10 @@ class ResultList(QWidget):
                     dtime = ' '
                 else:
                     if rank[0].time is not None:
-                        #dtime = '+' + str(crank.time - rank[0].time)
-                        dtime = '+' + formattime(crank.time - rank[0].time, longfmt=False)
+                        if rank[0].laps <= crank.laps:
+                            dtime = '+' + formattime(crank.time - rank[0].time, longfmt=False)
+                        else:
+                            dtime = self.tr('+%n Lap(s)', '', rank[0].laps - crank.laps)
             if sort_mode == SORT_MODE__LAPTIME:
                 ftime = formattime(crank.bestlap, longfmt=False)
                 if drank == 1:

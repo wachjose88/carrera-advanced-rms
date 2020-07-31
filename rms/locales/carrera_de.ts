@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="de_AT">
+<!DOCTYPE TS><TS version="2.0" language="de_AT" sourcelanguage="">
 <context>
     <name>CompLaps</name>
     <message>
@@ -51,42 +50,42 @@
 <context>
     <name>Grid</name>
     <message>
-        <location filename="../gui.py" line="621"/>
+        <location filename="../gui.py" line="624"/>
         <source>Pos</source>
         <translation>Pos</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="621"/>
+        <location filename="../gui.py" line="624"/>
         <source>Driver</source>
         <translation>Fahrer</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="621"/>
+        <location filename="../gui.py" line="624"/>
         <source>Total</source>
         <translation>Gesamt</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="622"/>
+        <location filename="../gui.py" line="625"/>
         <source>Laps</source>
         <translation>Runden</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="623"/>
+        <location filename="../gui.py" line="626"/>
         <source>Laptime</source>
         <translation>Rundenzeit</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="623"/>
+        <location filename="../gui.py" line="626"/>
         <source>Best Lap</source>
         <translation>Beste Runde</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="624"/>
+        <location filename="../gui.py" line="627"/>
         <source>Fuel</source>
         <translation>Treibstoff</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="624"/>
+        <location filename="../gui.py" line="627"/>
         <source>Pits</source>
         <translation>Boxenstopps</translation>
     </message>
@@ -96,7 +95,7 @@
         <translation type="obsolete">Stopp</translation>
     </message>
     <message>
-        <location filename="../gui.py" line="753"/>
+        <location filename="../gui.py" line="756"/>
         <source> (in)</source>
         <translation> (in)</translation>
     </message>
@@ -324,6 +323,14 @@
         <location filename="../gui.py" line="521"/>
         <source>Back</source>
         <translation>Zurück</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../gui.py" line="565"/>
+        <source>+%n Lap(s)</source>
+        <translation>
+            <numerusform>+%n Runde</numerusform>
+            <numerusform>+%n Runden</numerusform>
+        </translation>
     </message>
 </context>
 <context>
