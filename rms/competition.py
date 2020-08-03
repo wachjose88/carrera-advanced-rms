@@ -85,10 +85,13 @@ class RaceState(QWidget):
 
     def handleUpdateTime(self, rtime, minutes, cu_drivers):
         cd = (minutes * 60 * 1000) - rtime
-        self.starttext.setText(self.tr('Race: ') + str(formattime(cd)))
         if cd <= 0:
             for driver in cu_drivers:
-                driver.racing = False
+                driver.stopnext = True
+            self.starttext.setText(self.tr('Race finished'))
+        else:
+            self.starttext.setText(self.tr('Race: ')
+                                   + str(formattime(cd)))
 
 
 class QualifyingState(QWidget):
@@ -132,17 +135,23 @@ class QualifyingState(QWidget):
 
     def handleUpdateTimeSeq(self, rtime, minutes, cu_drivers):
         cd = (minutes * 60 * 1000) - rtime
-        self.starttext.setText(self.tr('Qualifying: ') + str(formattime(cd)))
         if cd <= 0:
             for driver in cu_drivers:
-                driver.racing = False
+                driver.stopnext = True
+            self.starttext.setText(self.tr('Qualifying finished'))
+        else:
+            self.starttext.setText(self.tr('Qualifying: ')
+                                   + str(formattime(cd)))
 
     def handleUpdateTime(self, rtime, minutes, cu_drivers):
         cd = (minutes * 60 * 1000) - rtime
-        self.starttext.setText(self.tr('Qualifying: ') + str(formattime(cd)))
         if cd <= 0:
             for driver in cu_drivers:
-                driver.racing = False
+                driver.stopnext = True
+            self.starttext.setText(self.tr('Qualifying finished'))
+        else:
+            self.starttext.setText(self.tr('Qualifying: ')
+                                   + str(formattime(cd)))
 
 
 class TrainingState(QWidget):

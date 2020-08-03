@@ -64,6 +64,8 @@ class RMS(QMainWindow):
         self.start_signal.ready_to_run.connect(self.startAfterSignal)
         self.start_signal.show_lights.connect(self.grid.showLight)
         self.idle.update_state.connect(self.show_state)
+        self.bridge.update_state.connect(self.show_state)
+        self.start_signal.update_state.connect(self.show_state)
         self.setCentralWidget(self.main_stack)
         self.initUI()
 
@@ -227,9 +229,29 @@ class RMS(QMainWindow):
 
     @pyqtSlot(int)
     def show_state(self, mode):
+        binMode = "{0:04b}".format(mode)
+        fuelmode = ''
+        pitlane = ''
+        lapcounter = ''
+        if binMode[2] == '1':
+            fuelmode = self.tr('Real')
+        elif binMode[3] == '1':
+            fuelmode = self.tr('On')
+        elif binMode[3] == '0':
+            fuelmode = self.tr('Off')
+        if binMode[1] == '1':
+            pitlane = self.tr('Exists')
+        else:
+            pitlane = self.tr('Missing')
+        if binMode[0] == '1':
+            lapcounter = self.tr('Exists')
+        else:
+            lapcounter = self.tr('Missing')
         self.statusBar().showMessage(
             self.tr('CU version: ') + str(self.cuv)
-            + self.tr(', mode: ') + str(mode))
+            + self.tr(', Pitlane: ') + str(pitlane)
+            + self.tr(', Fuelmode: ') + str(fuelmode)
+            + self.tr(', Lapcounter: ') + str(lapcounter))
 
     def closeEvent(self, event):
         result = QMessageBox.question(
