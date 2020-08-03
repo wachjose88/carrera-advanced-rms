@@ -9,9 +9,18 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
     QStackedWidget
 
 from bridge import CUBridge, StartSignal, IdleMonitor
-from gui import Grid, Home, ThreadTranslation, ResultList, QualifyingSeq
+from competition import Grid, ResultList, QualifyingSeq
+from home import Home
 from tts import TTSHandler
-from constants import *
+from utils import ThreadTranslation
+from constants import COMP_MODE__TRAINING, COMP_MODE__QUALIFYING_LAPS, \
+                      COMP_MODE__QUALIFYING_TIME, \
+                      COMP_MODE__QUALIFYING_LAPS_SEQ, \
+                      COMP_MODE__QUALIFYING_TIME_SEQ, \
+                      COMP_MODE__RACE_LAPS, \
+                      COMP_MODE__RACE_TIME, \
+                      SORT_MODE__LAPS, SORT_MODE__LAPTIME, \
+                      DUMMY_IDS
 
 
 class RMS(QMainWindow):
@@ -62,7 +71,7 @@ class RMS(QMainWindow):
 
         self.statusBar().showMessage('Ready')
 
-        if self.cuv not in ['d', 'dummy']:
+        if self.cuv not in DUMMY_IDS:
             self.showMaximized()
         self.setWindowTitle('RMS')
         self.showHome()
@@ -111,15 +120,18 @@ class RMS(QMainWindow):
     def showResultList(self, cu_drivers):
         self.stopAllThreads()
         self.resultlist.resetDrivers()
-        self.resultlist.addDrivers(self.drivers, cu_drivers, self.grid.sort_mode)
+        self.resultlist.addDrivers(self.drivers, cu_drivers,
+                                   self.grid.sort_mode)
         self.main_stack.setCurrentWidget(self.resultlist)
 
     def showGrid(self):
         self.grid.resetDrivers()
         seq_found = None
         for addr, driver in self.drivers.items():
-            if self.comp_mode in [COMP_MODE__QUALIFYING_LAPS_SEQ, COMP_MODE__QUALIFYING_TIME_SEQ]:
-                if seq_found is None and driver['qualifying_cu_driver'] is None:
+            if self.comp_mode in [COMP_MODE__QUALIFYING_LAPS_SEQ,
+                                  COMP_MODE__QUALIFYING_TIME_SEQ]:
+                if seq_found is None and \
+                        driver['qualifying_cu_driver'] is None:
                     self.grid.addDriver(addr, driver)
                     seq_found = addr
             else:
@@ -159,7 +171,8 @@ class RMS(QMainWindow):
     def comp_finished_all(self, rtime, drivers):
         tdrivers = drivers
         self.stopAllThreads()
-        if self.comp_mode in [COMP_MODE__QUALIFYING_LAPS_SEQ, COMP_MODE__QUALIFYING_TIME_SEQ]:
+        if self.comp_mode in [COMP_MODE__QUALIFYING_LAPS_SEQ,
+                              COMP_MODE__QUALIFYING_TIME_SEQ]:
             seq_found = []
             next = None
             for addr, driver in self.drivers.items():
@@ -174,7 +187,7 @@ class RMS(QMainWindow):
                     tdrivers[addr] = driver['qualifying_cu_driver']
                 self.showResultList(tdrivers)
             else:
-                self.qualifyingseq.setDrivers(seq_found[-1], next)  
+                self.qualifyingseq.setDrivers(seq_found[-1], next)
                 self.main_stack.setCurrentWidget(self.qualifyingseq)
         else:
             self.showResultList(drivers)
@@ -192,32 +205,38 @@ class RMS(QMainWindow):
                                                   minutes=self.comp_duration,
                                                   cu_drivers=cu_drivers)
         elif self.comp_mode == COMP_MODE__QUALIFYING_LAPS:
-            self.grid.qualifying_state.handleUpdateLaps(rtime=rtime,
-                                                        laps=self.comp_duration,
-                                                        cu_drivers=cu_drivers)
+            self.grid.qualifying_state.handleUpdateLaps(
+                rtime=rtime,
+                laps=self.comp_duration,
+                cu_drivers=cu_drivers)
         elif self.comp_mode == COMP_MODE__QUALIFYING_TIME:
-            self.grid.qualifying_state.handleUpdateTime(rtime=rtime,
-                                                        minutes=self.comp_duration,
-                                                        cu_drivers=cu_drivers)
+            self.grid.qualifying_state.handleUpdateTime(
+                rtime=rtime,
+                minutes=self.comp_duration,
+                cu_drivers=cu_drivers)
         elif self.comp_mode == COMP_MODE__QUALIFYING_LAPS_SEQ:
-            self.grid.qualifying_state.handleUpdateLapsSeq(rtime=rtime,
-                                                           laps=self.comp_duration,
-                                                           cu_drivers=cu_drivers)
+            self.grid.qualifying_state.handleUpdateLapsSeq(
+                rtime=rtime,
+                laps=self.comp_duration,
+                cu_drivers=cu_drivers)
         elif self.comp_mode == COMP_MODE__QUALIFYING_TIME_SEQ:
-            self.grid.qualifying_state.handleUpdateTimeSeq(rtime=rtime,
-                                                           minutes=self.comp_duration,
-                                                           cu_drivers=cu_drivers)
+            self.grid.qualifying_state.handleUpdateTimeSeq(
+                rtime=rtime,
+                minutes=self.comp_duration,
+                cu_drivers=cu_drivers)
 
     @pyqtSlot(int)
     def show_state(self, mode):
         self.statusBar().showMessage(
-            self.tr('CU version: ') + str(self.cuv) + self.tr(', mode: ') + str(mode))
+            self.tr('CU version: ') + str(self.cuv)
+            + self.tr(', mode: ') + str(mode))
 
     def closeEvent(self, event):
-        result = QMessageBox.question(self,
-                                      self.tr("Confirm Exit..."),
-                                      self.tr("Are you sure you want to exit ?"),
-                                      QMessageBox.Yes | QMessageBox.No)
+        result = QMessageBox.question(
+            self,
+            self.tr("Confirm Exit..."),
+            self.tr("Are you sure you want to exit ?"),
+            QMessageBox.Yes | QMessageBox.No)
         event.ignore()
 
         if result == QMessageBox.Yes:
@@ -230,11 +249,13 @@ class RMS(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     qtbase_translator = QTranslator()
-    qtbase_translator.load("qtbase_" + locale.getlocale()[0][0:2],
+    qtbase_translator.load(
+        "qtbase_" + locale.getlocale()[0][0:2],
         QLibraryInfo.location(QLibraryInfo.TranslationsPath))
     app.installTranslator(qtbase_translator)
     qt_translator = QTranslator()
-    qt_translator.load("qt_" + locale.getlocale()[0][0:2],
+    qt_translator.load(
+        "qt_" + locale.getlocale()[0][0:2],
         QLibraryInfo.location(QLibraryInfo.TranslationsPath))
     app.installTranslator(qt_translator)
     translator = QTranslator()
@@ -250,7 +271,8 @@ if __name__ == '__main__':
     else:
         from carreralib import ControlUnit
         print(args.controlunit)
-    with contextlib.closing(ControlUnit(str(args.controlunit), timeout=3.0)) as cu:
+    with contextlib.closing(ControlUnit(str(args.controlunit),
+                                        timeout=3.0)) as cu:
         print('CU version %s' % cu.version())
         ex = RMS(cu, ControlUnit)
         sys.exit(app.exec_())

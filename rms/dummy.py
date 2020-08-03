@@ -43,7 +43,8 @@ class ControlUnit(object):
         self.start_press = start if start < 8 else 0
         if self.started is None and start == 8:
             self.started = time.time()
-        self.last = ControlUnit.Status(fuel, self.start_press, mode, pit, display)
+        self.last = ControlUnit.Status(fuel, self.start_press,
+                                       mode, pit, display)
         return self.last
 
     def _timer(self, address, timestamp, sector=1):

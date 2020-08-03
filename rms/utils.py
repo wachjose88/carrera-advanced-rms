@@ -1,5 +1,32 @@
 import locale
 
+from PyQt5.QtWidgets import QWidget,  QHBoxLayout, QFrame, QLabel
+
+
+class ThreadTranslation(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.hbox = QHBoxLayout()
+        self.letsgo = QLabel(self.tr("let's go!"))
+        self.hbox.addWidget(self.letsgo)
+        self.setLayout(self.hbox)
+
+
+class HSep(QFrame):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFrameShape(QFrame.HLine)
+        self.setLineWidth(1)
+
+
+class VSep(QFrame):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFrameShape(QFrame.VLine)
+        self.setLineWidth(1)
+
 
 def formattime(time, longfmt=True):
     if time is None:

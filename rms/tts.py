@@ -26,9 +26,11 @@ class TTSHandler(QThread):
         bl = old[addr].bestlap
         nbl = new[addr].bestlap
         if bl is None and nbl is not None:
-            self.say(new[addr].name + ': ' + str(formattime(nbl, longfmt=False)))
+            self.say(new[addr].name + ': '
+                     + str(formattime(nbl, longfmt=False)))
         if bl is not None and nbl is not None and nbl < bl:
-            self.say(new[addr].name + ': ' + str(formattime(nbl, longfmt=False)))
+            self.say(new[addr].name + ': '
+                     + str(formattime(nbl, longfmt=False)))
 
     def say(self, text):
         self.engine.say(text)

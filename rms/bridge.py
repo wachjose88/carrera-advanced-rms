@@ -2,8 +2,8 @@
 import time
 import copy
 from PyQt5.QtCore import QThread, pyqtSignal
-from utils import formattime
-from constants import *
+from constants import COMP_MODE__QUALIFYING_LAPS_SEQ, \
+                      COMP_MODE__QUALIFYING_TIME_SEQ
 
 
 class IdleMonitor(QThread):
@@ -106,7 +106,8 @@ class CUBridge(QThread):
         def dump(self):
             print('num: ' + str(self.num) + ' time: ' + str(self.time))
 
-    def __init__(self, cu, cu_instance, selected_drivers, tts, threadtranslation):
+    def __init__(self, cu, cu_instance, selected_drivers, tts,
+                 threadtranslation):
         QThread.__init__(self)
         self.cu = cu
         self.cu_instance = cu_instance
@@ -121,8 +122,10 @@ class CUBridge(QThread):
         seq_found = None
         for addr, driver in selected_drivers.items():
             self.drivers[addr].name = driver['name']
-            if mode in [COMP_MODE__QUALIFYING_LAPS_SEQ, COMP_MODE__QUALIFYING_TIME_SEQ]:
-                if seq_found is None and driver['qualifying_cu_driver'] is None:
+            if mode in [COMP_MODE__QUALIFYING_LAPS_SEQ,
+                        COMP_MODE__QUALIFYING_TIME_SEQ]:
+                if seq_found is None and \
+                        driver['qualifying_cu_driver'] is None:
                     self.drivers[addr].racing = True
                     seq_found = addr
                     driver['qualifying_cu_driver'] = self.drivers[addr]
@@ -153,7 +156,8 @@ class CUBridge(QThread):
                 if driver.racing is True:
                     racing = True
             if racing is False:
-                self.comp_finished.emit(int(rt*1000), copy.deepcopy(self.drivers))
+                self.comp_finished.emit(int(rt*1000),
+                                        copy.deepcopy(self.drivers))
                 while not self.stop:
                     time.sleep(0.01)
                 continue
