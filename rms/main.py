@@ -11,6 +11,8 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
 from bridge import CUBridge, StartSignal, IdleMonitor
 from competition import Grid, ResultList, QualifyingSeq
 from home import Home
+from settings import Settings
+from database import DatabaseHandler
 from tts import TTSHandler
 from utils import ThreadTranslation
 from constants import COMP_MODE__TRAINING, COMP_MODE__QUALIFYING_LAPS, \
@@ -40,6 +42,7 @@ class RMS(QMainWindow):
         }
         self.comp_mode = COMP_MODE__TRAINING
         self.comp_duration = 0
+        self.database = DatabaseHandler()
         self.tts = TTSHandler()
         self.tts.start()
         self.main_stack = QStackedWidget(self)
@@ -54,9 +57,11 @@ class RMS(QMainWindow):
         self.start_signal = StartSignal(cu=cu, cu_instance=cu_instance)
         self.grid = Grid(parent=self)
         self.home = Home(parent=self)
+        self.settings = Settings(parent=self, database=self.database)
         self.resultlist = ResultList(parent=self)
         self.main_stack.addWidget(self.home)
         self.main_stack.addWidget(self.grid)
+        self.main_stack.addWidget(self.settings)
         self.main_stack.addWidget(self.resultlist)
         self.bridge.update_grid.connect(self.grid.driver_change)
         self.bridge.comp_state.connect(self.comp_state_update)
@@ -105,7 +110,15 @@ class RMS(QMainWindow):
             self.start_signal.stop = True
             self.start_signal.wait()
 
+    def showSettings(self):
+        self.main_stack.setCurrentWidget(self.settings)
+        self.stopAllThreads()
+        self.startIdleThread()
+
     def showHome(self):
+        tn = self.database.getConfigStr('TRACKNAME')
+        if tn is not None:
+            self.home.headline.setText(tn + ' ' + self.tr('RMS'))
         for i in range(0, 6):
             try:
                 n = self.drivers[i]['name']

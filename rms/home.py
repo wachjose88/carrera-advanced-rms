@@ -104,13 +104,10 @@ class QualifyingParams(QWidget):
             return self.comptime.duration.value()
 
 
-class Home(QWidget):
+class ControllerSet(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.initUI()
-
-    def initUI(self):
         self.controller = QGridLayout()
         self.controller_ok = []
         self.controller_name = []
@@ -122,6 +119,29 @@ class Home(QWidget):
             name = QLineEdit()
             self.controller.addWidget(name, 1, i)
             self.controller_name.append(name)
+        self.setLayout(self.controller)
+
+    def getOk(self, addr):
+        return self.controller_ok[addr].isChecked()
+
+    def getName(self, addr):
+        return self.controller_name[addr].text()
+
+    def setOk(self, addr, checked):
+        self.controller_ok[addr].setChecked(checked)
+
+    def setName(self, addr, name):
+        self.controller_name[addr].setText(name)
+
+
+class Home(QWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.initUI()
+
+    def initUI(self):
+        self.controller = ControllerSet()
         self.vml = QVBoxLayout()
         self.vml.setSpacing(10)
         self.headFont = QFont()
@@ -131,7 +151,7 @@ class Home(QWidget):
         self.headline.setFont(self.headFont)
         self.vml.addWidget(self.headline)
         self.vml.addWidget(HSep())
-        self.vml.addLayout(self.controller)
+        self.vml.addWidget(self.controller)
         self.vml.addWidget(HSep())
         self.starts = QHBoxLayout()
         self.vml.addLayout(self.starts)
@@ -168,21 +188,28 @@ class Home(QWidget):
                                       QSizePolicy.Expanding)
         self.rhbox.addWidget(self.start_race)
         self.starts.addLayout(self.rhbox)
+        self.btnrow = QHBoxLayout()
         self.fullscreen = QPushButton()
         self.fullscreen.setText(self.tr('Fullscreen'))
         self.fullscreen.clicked.connect(self.fullscreen_click)
-        self.vml.addWidget(self.fullscreen)
+        self.btnrow.addWidget(self.fullscreen)
         self.statistics = QPushButton()
         self.statistics.setText(self.tr('Statistics'))
-        self.vml.addWidget(self.statistics)
+        self.btnrow.addWidget(self.statistics)
         self.settings = QPushButton()
         self.settings.setText(self.tr('Settings'))
-        self.vml.addWidget(self.settings)
+        self.settings.clicked.connect(self.settings_click)
+        self.btnrow.addWidget(self.settings)
+        self.vml.addLayout(self.btnrow)
         self.exitrms = QPushButton()
         self.exitrms.setText(self.tr('Exit'))
         self.exitrms.clicked.connect(self.exitrms_click)
         self.vml.addWidget(self.exitrms)
         self.setLayout(self.vml)
+
+    @pyqtSlot()
+    def settings_click(self):
+        self.parent().parent().showSettings()
 
     @pyqtSlot()
     def exitrms_click(self):
@@ -232,13 +259,13 @@ class Home(QWidget):
         self.parent().parent().startTraining()
 
     def getOk(self, addr):
-        return self.controller_ok[addr].isChecked()
+        return self.controller.getOk(addr)
 
     def getName(self, addr):
-        return self.controller_name[addr].text()
+        return self.controller.getName(addr)
 
     def setOk(self, addr, checked):
-        self.controller_ok[addr].setChecked(checked)
+        self.controller.setOk(addr, checked)
 
     def setName(self, addr, name):
-        self.controller_name[addr].setText(name)
+        self.controller.setName(addr, name)

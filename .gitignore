@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 rms/run.sh
+rms/carrera.db
 
 # Distribution / packaging
 .Python

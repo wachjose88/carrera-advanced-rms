@@ -23,7 +23,7 @@ class IdleMonitor(QThread):
                 time.sleep(0.01)
                 data = self.cu.request()
 
-                print('IdleMonitor: ', data)
+                # print('IdleMonitor: ', data)
                 if data == last:
                     continue
                 elif isinstance(data, self.cu_instance.Status):
@@ -61,7 +61,7 @@ class StartSignal(QThread):
             status = self.cu.request()
             if status == last:
                 continue
-            print('StartSignal: ', status)
+            # print('StartSignal: ', status)
             if isinstance(status, self.cu_instance.Status):
                 self.update_state.emit(status.mode)
                 if status.start > 1 and status.start < 7:
@@ -72,6 +72,7 @@ class StartSignal(QThread):
                     break
                 if status.start > 7:
                     self.show_lights.emit(0)
+                    break
                 if status.start == 0 and finished is True:
                     break
 
@@ -146,7 +147,7 @@ class CUBridge(QThread):
         while not isinstance(status, self.cu_instance.Status):
             time.sleep(0.01)
             status = self.cu.request()
-            print('re', status)
+            # print('re', status)
         self.status = status
         # reset cu timer
         self.cu.reset()
@@ -174,7 +175,7 @@ class CUBridge(QThread):
                 time.sleep(0.01)
                 data = self.cu.request()
                 # prevent counting duplicate laps
-                print('CUBridge: ', data)
+                # print('CUBridge: ', data)
                 if data == last:
                     continue
                 elif isinstance(data, self.cu_instance.Status):
