@@ -288,6 +288,9 @@ class ResultList(QWidget):
         self.timeFont.setFamily('monospace')
         self.posCss = "QLabel{ border-radius: 10px; border-color: black; " \
             + "border: 5px solid black; background-color: white}"
+        self.nameCss = "QLabel{ border-radius: 10px; border-color: black; " \
+            + "border: 5px solid black; background-color: white; " \
+            + "font-size: 20pt}"
         self.lcdCss = "QLCDNumber{ border-radius: 10px; " \
             + "background-color: black}"
         self.lcdColor = QColor(255, 0, 0)
@@ -319,9 +322,11 @@ class ResultList(QWidget):
             driverPos.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
             driverPos.setFont(self.posFont)
             self.mainLayout.addWidget(driverPos, self.num_row, 0)
-            name = QLabel(str(crank.name))
-            name.setStyleSheet(self.posCss)
-            name.setFont(self.nameFont)
+            name = QLabel(
+                '<big><b>' + str(crank.name)
+                + '</b></big><br><small>todo: carname</small>')
+            name.setStyleSheet(self.nameCss)
+            name.setTextFormat(Qt.RichText)
             self.mainLayout.addWidget(name, self.num_row, 1)
             laps = QLabel(str(crank.laps))
             laps.setStyleSheet(self.posCss)
@@ -448,6 +453,9 @@ class Grid(QWidget):
         self.timeFont.setFamily('monospace')
         self.posCss = "QLabel{ border-radius: 10px; border-color: black; " \
             + "border: 5px solid black; background-color: white}"
+        self.nameCss = "QLabel{ border-radius: 10px; border-color: black; " \
+            + "border: 5px solid black; background-color: white; " \
+            + "font-size: 20pt}"
         self.lcdCss = "QLCDNumber{ border-radius: 10px; " \
             + "background-color: black}"
         self.lcdColor = QColor(255, 0, 0)
@@ -459,9 +467,11 @@ class Grid(QWidget):
         driverPos.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         driverPos.setFont(self.posFont)
         self.mainLayout.addWidget(driverPos, self.num_row, 0)
-        name = QLabel(str(driver['name']))
-        name.setStyleSheet(self.posCss)
-        name.setFont(self.nameFont)
+        name = QLabel(
+            '<big><b>' + str(driver['name'])
+            + '</b></big><br><small>todo: carname</small>')
+        name.setTextFormat(Qt.RichText)
+        name.setStyleSheet(self.nameCss)
         self.mainLayout.addWidget(name, self.num_row, 1)
         total = QLabel('00:00')
         total.setStyleSheet(self.posCss)

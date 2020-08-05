@@ -3,6 +3,7 @@ import contextlib
 import sys
 import argparse
 import locale
+import json
 
 from PyQt5.QtCore import pyqtSlot, QTranslator, QLibraryInfo
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
@@ -30,19 +31,13 @@ class RMS(QMainWindow):
     def __init__(self, cu, cu_instance):
         super().__init__()
         self.cuv = cu.version()
-        self.drivers = {
-            0: {
-                'pos': 4,
-                'name': 'Josef'
-            },
-            1: {
-                'pos': 2,
-                'name': 'Papa'
-            }
-        }
+        self.database = DatabaseHandler(
+            debug=True if self.cuv in DUMMY_IDS else False
+        )
+        self.drivers = {}
+        self.setDefaultDrivers()
         self.comp_mode = COMP_MODE__TRAINING
         self.comp_duration = 0
-        self.database = DatabaseHandler()
         self.tts = TTSHandler()
         self.tts.start()
         self.main_stack = QStackedWidget(self)
@@ -83,6 +78,15 @@ class RMS(QMainWindow):
         self.setWindowTitle('RMS')
         self.showHome()
         self.show()
+
+    def setDefaultDrivers(self):
+        self.drivers = {}
+        driversjson = self.database.getConfigStr('DEFAULT_DRIVERS')
+        if driversjson is not None:
+            driversdb = json.loads(driversjson)
+            for addr, driver in driversdb.items():
+                addrt = int(addr)
+                self.drivers[addrt] = driver
 
     def startBridgeThread(self):
         if not self.bridge.isRunning():
