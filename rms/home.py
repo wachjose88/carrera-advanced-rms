@@ -1,5 +1,5 @@
 
-from PyQt5.QtWidgets import QWidget, QGridLayout, \
+from PyQt5.QtWidgets import QWidget, QGridLayout, QComboBox, \
                             QLabel, QVBoxLayout, QSizePolicy, \
                             QCheckBox, QLineEdit, QPushButton, QHBoxLayout, \
                             QSpinBox, QTabWidget
@@ -106,20 +106,39 @@ class QualifyingParams(QWidget):
 
 class ControllerSet(QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, database=None):
         super().__init__(parent)
+        self.database = database
         self.controller = QGridLayout()
         self.controller_ok = []
         self.controller_name = []
+        self.controller_car = []
+        cars = self.database.getAllCars()
+        self.carlbl = self.tr('Car')
+        self.carsep = '---'
         for i in range(0, 6):
             ok = QCheckBox()
+            ok.setSizePolicy(QSizePolicy.Expanding,
+                             QSizePolicy.Maximum)
             ok.setText(self.tr('Controller ') + str(i+1))
             self.controller.addWidget(ok, 0, i)
             self.controller_ok.append(ok)
             name = QLineEdit()
+            name.setSizePolicy(QSizePolicy.Expanding,
+                               QSizePolicy.Maximum)
             self.controller.addWidget(name, 1, i)
             self.controller_name.append(name)
+            car = QComboBox()
+            car.addItem(self.carlbl)
+            car.addItem(self.carsep)
+            for c in cars:
+                car.addItem(c.name)
+            self.controller.addWidget(car, 2, i)
+            self.controller_car.append(car)
         self.setLayout(self.controller)
+
+    def getCar(self, addr):
+        return self.controller_car[addr].currentText()
 
     def getOk(self, addr):
         return self.controller_ok[addr].isChecked()
@@ -127,21 +146,41 @@ class ControllerSet(QWidget):
     def getName(self, addr):
         return self.controller_name[addr].text()
 
+    def setCar(self, addr, car):
+        index = self.controller_car[addr].findText(car)
+        if index >= 0:
+            self.controller_car[addr].setCurrentIndex(index)
+
     def setOk(self, addr, checked):
         self.controller_ok[addr].setChecked(checked)
 
     def setName(self, addr, name):
         self.controller_name[addr].setText(name)
 
+    def buildCarList(self):
+        cars = self.database.getAllCars()
+        for i in range(0, 6):
+            cw = self.controller_car[i]
+            car = cw.currentText()
+            cw.clear()
+            cw.addItem(self.carlbl)
+            cw.addItem(self.carsep)
+            for c in cars:
+                cw.addItem(c.name)
+            index = cw.findText(car)
+            if index >= 0:
+                cw.setCurrentIndex(index)
+
 
 class Home(QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, database=None):
         super().__init__(parent)
+        self.database = database
         self.initUI()
 
     def initUI(self):
-        self.controller = ControllerSet()
+        self.controller = ControllerSet(self, self.database)
         self.vml = QVBoxLayout()
         self.vml.setSpacing(10)
         self.headFont = QFont()
@@ -232,7 +271,8 @@ class Home(QWidget):
         d = {}
         for i in range(0, 6):
             if self.getOk(i):
-                p = {'pos': 0, 'name': self.getName(i)}
+                c = self.getCar(i)
+                p = {'pos': 0, 'name': self.getName(i), 'car': c}
                 if self.qualifyingparams.getCompMode() in [
                         COMP_MODE__QUALIFYING_LAPS_SEQ,
                         COMP_MODE__QUALIFYING_TIME_SEQ]:
@@ -258,14 +298,23 @@ class Home(QWidget):
         self.parent().parent().drivers = self.getDrivers()
         self.parent().parent().startTraining()
 
+    def getCar(self, addr):
+        return self.controller.getCar(addr)
+
     def getOk(self, addr):
         return self.controller.getOk(addr)
 
     def getName(self, addr):
         return self.controller.getName(addr)
 
+    def setCar(self, addr, car):
+        self.controller.setCar(addr, car)
+
     def setOk(self, addr, checked):
         self.controller.setOk(addr, checked)
 
     def setName(self, addr, name):
         self.controller.setName(addr, name)
+
+    def buildCarList(self):
+        self.controller.buildCarList()

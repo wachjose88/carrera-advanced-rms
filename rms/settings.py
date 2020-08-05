@@ -1,12 +1,13 @@
 import json
 from PyQt5.QtWidgets import QWidget, QGridLayout, \
                             QLabel, QVBoxLayout, QSizePolicy, \
-                            QCheckBox, QLineEdit, QPushButton, QHBoxLayout, \
-                            QSpinBox, QTabWidget, QMessageBox, QListWidget
-from PyQt5.QtCore import Qt, pyqtSlot
+                            QListWidgetItem, QLineEdit, QPushButton, \
+                            QInputDialog, QTabWidget, QMessageBox, QListWidget
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QFont
 
 from home import ControllerSet
+from utils import HSep
 
 
 class CarSet(QWidget):
@@ -20,35 +21,55 @@ class CarSet(QWidget):
                                       QSizePolicy.Maximum)
         self.mgrid.addWidget(self.carnamelbl, 0, 0)
         self.carname = QLineEdit()
-        self.carname.editingFinished.connect(self.carname_finished)
         self.carname.setSizePolicy(QSizePolicy.Expanding,
                                    QSizePolicy.Maximum)
         self.mgrid.addWidget(self.carname, 0, 1)
+        self.addcar = QPushButton()
+        self.addcar.setText(self.tr('Add'))
+        self.addcar.clicked.connect(self.carname_finished)
+        self.addcar.setSizePolicy(QSizePolicy.Maximum,
+                                  QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.addcar, 0, 2)
         self.carlist = QListWidget()
-        self.carlist.currentRowChanged.connect(self.carlist_rowchanged)
-        self.item2car = {}
+        self.carlist.itemDoubleClicked.connect(self.carlist_itemDoubleClicked)
         i = 0
         for car in self.database.getAllCars():
             self.carlist.insertItem(i, car.name)
-            self.item2car[i] = car.id
             i = i + 1
-        self.mgrid.addWidget(self.carlist, 1, 0, 1, 2)
+        self.mgrid.addWidget(self.carlist, 1, 0, 1, 3)
         self.setLayout(self.mgrid)
 
-    @pyqtSlot(int)
-    def carlist_rowchanged(self, id):
-        self.carname.setText(self.database.getCar(self.item2car[id]).name)
+    @pyqtSlot(QListWidgetItem)
+    def carlist_itemDoubleClicked(self, item):
+        c = self.database.getCarByName(item.text())
+        name, ok = QInputDialog.getText(self, self.tr('Edit Car'),
+                                        self.tr('Carname: '),
+                                        text=c.name)
+
+        if ok:
+            cn = str(name).strip()
+            if len(cn) <= 0:
+                return
+            self.database.setCar(cn)
+            self.parent().parent().parent().coreset.controller.buildCarList()
+            self.carlist.clear()
+            i = 0
+            for car in self.database.getAllCars():
+                self.carlist.insertItem(i, car.name)
+                i = i + 1
 
     @pyqtSlot()
     def carname_finished(self):
         cn = str(self.carname.text()).strip()
+        if len(cn) <= 0:
+            return
         self.database.setCar(cn)
+        self.carname.setText('')
+        self.parent().parent().parent().coreset.controller.buildCarList()
         self.carlist.clear()
-        self.item2car = {}
         i = 0
         for car in self.database.getAllCars():
             self.carlist.insertItem(i, car.name)
-            self.item2car[i] = car.id
             i = i + 1
 
 
@@ -57,6 +78,7 @@ class CoreSet(QWidget):
     def __init__(self, parent=None, database=None):
         super().__init__(parent)
         self.database = database
+        self.vml = QVBoxLayout()
         self.mgrid = QGridLayout()
         self.tracknamelbl = QLabel(self.tr('Trackname: '))
         self.tracknamelbl.setSizePolicy(QSizePolicy.Maximum,
@@ -70,7 +92,11 @@ class CoreSet(QWidget):
         self.trackname.setSizePolicy(QSizePolicy.Expanding,
                                      QSizePolicy.Maximum)
         self.mgrid.addWidget(self.trackname, 0, 1)
-        self.controller = ControllerSet()
+        self.vml.addLayout(self.mgrid)
+        self.vml.addWidget(HSep())
+        self.dcs = QLabel(self.tr('Default Controller Settings:'))
+        self.vml.addWidget(self.dcs)
+        self.controller = ControllerSet(self, self.database)
         driversjson = self.database.getConfigStr('DEFAULT_DRIVERS')
         if driversjson is not None:
             driversdb = json.loads(driversjson)
@@ -78,8 +104,11 @@ class CoreSet(QWidget):
                 addrt = int(addr)
                 self.controller.setOk(addrt, True)
                 self.controller.setName(addrt, driver['name'])
-        self.mgrid.addWidget(self.controller, 1, 0, 1, 2)
-        self.setLayout(self.mgrid)
+                self.controller.setCar(addrt, driver['car'])
+        self.vml.addWidget(self.controller)
+        self.vml.addWidget(HSep())
+        self.vml.addStretch(1)
+        self.setLayout(self.vml)
         self.error = False
 
     @pyqtSlot()
@@ -131,7 +160,8 @@ class Settings(QWidget):
                 if self.coreset.controller.getOk(i) is True:
                     dc[i] = {
                         'pos': 1,
-                        'name': self.coreset.controller.getName(i)
+                        'name': self.coreset.controller.getName(i),
+                        'car': self.coreset.controller.getCar(i)
                     }
             except KeyError:
                 pass

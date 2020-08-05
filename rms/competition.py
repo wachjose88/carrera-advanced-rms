@@ -324,7 +324,8 @@ class ResultList(QWidget):
             self.mainLayout.addWidget(driverPos, self.num_row, 0)
             name = QLabel(
                 '<big><b>' + str(crank.name)
-                + '</b></big><br><small>todo: carname</small>')
+                + '</b></big><br><small>' + str(drivers[addr-1]['car'])
+                + '</small>')
             name.setStyleSheet(self.nameCss)
             name.setTextFormat(Qt.RichText)
             self.mainLayout.addWidget(name, self.num_row, 1)
@@ -469,7 +470,8 @@ class Grid(QWidget):
         self.mainLayout.addWidget(driverPos, self.num_row, 0)
         name = QLabel(
             '<big><b>' + str(driver['name'])
-            + '</b></big><br><small>todo: carname</small>')
+            + '</b></big><br><small>' + str(driver['car'])
+            + '</small>')
         name.setTextFormat(Qt.RichText)
         name.setStyleSheet(self.nameCss)
         self.mainLayout.addWidget(name, self.num_row, 1)

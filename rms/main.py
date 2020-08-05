@@ -51,7 +51,7 @@ class RMS(QMainWindow):
                                threadtranslation=self.threadtranslation)
         self.start_signal = StartSignal(cu=cu, cu_instance=cu_instance)
         self.grid = Grid(parent=self)
-        self.home = Home(parent=self)
+        self.home = Home(parent=self, database=self.database)
         self.settings = Settings(parent=self, database=self.database)
         self.resultlist = ResultList(parent=self)
         self.main_stack.addWidget(self.home)
@@ -123,14 +123,18 @@ class RMS(QMainWindow):
         tn = self.database.getConfigStr('TRACKNAME')
         if tn is not None:
             self.home.headline.setText(tn + ' ' + self.tr('RMS'))
+        self.home.buildCarList()
         for i in range(0, 6):
             try:
                 n = self.drivers[i]['name']
+                c = self.drivers[i]['car']
                 self.home.setOk(i, True)
                 self.home.setName(i, n)
+                self.home.setCar(i, c)
             except KeyError:
                 self.home.setOk(i, False)
                 self.home.setName(i, '')
+                self.home.setCar(i, '')
 
         self.main_stack.setCurrentWidget(self.home)
         self.stopAllThreads()
