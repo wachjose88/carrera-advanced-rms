@@ -1,8 +1,8 @@
 import json
-from PyQt5.QtWidgets import QWidget, QGridLayout, \
+from PyQt5.QtWidgets import QWidget, QGridLayout, QSpinBox, \
                             QLabel, QVBoxLayout, QSizePolicy, \
                             QListWidgetItem, QLineEdit, QPushButton, \
-                            QInputDialog, QTabWidget, QMessageBox, QListWidget
+                            QInputDialog, QTabWidget, QListWidget
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QFont
 
@@ -50,7 +50,7 @@ class CarSet(QWidget):
             cn = str(name).strip()
             if len(cn) <= 0:
                 return
-            self.database.setCar(cn)
+            self.database.setCar(c.name, cn)
             self.parent().parent().parent().coreset.controller.buildCarList()
             self.carlist.clear()
             i = 0
@@ -92,6 +92,22 @@ class CoreSet(QWidget):
         self.trackname.setSizePolicy(QSizePolicy.Expanding,
                                      QSizePolicy.Maximum)
         self.mgrid.addWidget(self.trackname, 0, 1)
+        self.tracklengthlbl = QLabel(self.tr('Tracklength: '))
+        self.tracklengthlbl.setSizePolicy(QSizePolicy.Maximum,
+                                          QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.tracklengthlbl, 1, 0)
+        self.tracklength = QSpinBox()
+        self.tracklength.setMinimum(1)
+        self.tracklength.setMaximum(2147483647)
+        self.tracklength.setSuffix(self.tr(' mm'))
+        self.tracklength.setValue(20000)
+        tl = self.database.getConfigStr('TRACKLENGTH')
+        if tl is not None:
+            self.tracklength.setValue(int(tl))
+        self.tracklength.editingFinished.connect(self.tracklength_finished)
+        self.tracklength.setSizePolicy(QSizePolicy.Expanding,
+                                       QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.tracklength, 1, 1)
         self.vml.addLayout(self.mgrid)
         self.vml.addWidget(HSep())
         self.dcs = QLabel(self.tr('Default Controller Settings:'))
@@ -109,21 +125,16 @@ class CoreSet(QWidget):
         self.vml.addWidget(HSep())
         self.vml.addStretch(1)
         self.setLayout(self.vml)
-        self.error = False
+
+    @pyqtSlot()
+    def tracklength_finished(self):
+        tl = str(self.tracklength.value()).strip()
+        self.database.setConfig('TRACKLENGTH', tl)
 
     @pyqtSlot()
     def trackname_finished(self):
         tn = str(self.trackname.text()).strip()
-        if len(tn) > 0:
-            self.database.setConfig('TRACKNAME', tn)
-            self.error = False
-        else:
-            self.error = True
-            QMessageBox.information(
-                self,
-                self.tr("Missing Trackname"),
-                self.tr("Please enter a trackname."),
-                QMessageBox.Ok)
+        self.database.setConfig('TRACKNAME', tn)
 
 
 class Settings(QWidget):
@@ -152,19 +163,17 @@ class Settings(QWidget):
 
     @pyqtSlot()
     def back_click(self):
-        if self.coreset.error is True:
-            return
         dc = {}
-        for i in range(0, 6):
-            try:
+        try:
+            for i in range(0, 6):
                 if self.coreset.controller.getOk(i) is True:
                     dc[i] = {
                         'pos': 1,
                         'name': self.coreset.controller.getName(i),
                         'car': self.coreset.controller.getCar(i)
                     }
-            except KeyError:
-                pass
-        self.database.setConfig('DEFAULT_DRIVERS', str(json.dumps(dc)))
-        self.parent().parent().setDefaultDrivers()
-        self.parent().parent().showHome()
+            self.database.setConfig('DEFAULT_DRIVERS', str(json.dumps(dc)))
+            self.parent().parent().setDefaultDrivers()
+            self.parent().parent().showHome()
+        except KeyError:
+            pass

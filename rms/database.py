@@ -58,15 +58,14 @@ class DatabaseHandler(object):
             return str(c.value)
         return c
 
-    def setCar(self, name):
+    def setCar(self, name, newname):
         session = self.Session()
         c = session.query(Car).filter_by(name=str(name)).first()
-        print(name, c)
         if c is None:
-            nc = Car(name=str(name))
+            nc = Car(name=str(newname))
             session.add(nc)
         else:
-            c.name = str(name)
+            c.name = str(newname)
         session.commit()
         self.Session.remove()
 

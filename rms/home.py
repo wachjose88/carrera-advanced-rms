@@ -2,7 +2,7 @@
 from PyQt5.QtWidgets import QWidget, QGridLayout, QComboBox, \
                             QLabel, QVBoxLayout, QSizePolicy, \
                             QCheckBox, QLineEdit, QPushButton, QHBoxLayout, \
-                            QSpinBox, QTabWidget
+                            QSpinBox, QTabWidget, QMessageBox
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont
 from utils import HSep, VSep
@@ -114,7 +114,7 @@ class ControllerSet(QWidget):
         self.controller_name = []
         self.controller_car = []
         cars = self.database.getAllCars()
-        self.carlbl = self.tr('Car')
+        self.carlbl = self.tr('Select Car')
         self.carsep = '---'
         for i in range(0, 6):
             ok = QCheckBox()
@@ -138,13 +138,31 @@ class ControllerSet(QWidget):
         self.setLayout(self.controller)
 
     def getCar(self, addr):
+        t = self.controller_car[addr].currentText()
+        if t in [self.carlbl, self.carsep]:
+            QMessageBox.information(
+                self,
+                self.tr("No car selected"),
+                str(self.tr("Please select a car for Controller ")
+                    + str(addr+1) + '.'),
+                QMessageBox.Ok)
+            raise KeyError
         return self.controller_car[addr].currentText()
 
     def getOk(self, addr):
         return self.controller_ok[addr].isChecked()
 
     def getName(self, addr):
-        return self.controller_name[addr].text()
+        name = self.controller_name[addr].text()
+        if name is None or len(name) <= 0:
+            QMessageBox.information(
+                self,
+                self.tr("Driver name missing"),
+                str(self.tr("Please enter a driver name for Controller ")
+                    + str(addr+1) + '.'),
+                QMessageBox.Ok)
+            raise KeyError
+        return name
 
     def setCar(self, addr, car):
         index = self.controller_car[addr].findText(car)
@@ -282,21 +300,30 @@ class Home(QWidget):
 
     @pyqtSlot()
     def startRace_click(self):
-        self.parent().parent().drivers = self.getDrivers()
-        self.parent().parent().startRace(self.raceparams.getCompMode(),
-                                         self.raceparams.getDuration())
+        try:
+            self.parent().parent().drivers = self.getDrivers()
+            self.parent().parent().startRace(self.raceparams.getCompMode(),
+                                             self.raceparams.getDuration())
+        except KeyError:
+            pass
 
     @pyqtSlot()
     def startQualifying_click(self):
-        self.parent().parent().drivers = self.getDrivers()
-        self.parent().parent().startQualifying(
-            self.qualifyingparams.getCompMode(),
-            self.qualifyingparams.getDuration())
+        try:
+            self.parent().parent().drivers = self.getDrivers()
+            self.parent().parent().startQualifying(
+                self.qualifyingparams.getCompMode(),
+                self.qualifyingparams.getDuration())
+        except KeyError:
+            pass
 
     @pyqtSlot()
     def startTraining_click(self):
-        self.parent().parent().drivers = self.getDrivers()
-        self.parent().parent().startTraining()
+        try:
+            self.parent().parent().drivers = self.getDrivers()
+            self.parent().parent().startTraining()
+        except KeyError:
+            pass
 
     def getCar(self, addr):
         return self.controller.getCar(addr)

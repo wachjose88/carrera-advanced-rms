@@ -121,8 +121,10 @@ class RMS(QMainWindow):
 
     def showHome(self):
         tn = self.database.getConfigStr('TRACKNAME')
-        if tn is not None:
+        if tn is not None and len(tn) > 0:
             self.home.headline.setText(tn + ' ' + self.tr('RMS'))
+        else:
+            self.home.headline.setText(self.tr('Carrera RMS'))
         self.home.buildCarList()
         for i in range(0, 6):
             try:
