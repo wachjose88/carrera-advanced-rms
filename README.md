@@ -18,3 +18,5 @@ CUADDRESS should be replaced by the adress of your Carrera Control Unit. This co
 ## Screenshots
 
 ![Homescreen](/screenshots/home.png)
+
+![Racemode](/screenshots/race.png)
