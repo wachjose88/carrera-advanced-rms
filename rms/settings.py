@@ -2,12 +2,21 @@ import json
 from PyQt5.QtWidgets import QWidget, QGridLayout, QSpinBox, \
                             QLabel, QVBoxLayout, QSizePolicy, \
                             QListWidgetItem, QLineEdit, QPushButton, \
-                            QInputDialog, QTabWidget, QListWidget
+                            QInputDialog, QTabWidget, QListWidget, \
+                            QListWidgetItem
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QFont
 
 from home import ControllerSet
 from utils import HSep
+
+
+class CarItem(QListWidgetItem):
+
+    def __init__(self, name=None, number=None):
+        super().__init__(str(name + ' (' + number + ')'))
+        self.name = name
+        self.number = number
 
 
 class CarSet(QWidget):
@@ -24,38 +33,52 @@ class CarSet(QWidget):
         self.carname.setSizePolicy(QSizePolicy.Expanding,
                                    QSizePolicy.Maximum)
         self.mgrid.addWidget(self.carname, 0, 1)
+        self.carnumberlbl = QLabel(self.tr('Carnumber: '))
+        self.carnumberlbl.setSizePolicy(QSizePolicy.Maximum,
+                                        QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.carnumberlbl, 1, 0)
+        self.carnumber = QLineEdit()
+        self.carnumber.setSizePolicy(QSizePolicy.Expanding,
+                                     QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.carnumber, 1, 1)
         self.addcar = QPushButton()
         self.addcar.setText(self.tr('Add'))
         self.addcar.clicked.connect(self.carname_finished)
         self.addcar.setSizePolicy(QSizePolicy.Maximum,
-                                  QSizePolicy.Maximum)
-        self.mgrid.addWidget(self.addcar, 0, 2)
+                                  QSizePolicy.Expanding)
+        self.mgrid.addWidget(self.addcar, 0, 2, 2, 1)
         self.carlist = QListWidget()
         self.carlist.itemDoubleClicked.connect(self.carlist_itemDoubleClicked)
         i = 0
         for car in self.database.getAllCars():
-            self.carlist.insertItem(i, car.name)
+            self.carlist.insertItem(i, CarItem(car.name, car.number))
             i = i + 1
-        self.mgrid.addWidget(self.carlist, 1, 0, 1, 3)
+        self.mgrid.addWidget(self.carlist, 2, 0, 1, 3)
         self.setLayout(self.mgrid)
 
     @pyqtSlot(QListWidgetItem)
     def carlist_itemDoubleClicked(self, item):
-        c = self.database.getCarByName(item.text())
+        c = self.database.getCarByName(item.name)
         name, ok = QInputDialog.getText(self, self.tr('Edit Car'),
                                         self.tr('Carname: '),
                                         text=c.name)
+        number, okn = QInputDialog.getText(self, self.tr('Edit Car'),
+                                           self.tr('Carnumber: '),
+                                           text=c.number)
 
-        if ok:
+        if ok and okn:
             cn = str(name).strip()
             if len(cn) <= 0:
                 return
-            self.database.setCar(c.name, cn)
+            cnr = str(number).strip()
+            if len(cnr) <= 0:
+                return
+            self.database.setCar(c.name, cn, cnr)
             self.parent().parent().parent().coreset.controller.buildCarList()
             self.carlist.clear()
             i = 0
             for car in self.database.getAllCars():
-                self.carlist.insertItem(i, car.name)
+                self.carlist.insertItem(i, CarItem(car.name, car.number))
                 i = i + 1
 
     @pyqtSlot()
@@ -63,13 +86,16 @@ class CarSet(QWidget):
         cn = str(self.carname.text()).strip()
         if len(cn) <= 0:
             return
-        self.database.setCar(cn)
+        cnr = str(self.carnumber.text()).strip()
+        if len(cnr) <= 0:
+            return
+        self.database.setCar(cn, cn, cnr)
         self.carname.setText('')
         self.parent().parent().parent().coreset.controller.buildCarList()
         self.carlist.clear()
         i = 0
         for car in self.database.getAllCars():
-            self.carlist.insertItem(i, car.name)
+            self.carlist.insertItem(i, CarItem(car.name, car.number))
             i = i + 1
 
 

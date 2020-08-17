@@ -12,7 +12,7 @@ class Config(Base):
     id = Column(Integer, primary_key=True)
     key = Column(String)
     value = Column(String)
-    sync = Column(Boolean, default=True)
+    sync = Column(Boolean, default=False)
 
     def __repr__(self):
         return "<Config(key='%s', value='%s')>" % (
@@ -24,7 +24,8 @@ class Car(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
-    sync = Column(Boolean, default=True)
+    number = Column(String, unique=True)
+    sync = Column(Boolean, default=False)
 
     def __repr__(self):
         return "<Car(name='%s')>" % (
@@ -58,14 +59,15 @@ class DatabaseHandler(object):
             return str(c.value)
         return c
 
-    def setCar(self, name, newname):
+    def setCar(self, name, newname, number):
         session = self.Session()
         c = session.query(Car).filter_by(name=str(name)).first()
         if c is None:
-            nc = Car(name=str(newname))
+            nc = Car(name=str(newname), number=str(number))
             session.add(nc)
         else:
             c.name = str(newname)
+            c.number = str(number)
         session.commit()
         self.Session.remove()
 

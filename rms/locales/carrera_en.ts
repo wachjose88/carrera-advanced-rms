@@ -3,18 +3,23 @@
 <context>
     <name>CarSet</name>
     <message>
-        <location filename="../settings.py" line="45"/>
+        <location filename="../settings.py" line="62"/>
         <source>Carname: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="28"/>
+        <location filename="../settings.py" line="45"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="45"/>
+        <location filename="../settings.py" line="65"/>
         <source>Edit Car</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="65"/>
+        <source>Carnumber: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -80,22 +85,22 @@
 <context>
     <name>CoreSet</name>
     <message>
-        <location filename="../settings.py" line="83"/>
+        <location filename="../settings.py" line="109"/>
         <source>Trackname: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="113"/>
+        <location filename="../settings.py" line="139"/>
         <source>Default Controller Settings:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="95"/>
+        <location filename="../settings.py" line="121"/>
         <source>Tracklength: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="102"/>
+        <location filename="../settings.py" line="128"/>
         <source> mm</source>
         <translation type="unfinished"></translation>
     </message>
@@ -442,22 +447,22 @@
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../settings.py" line="149"/>
+        <location filename="../settings.py" line="175"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="155"/>
+        <location filename="../settings.py" line="181"/>
         <source>Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="157"/>
+        <location filename="../settings.py" line="183"/>
         <source>Cars</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="159"/>
+        <location filename="../settings.py" line="185"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>

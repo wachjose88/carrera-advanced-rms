@@ -74,7 +74,7 @@ class ControlUnit(object):
         if self.start_press in range(2, 8) and d > 1.0:
             self.time = n
             return self._status(start=self.start_press+1)
-        r = random.uniform(2.1, 3.2)
+        r = random.uniform(2.10000, 2.103000)
         if self.started is not None:
             for i, dn in enumerate(self.drivers):
                 dnd = n - dn

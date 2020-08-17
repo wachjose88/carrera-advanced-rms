@@ -313,7 +313,10 @@ class ResultList(QWidget):
                                                                   dr.time))
         if sort_mode == SORT_MODE__LAPTIME:
             rank.sort(key=lambda dr: 0 if dr.bestlap is None else dr.bestlap)
-
+        last_drank = '0'
+        last_bl = 0
+        last_tm = 0
+        last_lp = 0
         for crank in rank:
             addr = crank.num
             drank = rank.index(crank) + 1
@@ -367,6 +370,17 @@ class ResultList(QWidget):
             otime.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
             otime.setFont(self.timeFont)
             self.mainLayout.addWidget(otime, self.num_row, 4)
+            if sort_mode == SORT_MODE__LAPS:
+                if int(crank.laps) == int(last_lp) and \
+                        int(crank.time) == int(last_tm):
+                    driverPos.setText(str(last_drank))
+            if sort_mode == SORT_MODE__LAPTIME:
+                if int(crank.bestlap) == int(last_bl):
+                    driverPos.setText(str(last_drank))
+            last_drank = driverPos.text()
+            last_bl = int(crank.bestlap)
+            last_lp = int(crank.laps)
+            last_tm = int(crank.time)
             self.driver_ui[addr] = {
                 'pos': driverPos,
                 'name': name,

@@ -4,19 +4,24 @@
 <context>
     <name>CarSet</name>
     <message>
-        <location filename="../settings.py" line="45"/>
+        <location filename="../settings.py" line="62"/>
         <source>Carname: </source>
         <translation>Autoname: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="28"/>
+        <location filename="../settings.py" line="45"/>
         <source>Add</source>
         <translation>Hinzufügen</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="45"/>
+        <location filename="../settings.py" line="65"/>
         <source>Edit Car</source>
         <translation>Auto bearbeiten</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="65"/>
+        <source>Carnumber: </source>
+        <translation>Autonummer: </translation>
     </message>
 </context>
 <context>
@@ -86,12 +91,12 @@
 <context>
     <name>CoreSet</name>
     <message>
-        <location filename="../settings.py" line="83"/>
+        <location filename="../settings.py" line="109"/>
         <source>Trackname: </source>
         <translation>Streckenname: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="113"/>
+        <location filename="../settings.py" line="139"/>
         <source>Default Controller Settings:</source>
         <translation>Standard Regler Einstellungen</translation>
     </message>
@@ -106,12 +111,12 @@
         <translation type="obsolete">Bitte geben Sie einen Streckennamen ein.</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="95"/>
+        <location filename="../settings.py" line="121"/>
         <source>Tracklength: </source>
         <translation>Streckenlänge: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="102"/>
+        <location filename="../settings.py" line="128"/>
         <source> mm</source>
         <translation> mm</translation>
     </message>
@@ -491,22 +496,22 @@
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../settings.py" line="149"/>
+        <location filename="../settings.py" line="175"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="155"/>
+        <location filename="../settings.py" line="181"/>
         <source>Core</source>
         <translation>Allgemein</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="157"/>
+        <location filename="../settings.py" line="183"/>
         <source>Cars</source>
         <translation>Autos</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="159"/>
+        <location filename="../settings.py" line="185"/>
         <source>Back</source>
         <translation>Zurück</translation>
     </message>
