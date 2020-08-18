@@ -31,6 +31,8 @@ class RMS(QMainWindow):
     def __init__(self, cu, cu_instance):
         super().__init__()
         self.cuv = cu.version()
+        self.show_pits = True
+        self.show_fuel = True
         self.database = DatabaseHandler(
             debug=True if self.cuv in DUMMY_IDS else False
         )
@@ -150,17 +152,19 @@ class RMS(QMainWindow):
         self.main_stack.setCurrentWidget(self.resultlist)
 
     def showGrid(self):
-        self.grid.resetDrivers()
+        self.grid.resetDrivers(self.show_fuel, self.show_pits)
         seq_found = None
         for addr, driver in self.drivers.items():
             if self.comp_mode in [COMP_MODE__QUALIFYING_LAPS_SEQ,
                                   COMP_MODE__QUALIFYING_TIME_SEQ]:
                 if seq_found is None and \
                         driver['qualifying_cu_driver'] is None:
-                    self.grid.addDriver(addr, driver)
+                    self.grid.addDriver(addr, driver,
+                                        self.show_fuel, self.show_pits)
                     seq_found = addr
             else:
-                self.grid.addDriver(addr, driver)
+                self.grid.addDriver(addr, driver,
+                                    self.show_fuel, self.show_pits)
 
         self.main_stack.setCurrentWidget(self.grid)
         self.stopAllThreads()
@@ -258,14 +262,19 @@ class RMS(QMainWindow):
         lapcounter = ''
         if binMode[2] == '1':
             fuelmode = self.tr('Real')
+            self.show_fuel = True
         elif binMode[3] == '1':
             fuelmode = self.tr('On')
+            self.show_fuel = True
         elif binMode[3] == '0':
             fuelmode = self.tr('Off')
+            self.show_fuel = False
         if binMode[1] == '1':
             pitlane = self.tr('Exists')
+            self.show_pits = True
         else:
             pitlane = self.tr('Missing')
+            self.show_pits = False
         if binMode[0] == '1':
             lapcounter = self.tr('Exists')
         else:

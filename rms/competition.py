@@ -425,10 +425,11 @@ class Grid(QWidget):
                          self.tr('Laps'),
                          self.tr('Laptime'), self.tr('Best Lap'),
                          self.tr('Fuel'), self.tr('Pits')]
+        self.headerLabel = self.labelArr
         for index, label in enumerate(self.labelArr):
-            self.headerLabel = QLabel(label)
-            self.headerLabel.setFont(self.headerFont)
-            self.mainLayout.addWidget(self.headerLabel, 0,
+            self.headerLabel[index] = QLabel(label)
+            self.headerLabel[index].setFont(self.headerFont)
+            self.mainLayout.addWidget(self.headerLabel[index], 0,
                                       index, Qt.AlignHCenter)
         self.mainLayout.setColumnStretch(1, 1)
         self.mainLayout.setColumnStretch(2, 1)
@@ -476,7 +477,7 @@ class Grid(QWidget):
         self.lcdColor = QColor(255, 0, 0)
         self.num_row = 1
 
-    def addDriver(self, addr, driver):
+    def addDriver(self, addr, driver, show_fuel, show_pits):
         driverPos = QLabel(str(driver['pos']))
         driverPos.setStyleSheet(self.posCss)
         driverPos.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
@@ -524,12 +525,14 @@ class Grid(QWidget):
         fuelbar.setValue(15)
         fuelbar.setFont(self.timeFont)
         fuelbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+        fuelbar.setHidden(not show_fuel)
         self.mainLayout.addWidget(fuelbar, self.num_row, 6)
         pits = QLabel('00')
         pits.setStyleSheet(self.posCss)
         pits.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         pits.setFont(self.timeFont)
         pits.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+        pits.setHidden(not show_pits)
         self.mainLayout.addWidget(pits, self.num_row, 7)
         self.driver_ui[addr] = {
             'pos': driverPos,
@@ -543,7 +546,15 @@ class Grid(QWidget):
         }
         self.num_row += 1
 
-    def resetDrivers(self):
+    def resetDrivers(self, show_fuel, show_pits):
+        if show_fuel is False:
+            self.headerLabel[-2].setHidden(True)
+        else:
+            self.headerLabel[-2].setHidden(False)
+        if show_pits is False:
+            self.headerLabel[-1].setHidden(True)
+        else:
+            self.headerLabel[-1].setHidden(False)
         for addr, row in self.driver_ui.items():
             for name, widget in row.items():
                 self.mainLayout.removeWidget(widget)
@@ -563,15 +574,35 @@ class Grid(QWidget):
                                                                   dr.time))
         if self.sort_mode == SORT_MODE__LAPTIME:
             rank.sort(key=lambda dr: 0 if dr.bestlap is None else dr.bestlap)
+        posl = []
+        for i in range(0, len(rank)):
+            pos = i + 1
+            dposm1 = i - 1
+            if dposm1 >= 0:
+                if self.sort_mode == SORT_MODE__LAPS:
+                    if rank[i].laps is not None and \
+                            rank[dposm1].laps is not None and \
+                            rank[i].laps == rank[dposm1].laps and \
+                            rank[i].time is not None and \
+                            rank[dposm1].time is not None and \
+                            rank[i].time == rank[dposm1].time:
+                        pos = posl[dposm1]
+                if self.sort_mode == SORT_MODE__LAPTIME:
+                    if rank[i].bestlap is not None and \
+                            rank[dposm1].bestlap is not None and \
+                            rank[i].bestlap == rank[dposm1].bestlap:
+                        pos = posl[dposm1]
+            posl.append(pos)
         for addr, driver in self.driver_ui.items():
             try:
                 di = cu_drivers[addr]
                 p = str(di.pits)
                 if di.pit:
                     p += self.tr(' (in)')
+                dpos = posl[rank.index(di)]
                 self.updateDriver(
                     addr=addr,
-                    pos=rank.index(di)+1,
+                    pos=dpos,
                     total=di.time,
                     laps=di.laps,
                     laptime=di.laptime,
