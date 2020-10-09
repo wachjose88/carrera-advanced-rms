@@ -11,6 +11,99 @@ from home import ControllerSet
 from utils import HSep
 
 
+class PlayerItem(QListWidgetItem):
+
+    def __init__(self, username=None, name=None):
+        super().__init__(str(username + ': ' + name))
+        self.username = username
+        self.name = name
+
+
+class PlayerSet(QWidget):
+
+    def __init__(self, parent=None, database=None):
+        super().__init__(parent)
+        self.database = database
+        self.mgrid = QGridLayout()
+        self.usernamelbl = QLabel(self.tr('Username: '))
+        self.usernamelbl.setSizePolicy(QSizePolicy.Maximum,
+                                       QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.usernamelbl, 0, 0)
+        self.username = QLineEdit()
+        self.username.setSizePolicy(QSizePolicy.Expanding,
+                                    QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.username, 0, 1)
+        self.playernamelbl = QLabel(self.tr('Name: '))
+        self.playernamelbl.setSizePolicy(QSizePolicy.Maximum,
+                                         QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.playernamelbl, 1, 0)
+        self.playername = QLineEdit()
+        self.playername.setSizePolicy(QSizePolicy.Expanding,
+                                      QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.playername, 1, 1)
+        self.addplayer = QPushButton()
+        self.addplayer.setText(self.tr('Add'))
+        self.addplayer.clicked.connect(self.playername_finished)
+        self.addplayer.setSizePolicy(QSizePolicy.Maximum,
+                                     QSizePolicy.Expanding)
+        self.mgrid.addWidget(self.addplayer, 0, 2, 2, 1)
+        self.playerlist = QListWidget()
+        self.playerlist.itemDoubleClicked.connect(
+            self.playerlist_itemDoubleClicked)
+        i = 0
+        for player in self.database.getAllPlayers():
+            self.playerlist.insertItem(i, PlayerItem(player.username,
+                                                     player.name))
+            i = i + 1
+        self.mgrid.addWidget(self.playerlist, 2, 0, 1, 3)
+        self.setLayout(self.mgrid)
+
+    @pyqtSlot()
+    def playername_finished(self):
+        pn = str(self.playername.text()).strip()
+        if len(pn) <= 0:
+            return
+        pun = str(self.username.text()).strip()
+        if len(pun) <= 0:
+            return
+        self.database.setPlayer(pun, pun, pn)
+        self.username.setText('')
+        self.playername.setText('')
+        self.parent().parent().parent().coreset.controller.buildPlayerList()
+        self.playerlist.clear()
+        i = 0
+        for player in self.database.getAllPlayers():
+            self.playerlist.insertItem(i, PlayerItem(player.username,
+                                                     player.name))
+            i = i + 1
+
+    @pyqtSlot(QListWidgetItem)
+    def playerlist_itemDoubleClicked(self, item):
+        p = self.database.getPlayer(item.username)
+        username, ok = QInputDialog.getText(self, self.tr('Edit Player'),
+                                            self.tr('Username: '),
+                                            text=p.username)
+        name, okn = QInputDialog.getText(self, self.tr('Edit Player'),
+                                         self.tr('Name: '),
+                                         text=p.name)
+
+        if ok and okn:
+            pu = str(username).strip()
+            if len(pu) <= 0:
+                return
+            pn = str(name).strip()
+            if len(pn) <= 0:
+                return
+            self.database.setPlayer(p.username, pu, pn)
+            self.parent().parent().parent().coreset.controller.buildPlayerList()
+            self.playerlist.clear()
+            i = 0
+            for player in self.database.getAllPlayers():
+                self.playerlist.insertItem(i, PlayerItem(player.username,
+                                                         player.name))
+                i = i + 1
+
+
 class CarItem(QListWidgetItem):
 
     def __init__(self, name=None, number=None):
@@ -91,6 +184,7 @@ class CarSet(QWidget):
             return
         self.database.setCar(cn, cn, cnr)
         self.carname.setText('')
+        self.carnumber.setText('')
         self.parent().parent().parent().coreset.controller.buildCarList()
         self.carlist.clear()
         i = 0
@@ -181,6 +275,8 @@ class Settings(QWidget):
         self.settab.addTab(self.coreset, self.tr('Core'))
         self.carset = CarSet(database=self.database)
         self.settab.addTab(self.carset, self.tr('Cars'))
+        self.playerset = PlayerSet(database=self.database)
+        self.settab.addTab(self.playerset, self.tr('Player'))
         self.back = QPushButton()
         self.back.setText(self.tr('Back'))
         self.back.clicked.connect(self.back_click)

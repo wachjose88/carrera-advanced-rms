@@ -32,6 +32,19 @@ class Car(Base):
             self.name)
 
 
+class Player(Base):
+    __tablename__ = 'player'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True)
+    name = Column(String)
+    sync = Column(Boolean, default=False)
+
+    def __repr__(self):
+        return "<Car(username='%s')>" % (
+            self.username)
+
+
 class DatabaseHandler(object):
 
     def __init__(self, debug):
@@ -91,4 +104,30 @@ class DatabaseHandler(object):
         session = self.Session()
         c = session.query(Car).all()
         self.Session.remove()
+        return c
+
+    def getAllPlayers(self):
+        session = self.Session()
+        c = session.query(Player).all()
+        self.Session.remove()
+        return c
+
+    def setPlayer(self, username, newusername, name):
+        session = self.Session()
+        c = session.query(Player).filter_by(username=str(username)).first()
+        if c is None:
+            nc = Player(username=str(newusername), name=str(name))
+            session.add(nc)
+        else:
+            c.username = str(newusername)
+            c.name = str(name)
+        session.commit()
+        self.Session.remove()
+
+    def getPlayer(self, username):
+        session = self.Session()
+        c = session.query(Player).filter_by(username=username).first()
+        self.Session.remove()
+        if c is not None:
+            return c
         return c

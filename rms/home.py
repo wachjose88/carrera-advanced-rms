@@ -116,6 +116,9 @@ class ControllerSet(QWidget):
         cars = self.database.getAllCars()
         self.carlbl = self.tr('Select Car')
         self.carsep = '---'
+        players = self.database.getAllPlayers()
+        self.playerlbl = self.tr('Select Player')
+        self.playersep = '---'
         for i in range(0, 6):
             ok = QCheckBox()
             ok.setSizePolicy(QSizePolicy.Expanding,
@@ -123,11 +126,13 @@ class ControllerSet(QWidget):
             ok.setText(self.tr('Controller ') + str(i+1))
             self.controller.addWidget(ok, 0, i)
             self.controller_ok.append(ok)
-            name = QLineEdit()
-            name.setSizePolicy(QSizePolicy.Expanding,
-                               QSizePolicy.Maximum)
-            self.controller.addWidget(name, 1, i)
-            self.controller_name.append(name)
+            player = QComboBox()
+            player.addItem(self.playerlbl)
+            player.addItem(self.playersep)
+            for p in players:
+                player.addItem(p.username)
+            self.controller.addWidget(player, 1, i)
+            self.controller_name.append(player)
             car = QComboBox()
             car.addItem(self.carlbl)
             car.addItem(self.carsep)
@@ -153,8 +158,8 @@ class ControllerSet(QWidget):
         return self.controller_ok[addr].isChecked()
 
     def getName(self, addr):
-        name = self.controller_name[addr].text()
-        if name is None or len(name) <= 0:
+        username = self.controller_name[addr].currentText()
+        if username in [self.playerlbl, self.playersep]:
             QMessageBox.information(
                 self,
                 self.tr("Driver name missing"),
@@ -162,7 +167,7 @@ class ControllerSet(QWidget):
                     + str(addr+1) + '.'),
                 QMessageBox.Ok)
             raise KeyError
-        return name
+        return username
 
     def setCar(self, addr, car):
         index = self.controller_car[addr].findText(car)
@@ -172,8 +177,10 @@ class ControllerSet(QWidget):
     def setOk(self, addr, checked):
         self.controller_ok[addr].setChecked(checked)
 
-    def setName(self, addr, name):
-        self.controller_name[addr].setText(name)
+    def setName(self, addr, username):
+        index = self.controller_name[addr].findText(username)
+        if index >= 0:
+            self.controller_name[addr].setCurrentIndex(index)
 
     def buildCarList(self):
         cars = self.database.getAllCars()
@@ -186,6 +193,20 @@ class ControllerSet(QWidget):
             for c in cars:
                 cw.addItem(c.name)
             index = cw.findText(car)
+            if index >= 0:
+                cw.setCurrentIndex(index)
+
+    def buildPlayerList(self):
+        players = self.database.getAllPlayers()
+        for i in range(0, 6):
+            cw = self.controller_car[i]
+            player = cw.currentText()
+            cw.clear()
+            cw.addItem(self.playerlbl)
+            cw.addItem(self.playersep)
+            for p in players:
+                cw.addItem(p.username)
+            index = cw.findText(player)
             if index >= 0:
                 cw.setCurrentIndex(index)
 
@@ -345,3 +366,6 @@ class Home(QWidget):
 
     def buildCarList(self):
         self.controller.buildCarList()
+
+    def buildPlayerList(self):
+        self.controller.buildPlayerList()
