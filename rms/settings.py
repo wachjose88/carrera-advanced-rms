@@ -276,7 +276,7 @@ class Settings(QWidget):
         self.carset = CarSet(database=self.database)
         self.settab.addTab(self.carset, self.tr('Cars'))
         self.playerset = PlayerSet(database=self.database)
-        self.settab.addTab(self.playerset, self.tr('Player'))
+        self.settab.addTab(self.playerset, self.tr('Drivers'))
         self.back = QPushButton()
         self.back.setText(self.tr('Back'))
         self.back.clicked.connect(self.back_click)

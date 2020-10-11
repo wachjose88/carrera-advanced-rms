@@ -62,7 +62,7 @@ class RaceState(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.headFont = QFont()
-        self.headFont.setPointSize(45)
+        self.headFont.setPointSize(25)
         self.headFont.setBold(True)
         self.hbox = QVBoxLayout(self)
         self.starttext = QLabel(self.tr('Race'))
@@ -99,7 +99,7 @@ class QualifyingState(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.headFont = QFont()
-        self.headFont.setPointSize(45)
+        self.headFont.setPointSize(25)
         self.headFont.setBold(True)
         self.hbox = QVBoxLayout(self)
         self.starttext = QLabel(self.tr('Qualifying'))
@@ -159,7 +159,7 @@ class TrainingState(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.headFont = QFont()
-        self.headFont.setPointSize(45)
+        self.headFont.setPointSize(25)
         self.headFont.setBold(True)
         self.hbox = QVBoxLayout(self)
         self.starttext = QLabel(self.tr('Training'))
@@ -185,7 +185,7 @@ class FalseStart(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.headFont = QFont()
-        self.headFont.setPointSize(45)
+        self.headFont.setPointSize(25)
         self.headFont.setBold(True)
         self.hbox = QVBoxLayout(self)
         self.starttext = QLabel(self.tr('False Start'))
@@ -207,10 +207,10 @@ class QualifyingSeq(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.headFont = QFont()
-        self.headFont.setPointSize(50)
+        self.headFont.setPointSize(35)
         self.headFont.setBold(True)
         self.posFont = QFont()
-        self.posFont.setPointSize(35)
+        self.posFont.setPointSize(25)
         self.posFont.setBold(True)
         self.hbox = QVBoxLayout(self)
         self.starttext = QLabel(self.tr('Qualifying Driver Change'))
@@ -255,7 +255,7 @@ class ResultList(QWidget):
 
     def initUI(self):
         self.posFont = QFont()
-        self.posFont.setPointSize(35)
+        self.posFont.setPointSize(30)
         self.posFont.setBold(True)
         self.headline = QLabel(self.tr('Ranking'))
         self.headline.setFont(self.posFont)
@@ -282,14 +282,14 @@ class ResultList(QWidget):
         self.nameFont.setPointSize(20)
         self.nameFont.setBold(True)
         self.timeFont = QFont()
-        self.timeFont.setPointSize(36)
+        self.timeFont.setPointSize(30)
         self.timeFont.setBold(True)
         self.timeFont.setStyleHint(QFont.TypeWriter)
         self.timeFont.setFamily('monospace')
         self.posCss = "QLabel{ border-radius: 10px; border-color: black; " \
-            + "border: 5px solid black; background-color: white}"
+            + "border: 3px solid black; background-color: white}"
         self.nameCss = "QLabel{ border-radius: 10px; border-color: black; " \
-            + "border: 5px solid black; background-color: white; " \
+            + "border: 3px solid black; background-color: white; " \
             + "font-size: 20pt}"
         self.lcdCss = "QLCDNumber{ border-radius: 10px; " \
             + "background-color: black}"
@@ -423,8 +423,7 @@ class Grid(QWidget):
         self.headerFont.setBold(True)
         self.labelArr = [self.tr('Pos'), self.tr('Driver'), self.tr('Total'),
                          self.tr('Laps'),
-                         self.tr('Laptime'), self.tr('Best Lap'),
-                         self.tr('Fuel'), self.tr('Pits')]
+                         self.tr('Laptime'), self.tr('Best Lap')]
         self.headerLabel = self.labelArr
         for index, label in enumerate(self.labelArr):
             self.headerLabel[index] = QLabel(label)
@@ -436,8 +435,6 @@ class Grid(QWidget):
         self.mainLayout.setColumnStretch(3, 2)
         self.mainLayout.setColumnStretch(4, 3)
         self.mainLayout.setColumnStretch(5, 3)
-        self.mainLayout.setColumnStretch(6, 2)
-        self.mainLayout.setColumnStretch(7, 1)
         self.stateStack = QStackedWidget()
         self.start_signal = StartLights()
         self.false_start = FalseStart()
@@ -457,21 +454,26 @@ class Grid(QWidget):
 
     def initDriverUI(self):
         self.posFont = QFont()
-        self.posFont.setPointSize(35)
+        self.posFont.setPointSize(30)
         self.posFont.setBold(True)
         self.nameFont = QFont()
         self.nameFont.setPointSize(20)
         self.nameFont.setBold(True)
         self.timeFont = QFont()
-        self.timeFont.setPointSize(36)
+        self.timeFont.setPointSize(30)
         self.timeFont.setBold(True)
         self.timeFont.setStyleHint(QFont.TypeWriter)
         self.timeFont.setFamily('monospace')
+        self.pitFont = QFont()
+        self.pitFont.setPointSize(13)
+        self.pitFont.setBold(True)
+        self.pitFont.setStyleHint(QFont.TypeWriter)
+        self.pitFont.setFamily('monospace')
         self.posCss = "QLabel{ border-radius: 10px; border-color: black; " \
-            + "border: 5px solid black; background-color: white}"
+            + "border: 3px solid black; background-color: white}"
         self.nameCss = "QLabel{ border-radius: 10px; border-color: black; " \
-            + "border: 5px solid black; background-color: white; " \
-            + "font-size: 20pt}"
+            + "border: 3px solid black; background-color: white; " \
+            + "font-size: 18pt}"
         self.lcdCss = "QLCDNumber{ border-radius: 10px; " \
             + "background-color: black}"
         self.lcdColor = QColor(255, 0, 0)
@@ -490,7 +492,7 @@ class Grid(QWidget):
         name.setTextFormat(Qt.RichText)
         name.setStyleSheet(self.nameCss)
         self.mainLayout.addWidget(name, self.num_row, 1)
-        total = QLabel('00:00')
+        total = QLabel(str(formattime(0)))
         total.setStyleSheet(self.posCss)
         total.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         total.setFont(self.timeFont)
@@ -500,12 +502,12 @@ class Grid(QWidget):
         laps.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         laps.setFont(self.timeFont)
         self.mainLayout.addWidget(laps, self.num_row, 3)
-        laptime = QLabel('00:00')
+        laptime = QLabel(str(formattime(0, longfmt=False)))
         laptime.setStyleSheet(self.posCss)
         laptime.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         laptime.setFont(self.timeFont)
         self.mainLayout.addWidget(laptime, self.num_row, 4)
-        bestlaptime = QLabel('00:00')
+        bestlaptime = QLabel(str(formattime(0, longfmt=False)))
         bestlaptime.setStyleSheet(self.posCss)
         bestlaptime.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         bestlaptime.setFont(self.timeFont)
@@ -514,7 +516,7 @@ class Grid(QWidget):
         fuelbar.setOrientation(Qt.Horizontal)
         fuelbar.setStyleSheet(
             "QProgressBar{ color: white; background-color: black; border: "
-            + "5px solid black; border-radius: 10px; text-align: center} "
+            + "3px solid black; border-radius: 10px; text-align: center} "
             + "QProgressBar::chunk { background: qlineargradient(x1: 1, "
             + "y1: 0.5, x2: 0, y2: 0.5, stop: 0 #00AA00, stop: "
             + str(0.92 - (1 / (15))) + " #22FF22, stop: "
@@ -523,17 +525,19 @@ class Grid(QWidget):
         fuelbar.setMinimum(0)
         fuelbar.setMaximum(15)
         fuelbar.setValue(15)
-        fuelbar.setFont(self.timeFont)
-        fuelbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+        fuelbar.setFont(self.pitFont)
         fuelbar.setHidden(not show_fuel)
-        self.mainLayout.addWidget(fuelbar, self.num_row, 6)
-        pits = QLabel('00')
+        self.mainLayout.addWidget(fuelbar, self.num_row+1, 1, 1, 3)
+        pitslbl = QLabel(self.tr('Pits:'))
+        pitslbl.setFont(self.headerFont)
+        pitslbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        pitslbl.setHidden(not show_pits)
+        self.mainLayout.addWidget(pitslbl, self.num_row+1, 4)
+        pits = QLabel('0')
         pits.setStyleSheet(self.posCss)
-        pits.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
-        pits.setFont(self.timeFont)
-        pits.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+        pits.setFont(self.pitFont)
         pits.setHidden(not show_pits)
-        self.mainLayout.addWidget(pits, self.num_row, 7)
+        self.mainLayout.addWidget(pits, self.num_row+1, 5)
         self.driver_ui[addr] = {
             'pos': driverPos,
             'name': name,
@@ -542,19 +546,12 @@ class Grid(QWidget):
             'laptime': laptime,
             'bestlaptime': bestlaptime,
             'fuelbar': fuelbar,
-            'pits': pits
+            'pits': pits,
+            'pitslbl': pitslbl
         }
-        self.num_row += 1
+        self.num_row += 2
 
     def resetDrivers(self, show_fuel, show_pits):
-        if show_fuel is False:
-            self.headerLabel[-2].setHidden(True)
-        else:
-            self.headerLabel[-2].setHidden(False)
-        if show_pits is False:
-            self.headerLabel[-1].setHidden(True)
-        else:
-            self.headerLabel[-1].setHidden(False)
         for addr, row in self.driver_ui.items():
             for name, widget in row.items():
                 self.mainLayout.removeWidget(widget)

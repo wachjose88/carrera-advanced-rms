@@ -128,6 +128,7 @@ class RMS(QMainWindow):
         else:
             self.home.headline.setText(self.tr('Carrera RMS'))
         self.home.buildCarList()
+        self.home.buildPlayerList()
         for i in range(0, 6):
             try:
                 n = self.drivers[i]['name']

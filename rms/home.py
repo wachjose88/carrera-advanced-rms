@@ -117,7 +117,7 @@ class ControllerSet(QWidget):
         self.carlbl = self.tr('Select Car')
         self.carsep = '---'
         players = self.database.getAllPlayers()
-        self.playerlbl = self.tr('Select Player')
+        self.playerlbl = self.tr('Select Driver')
         self.playersep = '---'
         for i in range(0, 6):
             ok = QCheckBox()
@@ -127,6 +127,9 @@ class ControllerSet(QWidget):
             self.controller.addWidget(ok, 0, i)
             self.controller_ok.append(ok)
             player = QComboBox()
+            player.setMinimumContentsLength(9)
+            player.setSizeAdjustPolicy(
+                QComboBox.AdjustToMinimumContentsLengthWithIcon)
             player.addItem(self.playerlbl)
             player.addItem(self.playersep)
             for p in players:
@@ -134,6 +137,9 @@ class ControllerSet(QWidget):
             self.controller.addWidget(player, 1, i)
             self.controller_name.append(player)
             car = QComboBox()
+            car.setMinimumContentsLength(9)
+            car.setSizeAdjustPolicy(
+                QComboBox.AdjustToMinimumContentsLengthWithIcon)
             car.addItem(self.carlbl)
             car.addItem(self.carsep)
             for c in cars:
@@ -163,7 +169,7 @@ class ControllerSet(QWidget):
             QMessageBox.information(
                 self,
                 self.tr("Driver name missing"),
-                str(self.tr("Please enter a driver name for Controller ")
+                str(self.tr("Please select a driver name for Controller ")
                     + str(addr+1) + '.'),
                 QMessageBox.Ok)
             raise KeyError
@@ -199,7 +205,7 @@ class ControllerSet(QWidget):
     def buildPlayerList(self):
         players = self.database.getAllPlayers()
         for i in range(0, 6):
-            cw = self.controller_car[i]
+            cw = self.controller_name[i]
             player = cw.currentText()
             cw.clear()
             cw.addItem(self.playerlbl)
