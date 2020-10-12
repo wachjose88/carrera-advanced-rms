@@ -64,7 +64,7 @@ class ControlUnit(object):
         n = time.time()
         d = n - self.time
         if isinstance(self.last, ControlUnit.Timer):
-            return self._status()
+            return self._status(fuel=(random.randint(0, 15), 15, 15, 15, 15, 15, 0, 0))
         if self.start_press == 0 and buf == self.START_KEY:
             self.time = n
             return self._status(start=1)

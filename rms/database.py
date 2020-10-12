@@ -1,6 +1,9 @@
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
+from datetime import datetime
+
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, \
+                       ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import sessionmaker, scoped_session, relationship
 
 
 Base = declarative_base()
@@ -27,6 +30,8 @@ class Car(Base):
     number = Column(String, unique=True)
     sync = Column(Boolean, default=False)
 
+    racingplayer = relationship("RacingPlayer", back_populates="car")
+
     def __repr__(self):
         return "<Car(name='%s')>" % (
             self.name)
@@ -40,9 +45,64 @@ class Player(Base):
     name = Column(String)
     sync = Column(Boolean, default=False)
 
+    racingplayer = relationship("RacingPlayer", back_populates="player")
+
     def __repr__(self):
         return "<Car(username='%s')>" % (
             self.username)
+
+
+class Competition(Base):
+    __tablename__ = 'competition'
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    time = Column(DateTime, default=datetime.now)
+    mode = Column(Integer)
+    sync = Column(Boolean, default=False)
+
+    racingplayer = relationship("RacingPlayer", back_populates="competition")
+
+    def __repr__(self):
+        return "<Competition(title='%s', mode='%s')>" % (
+            self.title, self.mode)
+
+
+class RacingPlayer(Base):
+    __tablename__ = 'racingplayer'
+
+    id = Column(Integer, primary_key=True)
+    competition_id = Column(Integer, ForeignKey('competition.id'))
+    player_id = Column(Integer, ForeignKey('player.id'))
+    car_id = Column(Integer, ForeignKey('car.id'))
+    sync = Column(Boolean, default=False)
+
+    competition = relationship("Competition", back_populates="racingplayer")
+    player = relationship("Player", back_populates="racingplayer")
+    car = relationship("Car", back_populates="racingplayer")
+
+    lap = relationship("Lap", back_populates="racingplayer")
+
+    def __repr__(self):
+        return "<RacingPlayer(id='%s')>" % (
+            self.id)
+
+
+class Lap(Base):
+    __tablename__ = 'lap'
+
+    id = Column(Integer, primary_key=True)
+    timestamp = Column(Integer)
+    fuel = Column(Integer)
+    pit = Column(Boolean, default=False)
+    racingplayer_id = Column(Integer, ForeignKey('racingplayer.id'))
+    sync = Column(Boolean, default=False)
+
+    racingplayer = relationship("RacingPlayer", back_populates="lap")
+
+    def __repr__(self):
+        return "<RacingPlayer(id='%s')>" % (
+            self.id)
 
 
 class DatabaseHandler(object):

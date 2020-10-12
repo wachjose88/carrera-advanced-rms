@@ -1,7 +1,7 @@
 
 from PyQt5.QtWidgets import QWidget, QGridLayout, QComboBox, \
                             QLabel, QVBoxLayout, QSizePolicy, \
-                            QCheckBox, QLineEdit, QPushButton, QHBoxLayout, \
+                            QCheckBox, QPushButton, QHBoxLayout, \
                             QSpinBox, QTabWidget, QMessageBox
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont

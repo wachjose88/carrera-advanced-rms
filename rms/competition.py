@@ -304,6 +304,8 @@ class ResultList(QWidget):
         self.setLayout(self.vbox)
 
     def addDrivers(self, drivers, cu_drivers, sort_mode):
+        self.final_drivers = drivers
+        self.final_cu_drivers = cu_drivers
         rank = []
         for addr, driver in drivers.items():
             rank.append(cu_drivers[addr])
@@ -402,6 +404,10 @@ class ResultList(QWidget):
 
     @pyqtSlot()
     def back_click(self):
+        for addr, driver in self.final_drivers.items():
+            print(self.final_cu_drivers[addr].num,
+                  self.final_cu_drivers[addr].timestamps,
+                  self.final_cu_drivers[addr].fuels)
         self.parent().parent().showHome()
 
 
