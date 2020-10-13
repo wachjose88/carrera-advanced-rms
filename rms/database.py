@@ -59,6 +59,8 @@ class Competition(Base):
     title = Column(String)
     time = Column(DateTime, default=datetime.now)
     mode = Column(Integer)
+    sortmode = Column(Integer)
+    duration = Column(Integer)
     sync = Column(Boolean, default=False)
 
     racingplayer = relationship("RacingPlayer", back_populates="competition")
@@ -101,7 +103,7 @@ class Lap(Base):
     racingplayer = relationship("RacingPlayer", back_populates="lap")
 
     def __repr__(self):
-        return "<RacingPlayer(id='%s')>" % (
+        return "<Lap(id='%s')>" % (
             self.id)
 
 
@@ -131,6 +133,32 @@ class DatabaseHandler(object):
         if c is not None:
             return str(c.value)
         return c
+
+    def saveResult(self, title, time, mode, sort_mode, duration,
+                   drivers, cu_drivers):
+        session = self.Session()
+        comp = Competition(title=title,
+                           time=time,
+                           mode=mode,
+                           sortmode=sort_mode,
+                           duration=duration)
+        for addr, driver in drivers.items():
+            cu_driver = cu_drivers[addr]
+            car = session.query(Car).filter_by(name=driver['car']).first()
+            player = session.query(Player).filter_by(
+                username=cu_driver.name).first()
+            racingplayer = RacingPlayer()
+            racingplayer.player = player
+            racingplayer.car = car
+            comp.racingplayer.append(racingplayer)
+            for i in range(0, len(cu_driver.timestamps)):
+                lap = Lap(timestamp=cu_driver.timestamps[i],
+                          fuel=cu_driver.fuels[i],
+                          pit=cu_driver.pitslist[i])
+                racingplayer.lap.append(lap)
+        session.add(comp)
+        session.commit()
+        self.Session.remove()
 
     def setCar(self, name, newname, number):
         session = self.Session()

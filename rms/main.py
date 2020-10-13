@@ -4,6 +4,7 @@ import sys
 import argparse
 import locale
 import json
+from datetime import datetime
 
 from PyQt5.QtCore import pyqtSlot, QTranslator, QLibraryInfo
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, \
@@ -40,6 +41,7 @@ class RMS(QMainWindow):
         self.setDefaultDrivers()
         self.comp_mode = COMP_MODE__TRAINING
         self.comp_duration = 0
+        self.comp_starttime = datetime.now()
         self.tts = TTSHandler()
         self.tts.start()
         self.main_stack = QStackedWidget(self)
@@ -55,7 +57,7 @@ class RMS(QMainWindow):
         self.grid = Grid(parent=self)
         self.home = Home(parent=self, database=self.database)
         self.settings = Settings(parent=self, database=self.database)
-        self.resultlist = ResultList(parent=self)
+        self.resultlist = ResultList(parent=self, database=self.database)
         self.main_stack.addWidget(self.home)
         self.main_stack.addWidget(self.grid)
         self.main_stack.addWidget(self.settings)
@@ -195,6 +197,7 @@ class RMS(QMainWindow):
 
     @pyqtSlot()
     def startAfterSignal(self):
+        self.comp_starttime = datetime.now()
         self.startBridgeThread()
 
     @pyqtSlot(int, list)

@@ -2,7 +2,7 @@
 from PyQt5.QtWidgets import QWidget, QGridLayout, \
                             QLabel, QVBoxLayout, QSizePolicy, QProgressBar, \
                             QPushButton, QHBoxLayout, \
-                            QStackedWidget
+                            QStackedWidget, QInputDialog
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QColor, QPainter
 from utils import formattime, HSep
@@ -248,9 +248,10 @@ class QualifyingSeq(QWidget):
 
 class ResultList(QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, database=None):
         super().__init__(parent)
         self.driver_ui = {}
+        self.database = database
         self.initUI()
 
     def initUI(self):
@@ -306,6 +307,7 @@ class ResultList(QWidget):
     def addDrivers(self, drivers, cu_drivers, sort_mode):
         self.final_drivers = drivers
         self.final_cu_drivers = cu_drivers
+        self.final_sort_mode = sort_mode
         rank = []
         for addr, driver in drivers.items():
             rank.append(cu_drivers[addr])
@@ -404,10 +406,29 @@ class ResultList(QWidget):
 
     @pyqtSlot()
     def back_click(self):
-        for addr, driver in self.final_drivers.items():
-            print(self.final_cu_drivers[addr].num,
-                  self.final_cu_drivers[addr].timestamps,
-                  self.final_cu_drivers[addr].fuels)
+        mode = self.parent().parent().comp_mode
+        starttime = self.parent().parent().comp_starttime
+        duration = self.parent().parent().comp_duration
+        comp_mode_text = self.tr('unknown')
+        if mode == COMP_MODE__TRAINING:
+            comp_mode_text = self.tr('Save Training?')
+        elif mode in [COMP_MODE__QUALIFYING_LAPS, COMP_MODE__QUALIFYING_TIME,
+                      COMP_MODE__QUALIFYING_LAPS_SEQ,
+                      COMP_MODE__QUALIFYING_TIME_SEQ]:
+            comp_mode_text = self.tr('Save Qualifying?')
+        elif mode in [COMP_MODE__RACE_LAPS, COMP_MODE__RACE_TIME]:
+            comp_mode_text = self.tr('Save Race?')
+        title, ok = QInputDialog.getText(self, comp_mode_text,
+                                         self.tr('Title: '),
+                                         text='')
+        if ok:
+            self.database.saveResult(title=title,
+                                     time=starttime,
+                                     mode=mode,
+                                     sort_mode=self.final_sort_mode,
+                                     duration=duration,
+                                     drivers=self.final_drivers,
+                                     cu_drivers=self.final_cu_drivers)
         self.parent().parent().showHome()
 
 

@@ -102,6 +102,7 @@ class CUBridge(QThread):
             self.stopnext = False
             self.timestamps = []
             self.fuels = []
+            self.pitslist = []
 
         def newlap(self, timer):
             if self.racing:
@@ -115,6 +116,7 @@ class CUBridge(QThread):
                 self.time = timer.timestamp
                 self.timestamps.append(copy.deepcopy(self.time))
                 self.fuels.append(copy.deepcopy(self.fuel))
+                self.pitslist.append(copy.deepcopy(self.pit))
 
         def dump(self):
             print('num: ' + str(self.num) + ' time: ' + str(self.time))
