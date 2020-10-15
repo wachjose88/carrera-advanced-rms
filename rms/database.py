@@ -160,6 +160,15 @@ class DatabaseHandler(object):
         session.commit()
         self.Session.remove()
 
+    def getCompetitions(self, mode):
+        session = self.Session()
+        c = session.query(Competition).filter(
+            Competition.mode.in_(mode)).order_by(Competition.time.desc()).all()
+        self.Session.remove()
+        if c is not None:
+            return c
+        return []
+
     def setCar(self, name, newname, number):
         session = self.Session()
         c = session.query(Car).filter_by(name=str(name)).first()

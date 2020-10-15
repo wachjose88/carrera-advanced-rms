@@ -2,3 +2,4 @@ carreralib
 pyqt5
 pyttsx3
 SQLAlchemy
+Babel

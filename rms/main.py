@@ -14,6 +14,7 @@ from bridge import CUBridge, StartSignal, IdleMonitor
 from competition import Grid, ResultList, QualifyingSeq
 from home import Home
 from settings import Settings
+from statistics import Statistics
 from database import DatabaseHandler
 from tts import TTSHandler
 from utils import ThreadTranslation
@@ -57,10 +58,12 @@ class RMS(QMainWindow):
         self.grid = Grid(parent=self)
         self.home = Home(parent=self, database=self.database)
         self.settings = Settings(parent=self, database=self.database)
+        self.statistics = Statistics(parent=self, database=self.database)
         self.resultlist = ResultList(parent=self, database=self.database)
         self.main_stack.addWidget(self.home)
         self.main_stack.addWidget(self.grid)
         self.main_stack.addWidget(self.settings)
+        self.main_stack.addWidget(self.statistics)
         self.main_stack.addWidget(self.resultlist)
         self.bridge.update_grid.connect(self.grid.driver_change)
         self.bridge.comp_state.connect(self.comp_state_update)
@@ -120,6 +123,12 @@ class RMS(QMainWindow):
 
     def showSettings(self):
         self.main_stack.setCurrentWidget(self.settings)
+        self.stopAllThreads()
+        self.startIdleThread()
+
+    def showStatistics(self):
+        self.statistics.showLists()
+        self.main_stack.setCurrentWidget(self.statistics)
         self.stopAllThreads()
         self.startIdleThread()
 

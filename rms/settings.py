@@ -2,8 +2,7 @@ import json
 from PyQt5.QtWidgets import QWidget, QGridLayout, QSpinBox, \
                             QLabel, QVBoxLayout, QSizePolicy, \
                             QListWidgetItem, QLineEdit, QPushButton, \
-                            QInputDialog, QTabWidget, QListWidget, \
-                            QListWidgetItem
+                            QInputDialog, QTabWidget, QListWidget
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QFont
 

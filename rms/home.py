@@ -279,6 +279,7 @@ class Home(QWidget):
         self.btnrow.addWidget(self.fullscreen)
         self.statistics = QPushButton()
         self.statistics.setText(self.tr('Statistics'))
+        self.statistics.clicked.connect(self.statistics_click)
         self.btnrow.addWidget(self.statistics)
         self.settings = QPushButton()
         self.settings.setText(self.tr('Settings'))
@@ -290,6 +291,10 @@ class Home(QWidget):
         self.exitrms.clicked.connect(self.exitrms_click)
         self.vml.addWidget(self.exitrms)
         self.setLayout(self.vml)
+
+    @pyqtSlot()
+    def statistics_click(self):
+        self.parent().parent().showStatistics()
 
     @pyqtSlot()
     def settings_click(self):
