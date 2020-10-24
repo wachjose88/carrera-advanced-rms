@@ -335,67 +335,67 @@
 <context>
     <name>RMS</name>
     <message>
-        <location filename="../main.py" line="294"/>
+        <location filename="../main.py" line="296"/>
         <source>CU version: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="301"/>
+        <location filename="../main.py" line="303"/>
         <source>Confirm Exit...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="301"/>
+        <location filename="../main.py" line="303"/>
         <source>Are you sure you want to exit ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="276"/>
+        <location filename="../main.py" line="278"/>
         <source>Real</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="279"/>
+        <location filename="../main.py" line="281"/>
         <source>On</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="282"/>
+        <location filename="../main.py" line="284"/>
         <source>Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="291"/>
+        <location filename="../main.py" line="293"/>
         <source>Exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="293"/>
+        <location filename="../main.py" line="295"/>
         <source>Missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="294"/>
+        <location filename="../main.py" line="296"/>
         <source>, Pitlane: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="294"/>
+        <location filename="../main.py" line="296"/>
         <source>, Fuelmode: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="294"/>
+        <location filename="../main.py" line="296"/>
         <source>, Lapcounter: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="137"/>
+        <location filename="../main.py" line="138"/>
         <source>RMS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="139"/>
+        <location filename="../main.py" line="140"/>
         <source>Carrera RMS</source>
         <translation type="unfinished"></translation>
     </message>
@@ -554,18 +554,28 @@
 <context>
     <name>ThreadTranslation</name>
     <message>
-        <location filename="../utils.py" line="10"/>
+        <location filename="../utils.py" line="17"/>
         <source>let&apos;s go!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../utils.py" line="12"/>
+        <location filename="../utils.py" line="19"/>
         <source>box box box!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../utils.py" line="14"/>
-        <source>finished!</source>
+        <location filename="../utils.py" line="21"/>
+        <source>Training finished!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../utils.py" line="23"/>
+        <source>Qualifying finished!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../utils.py" line="25"/>
+        <source>Race finished!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

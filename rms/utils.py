@@ -2,6 +2,13 @@ import locale
 
 from PyQt5.QtWidgets import QWidget,  QHBoxLayout, QFrame, QLabel
 
+from constants import COMP_MODE__TRAINING, COMP_MODE__QUALIFYING_LAPS, \
+                      COMP_MODE__QUALIFYING_TIME, \
+                      COMP_MODE__QUALIFYING_LAPS_SEQ, \
+                      COMP_MODE__QUALIFYING_TIME_SEQ, \
+                      COMP_MODE__RACE_LAPS, \
+                      COMP_MODE__RACE_TIME
+
 
 class ThreadTranslation(QWidget):
     def __init__(self):
@@ -11,9 +18,25 @@ class ThreadTranslation(QWidget):
         self.hbox.addWidget(self.letsgo)
         self.box = QLabel(self.tr("box box box!"))
         self.hbox.addWidget(self.box)
-        self.finished = QLabel(self.tr("finished!"))
-        self.hbox.addWidget(self.finished)
+        self.tfinished = QLabel(self.tr("Training finished!"))
+        self.hbox.addWidget(self.tfinished)
+        self.qfinished = QLabel(self.tr("Qualifying finished!"))
+        self.hbox.addWidget(self.qfinished)
+        self.rfinished = QLabel(self.tr("Race finished!"))
+        self.hbox.addWidget(self.rfinished)
         self.setLayout(self.hbox)
+
+    def finished(self):
+        if self.mode == COMP_MODE__TRAINING:
+            return self.tfinished.text()
+        elif self.mode in [COMP_MODE__QUALIFYING_LAPS,
+                           COMP_MODE__QUALIFYING_TIME,
+                           COMP_MODE__QUALIFYING_LAPS_SEQ,
+                           COMP_MODE__QUALIFYING_TIME_SEQ]:
+            return self.qfinished.text()
+        elif self.mode in [COMP_MODE__RACE_LAPS,
+                           COMP_MODE__RACE_TIME]:
+            return self.rfinished.text()
 
 
 class HSep(QFrame):

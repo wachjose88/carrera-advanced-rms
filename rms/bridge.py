@@ -172,7 +172,7 @@ class CUBridge(QThread):
                 if driver.racing is True:
                     racing = True
             if racing is False:
-                self.tts.say(self.threadtranslation.finished.text())
+                self.tts.say(self.threadtranslation.finished())
                 self.comp_finished.emit(int(rt*1000),
                                         copy.deepcopy(self.drivers))
                 while not self.stop:

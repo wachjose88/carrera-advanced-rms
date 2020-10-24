@@ -16,7 +16,7 @@ from home import Home
 from settings import Settings
 from statistics import Statistics
 from database import DatabaseHandler
-from tts import TTSHandler
+from tts import TTSHandler, TTSThread
 from utils import ThreadTranslation
 from constants import COMP_MODE__TRAINING, COMP_MODE__QUALIFYING_LAPS, \
                       COMP_MODE__QUALIFYING_TIME, \
@@ -44,7 +44,8 @@ class RMS(QMainWindow):
         self.comp_duration = 0
         self.comp_starttime = datetime.now()
         self.tts = TTSHandler()
-        self.tts.start()
+        self.ttsthread = TTSThread(self.tts)
+        self.ttsthread.start()
         self.main_stack = QStackedWidget(self)
         self.qualifyingseq = QualifyingSeq(self)
         self.main_stack.addWidget(self.qualifyingseq)
@@ -207,6 +208,7 @@ class RMS(QMainWindow):
     @pyqtSlot()
     def startAfterSignal(self):
         self.comp_starttime = datetime.now()
+        self.threadtranslation.mode = self.comp_mode
         self.startBridgeThread()
 
     @pyqtSlot(int, list)
@@ -309,8 +311,8 @@ class RMS(QMainWindow):
         if result == QMessageBox.Yes:
             event.accept()
             self.stopAllThreads()
-            self.tts.stop = True
-            self.tts.wait()
+            self.ttsthread.stop = True
+            self.ttsthread.wait()
 
 
 if __name__ == '__main__':
