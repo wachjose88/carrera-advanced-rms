@@ -3,7 +3,7 @@ import time
 import copy
 from PyQt5.QtCore import QThread, pyqtSignal
 from constants import COMP_MODE__QUALIFYING_LAPS_SEQ, \
-                      COMP_MODE__QUALIFYING_TIME_SEQ
+                      COMP_MODE__QUALIFYING_TIME_SEQ, BOX_MIN
 
 
 class IdleMonitor(QThread):
@@ -95,7 +95,7 @@ class CUBridge(QThread):
             self.bestlap = None
             self.laps = 0
             self.pits = 0
-            self.fuel = 0
+            self.fuel = 15
             self.pit = False
             self.name = ''
             self.racing = False
@@ -172,6 +172,7 @@ class CUBridge(QThread):
                 if driver.racing is True:
                     racing = True
             if racing is False:
+                self.tts.say(self.threadtranslation.finished.text())
                 self.comp_finished.emit(int(rt*1000),
                                         copy.deepcopy(self.drivers))
                 while not self.stop:
@@ -196,6 +197,9 @@ class CUBridge(QThread):
 
     def handle_status(self, status):
         for driver, fuel in zip(self.drivers, status.fuel):
+            if driver.racing and fuel <= BOX_MIN and driver.fuel > BOX_MIN:
+                self.tts.say(driver.name + ': '
+                             + self.threadtranslation.box.text())
             driver.fuel = fuel
         for driver, pit in zip(self.drivers, status.pit):
             if pit and not driver.pit:

@@ -9,6 +9,10 @@ class ThreadTranslation(QWidget):
         self.hbox = QHBoxLayout()
         self.letsgo = QLabel(self.tr("let's go!"))
         self.hbox.addWidget(self.letsgo)
+        self.box = QLabel(self.tr("box box box!"))
+        self.hbox.addWidget(self.box)
+        self.finished = QLabel(self.tr("finished!"))
+        self.hbox.addWidget(self.finished)
         self.setLayout(self.hbox)
 
 

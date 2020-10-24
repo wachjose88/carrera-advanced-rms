@@ -621,6 +621,16 @@
         <source>let&apos;s go!</source>
         <translation>Los geht&apos;s</translation>
     </message>
+    <message>
+        <location filename="../utils.py" line="12"/>
+        <source>box box box!</source>
+        <translation>box box box!</translation>
+    </message>
+    <message>
+        <location filename="../utils.py" line="14"/>
+        <source>finished!</source>
+        <translation>beendet!</translation>
+    </message>
 </context>
 <context>
     <name>TrainingState</name>

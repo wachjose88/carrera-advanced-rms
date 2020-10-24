@@ -11,3 +11,5 @@ COMP_MODE__RACE_LAPS = 8
 COMP_MODE__RACE_TIME = 9
 
 DUMMY_IDS = ['d', 'dummy']
+
+BOX_MIN = 2

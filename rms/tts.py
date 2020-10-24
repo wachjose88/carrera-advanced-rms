@@ -23,14 +23,14 @@ class TTSHandler(QThread):
         self.stop = False
 
     def say_on_timer(self, old, new, addr):
+        n = new[addr].name
         bl = old[addr].bestlap
         nbl = new[addr].bestlap
+
         if bl is None and nbl is not None:
-            self.say(new[addr].name + ': '
-                     + str(formattime(nbl, longfmt=False)))
+            self.say(n + ': ' + str(formattime(nbl, longfmt=False)))
         if bl is not None and nbl is not None and nbl < bl:
-            self.say(new[addr].name + ': '
-                     + str(formattime(nbl, longfmt=False)))
+            self.say(n + ': ' + str(formattime(nbl, longfmt=False)))
 
     def say(self, text):
         self.engine.say(text)
@@ -38,7 +38,7 @@ class TTSHandler(QThread):
     def run(self):
         while not self.stop:
             try:
-                time.sleep(0.3)
+                time.sleep(0.01)
                 self.engine.runAndWait()
             except:
                 pass
