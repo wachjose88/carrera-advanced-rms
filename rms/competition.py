@@ -443,10 +443,10 @@ class Grid(QWidget):
 
     def initUI(self):
         self.mainLayout = QGridLayout()
-        self.mainLayout.setSpacing(10)
-        self.mainLayout.setHorizontalSpacing(10)
+        self.mainLayout.setSpacing(1)
+        self.mainLayout.setHorizontalSpacing(5)
         self.headerFont = QFont()
-        self.headerFont.setPointSize(14)
+        self.headerFont.setPointSize(10)
         self.headerFont.setBold(True)
         self.labelArr = [self.tr('Pos'), self.tr('Driver'), self.tr('Total'),
                          self.tr('Laps'),
@@ -492,12 +492,14 @@ class Grid(QWidget):
         self.timeFont.setStyleHint(QFont.TypeWriter)
         self.timeFont.setFamily('monospace')
         self.pitFont = QFont()
-        self.pitFont.setPointSize(13)
+        self.pitFont.setPointSize(10)
         self.pitFont.setBold(True)
         self.pitFont.setStyleHint(QFont.TypeWriter)
         self.pitFont.setFamily('monospace')
         self.posCss = "QLabel{ border-radius: 10px; border-color: black; " \
             + "border: 3px solid black; background-color: white}"
+        self.pitCss = "QLabel{ border-radius: 10px; border-color: black; " \
+            + "border: 3px solid black; background-color: white; padding: 0px}"
         self.nameCss = "QLabel{ border-radius: 10px; border-color: black; " \
             + "border: 3px solid black; background-color: white; " \
             + "font-size: 18pt}"
@@ -561,7 +563,7 @@ class Grid(QWidget):
         pitslbl.setHidden(not show_pits)
         self.mainLayout.addWidget(pitslbl, self.num_row+1, 4)
         pits = QLabel('0')
-        pits.setStyleSheet(self.posCss)
+        pits.setStyleSheet(self.pitCss)
         pits.setFont(self.pitFont)
         pits.setHidden(not show_pits)
         self.mainLayout.addWidget(pits, self.num_row+1, 5)
