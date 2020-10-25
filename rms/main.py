@@ -261,7 +261,8 @@ class RMS(QMainWindow):
             self.grid.qualifying_state.handleUpdateTime(
                 rtime=rtime,
                 minutes=self.comp_duration,
-                cu_drivers=cu_drivers)
+                cu_drivers=cu_drivers,
+                tts=self.tts)
         elif self.comp_mode == COMP_MODE__QUALIFYING_LAPS_SEQ:
             self.grid.qualifying_state.handleUpdateLapsSeq(
                 rtime=rtime,
@@ -272,7 +273,8 @@ class RMS(QMainWindow):
             self.grid.qualifying_state.handleUpdateTimeSeq(
                 rtime=rtime,
                 minutes=self.comp_duration,
-                cu_drivers=cu_drivers)
+                cu_drivers=cu_drivers,
+                tts=self.tts)
 
     @pyqtSlot(int)
     def show_state(self, mode):

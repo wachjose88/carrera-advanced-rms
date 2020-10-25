@@ -47,13 +47,13 @@ class TTSThread(QThread):
                 usev = voice.id
         self.engine.setProperty('voice', usev)
         rate = self.engine.getProperty('rate')
-        self.engine.setProperty('rate', rate-30)
+        self.engine.setProperty('rate', rate-43)
         self.stop = False
 
     def run(self):
         while not self.stop:
             try:
-                time.sleep(0.1)
+                time.sleep(0.01)
                 for text in self.handler.getSays():
                     self.engine.say(text)
                 self.engine.runAndWait()

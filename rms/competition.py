@@ -12,7 +12,8 @@ from constants import COMP_MODE__TRAINING, COMP_MODE__QUALIFYING_LAPS, \
                       COMP_MODE__QUALIFYING_TIME_SEQ, \
                       COMP_MODE__RACE_LAPS, \
                       COMP_MODE__RACE_TIME, \
-                      SORT_MODE__LAPS, SORT_MODE__LAPTIME
+                      SORT_MODE__LAPS, SORT_MODE__LAPTIME, TTS_LAPS_MOD, \
+                      TTS_TIME_MOD, TTS_LAPS_REMAINING, TTS_TIME_REMAINING
 
 
 class StartLight(QWidget):
@@ -86,8 +87,11 @@ class RaceState(QWidget):
                                + self.tr(', %n Lap(s) remaining',
                                          '', rlaps))
         if tts and rlaps != self.rlaps and rlaps > 0 and \
-                (rlaps % 10 == 0 or rlaps in [1, 2]):
-            tts.say(self.tr('%n Lap(s) remaining', '', rlaps))
+                (rlaps % TTS_LAPS_MOD == 0 or rlaps in TTS_LAPS_REMAINING):
+            if rlaps == 1:
+                tts.say(self.tr('One Lap remaining'))
+            else:
+                tts.say(self.tr('%n Lap(s) remaining', '', rlaps))
         self.rlaps = rlaps
 
     def handleUpdateTime(self, rtime, minutes, cu_drivers, tts=None):
@@ -101,7 +105,7 @@ class RaceState(QWidget):
             self.starttext.setText(self.tr('Race: ')
                                    + str(formattime(cd)))
         if tts and cds != self.rtime and cds > 0 and \
-                (cds % 30 == 0 or cds in [15, 8]):
+                (cds % TTS_TIME_MOD == 0 or cds in TTS_TIME_REMAINING):
             tts.say(self.tr('%n Seconds(s) remaining', '', cds))
         self.rtime = cds
 
@@ -136,8 +140,11 @@ class QualifyingState(QWidget):
                                + self.tr(', %n Lap(s) remaining',
                                          '', rlaps))
         if tts and rlaps != self.rlaps and rlaps > 0 and \
-                (rlaps % 10 == 0 or rlaps in [1, 2]):
-            tts.say(self.tr('%n Lap(s) remaining', '', rlaps))
+                (rlaps % TTS_LAPS_MOD == 0 or rlaps in TTS_LAPS_REMAINING):
+            if rlaps == 1:
+                tts.say(self.tr('One Lap remaining'))
+            else:
+                tts.say(self.tr('%n Lap(s) remaining', '', rlaps))
         self.rlaps = rlaps
 
     def handleUpdateLaps(self, rtime, laps, cu_drivers, tts=None):
@@ -153,8 +160,11 @@ class QualifyingState(QWidget):
                                + self.tr(', %n Lap(s) remaining',
                                          '', rlaps))
         if tts and rlaps != self.rlaps and rlaps > 0 and \
-                (rlaps % 10 == 0 or rlaps in [1, 2]):
-            tts.say(self.tr('%n Lap(s) remaining', '', rlaps))
+                (rlaps % TTS_LAPS_MOD == 0 or rlaps in TTS_LAPS_REMAINING):
+            if rlaps == 1:
+                tts.say(self.tr('One Lap remaining'))
+            else:
+                tts.say(self.tr('%n Lap(s) remaining', '', rlaps))
         self.rlaps = rlaps
 
     def handleUpdateTimeSeq(self, rtime, minutes, cu_drivers, tts=None):
@@ -168,7 +178,7 @@ class QualifyingState(QWidget):
             self.starttext.setText(self.tr('Qualifying: ')
                                    + str(formattime(cd)))
         if tts and cds != self.rtime and cds > 0 and \
-                (cds % 30 == 0 or cds in [15, 8]):
+                (cds % TTS_TIME_MOD == 0 or cds in TTS_TIME_REMAINING):
             tts.say(self.tr('%n Seconds(s) remaining', '', cds))
         self.rtime = cds
 
@@ -183,7 +193,7 @@ class QualifyingState(QWidget):
             self.starttext.setText(self.tr('Qualifying: ')
                                    + str(formattime(cd)))
         if tts and cds != self.rtime and cds > 0 and \
-                (cds % 30 == 0 or cds in [15, 8]):
+                (cds % TTS_TIME_MOD == 0 or cds in TTS_TIME_REMAINING):
             tts.say(self.tr('%n Seconds(s) remaining', '', cds))
         self.rtime = cds
 
@@ -743,4 +753,4 @@ class Grid(QWidget):
             self.start_signal.lightThree.setOff()
             self.start_signal.lightFour.setOff()
             self.start_signal.lightFive.setOff()
-            self.tts.say(self.threadtranslation.ready.text())
+            # self.tts.say(self.threadtranslation.ready.text())
