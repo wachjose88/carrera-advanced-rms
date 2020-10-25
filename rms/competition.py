@@ -70,21 +70,29 @@ class RaceState(QWidget):
         self.hbox.addWidget(self.starttext)
         self.setLayout(self.hbox)
         self.duration = 0
+        self.rlaps = 0
+        self.rtime = 0
 
-    def handleUpdateLaps(self, rtime, laps, cu_drivers):
+    def handleUpdateLaps(self, rtime, laps, cu_drivers, tts=None):
         mlaps = 0
         for driver in cu_drivers:
             if driver.laps > mlaps:
                 mlaps = driver.laps
             if driver.laps >= laps:
                 driver.racing = False
+        rlaps = laps-mlaps
         self.starttext.setText(self.tr('Race: ')
                                + str(formattime(rtime))
                                + self.tr(', %n Lap(s) remaining',
-                                         '', laps-mlaps))
+                                         '', rlaps))
+        if tts and rlaps != self.rlaps and rlaps > 0 and \
+                (rlaps % 10 == 0 or rlaps in [1, 2]):
+            tts.say(self.tr('%n Lap(s) remaining', '', rlaps))
+        self.rlaps = rlaps
 
-    def handleUpdateTime(self, rtime, minutes, cu_drivers):
+    def handleUpdateTime(self, rtime, minutes, cu_drivers, tts=None):
         cd = (minutes * 60 * 1000) - rtime
+        cds = int(cd/1000)
         if cd <= 0:
             for driver in cu_drivers:
                 driver.stopnext = True
@@ -92,6 +100,10 @@ class RaceState(QWidget):
         else:
             self.starttext.setText(self.tr('Race: ')
                                    + str(formattime(cd)))
+        if tts and cds != self.rtime and cds > 0 and \
+                (cds % 30 == 0 or cds in [15, 8]):
+            tts.say(self.tr('%n Seconds(s) remaining', '', cds))
+        self.rtime = cds
 
 
 class QualifyingState(QWidget):
@@ -108,33 +120,46 @@ class QualifyingState(QWidget):
         self.setLayout(self.hbox)
         self.duration = 0
         self.current_addr = -1
+        self.rlaps = 0
+        self.rtime = 0
 
-    def handleUpdateLapsSeq(self, rtime, laps, cu_drivers):
+    def handleUpdateLapsSeq(self, rtime, laps, cu_drivers, tts=None):
         mlaps = 0
         for driver in cu_drivers:
             if driver.laps > mlaps:
                 mlaps = driver.laps
             if driver.laps >= laps:
                 driver.racing = False
+        rlaps = laps-mlaps
         self.starttext.setText(self.tr('Qualifying: ')
                                + str(formattime(rtime))
                                + self.tr(', %n Lap(s) remaining',
-                                         '', laps-mlaps))
+                                         '', rlaps))
+        if tts and rlaps != self.rlaps and rlaps > 0 and \
+                (rlaps % 10 == 0 or rlaps in [1, 2]):
+            tts.say(self.tr('%n Lap(s) remaining', '', rlaps))
+        self.rlaps = rlaps
 
-    def handleUpdateLaps(self, rtime, laps, cu_drivers):
+    def handleUpdateLaps(self, rtime, laps, cu_drivers, tts=None):
         mlaps = 0
         for driver in cu_drivers:
             if driver.laps > mlaps:
                 mlaps = driver.laps
             if driver.laps >= laps:
                 driver.racing = False
+        rlaps = laps-mlaps
         self.starttext.setText(self.tr('Qualifying: ')
                                + str(formattime(rtime))
                                + self.tr(', %n Lap(s) remaining',
-                                         '', laps-mlaps))
+                                         '', rlaps))
+        if tts and rlaps != self.rlaps and rlaps > 0 and \
+                (rlaps % 10 == 0 or rlaps in [1, 2]):
+            tts.say(self.tr('%n Lap(s) remaining', '', rlaps))
+        self.rlaps = rlaps
 
-    def handleUpdateTimeSeq(self, rtime, minutes, cu_drivers):
+    def handleUpdateTimeSeq(self, rtime, minutes, cu_drivers, tts=None):
         cd = (minutes * 60 * 1000) - rtime
+        cds = int(cd/1000)
         if cd <= 0:
             for driver in cu_drivers:
                 driver.stopnext = True
@@ -142,9 +167,14 @@ class QualifyingState(QWidget):
         else:
             self.starttext.setText(self.tr('Qualifying: ')
                                    + str(formattime(cd)))
+        if tts and cds != self.rtime and cds > 0 and \
+                (cds % 30 == 0 or cds in [15, 8]):
+            tts.say(self.tr('%n Seconds(s) remaining', '', cds))
+        self.rtime = cds
 
-    def handleUpdateTime(self, rtime, minutes, cu_drivers):
+    def handleUpdateTime(self, rtime, minutes, cu_drivers, tts=None):
         cd = (minutes * 60 * 1000) - rtime
+        cds = int(cd/1000)
         if cd <= 0:
             for driver in cu_drivers:
                 driver.stopnext = True
@@ -152,6 +182,10 @@ class QualifyingState(QWidget):
         else:
             self.starttext.setText(self.tr('Qualifying: ')
                                    + str(formattime(cd)))
+        if tts and cds != self.rtime and cds > 0 and \
+                (cds % 30 == 0 or cds in [15, 8]):
+            tts.say(self.tr('%n Seconds(s) remaining', '', cds))
+        self.rtime = cds
 
 
 class TrainingState(QWidget):
@@ -434,9 +468,11 @@ class ResultList(QWidget):
 
 class Grid(QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, tts=None, threadtranslation=None):
         super().__init__(parent)
         self.sort_mode = SORT_MODE__LAPS
+        self.tts = tts
+        self.threadtranslation = threadtranslation
         self.driver_ui = {}
         self.initUI()
         self.initDriverUI()
@@ -707,3 +743,4 @@ class Grid(QWidget):
             self.start_signal.lightThree.setOff()
             self.start_signal.lightFour.setOff()
             self.start_signal.lightFive.setOff()
+            self.tts.say(self.threadtranslation.ready.text())

@@ -62,6 +62,7 @@ class StartSignal(QThread):
             if status == last:
                 continue
             # print('StartSignal: ', status)
+            last = status
             if isinstance(status, self.cu_instance.Status):
                 self.update_state.emit(status.mode)
                 if status.start > 1 and status.start < 7:

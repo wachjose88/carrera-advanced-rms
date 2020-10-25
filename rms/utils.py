@@ -24,6 +24,8 @@ class ThreadTranslation(QWidget):
         self.hbox.addWidget(self.qfinished)
         self.rfinished = QLabel(self.tr("Race finished!"))
         self.hbox.addWidget(self.rfinished)
+        self.ready = QLabel(self.tr("get ready!"))
+        self.hbox.addWidget(self.ready)
         self.setLayout(self.hbox)
 
     def finished(self):

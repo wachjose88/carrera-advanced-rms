@@ -23,6 +23,8 @@ class TTSHandler():
             self.say(n + ': ' + str(formattime(nbl, longfmt=False)))
 
     def say(self, text):
+        if len(self.to_say) > 0 and self.to_say[-1] == text:
+            return
         self.to_say.append(text)
 
     def getSays(self):
@@ -51,7 +53,7 @@ class TTSThread(QThread):
     def run(self):
         while not self.stop:
             try:
-                time.sleep(0.3)
+                time.sleep(0.1)
                 for text in self.handler.getSays():
                     self.engine.say(text)
                 self.engine.runAndWait()

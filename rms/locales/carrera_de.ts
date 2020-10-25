@@ -142,12 +142,12 @@
 <context>
     <name>FalseStart</name>
     <message>
-        <location filename="../competition.py" line="190"/>
+        <location filename="../competition.py" line="224"/>
         <source>False Start</source>
         <translation>Fehlstart</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="194"/>
+        <location filename="../competition.py" line="228"/>
         <source>Back</source>
         <translation>Zurück</translation>
     </message>
@@ -155,32 +155,32 @@
 <context>
     <name>Grid</name>
     <message>
-        <location filename="../competition.py" line="450"/>
+        <location filename="../competition.py" line="486"/>
         <source>Pos</source>
         <translation>Pos</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="450"/>
+        <location filename="../competition.py" line="486"/>
         <source>Driver</source>
         <translation>Fahrer</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="450"/>
+        <location filename="../competition.py" line="486"/>
         <source>Total</source>
         <translation>Gesamt</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="451"/>
+        <location filename="../competition.py" line="487"/>
         <source>Laps</source>
         <translation>Runden</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="452"/>
+        <location filename="../competition.py" line="488"/>
         <source>Laptime</source>
         <translation>Rundenzeit</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="452"/>
+        <location filename="../competition.py" line="488"/>
         <source>Best Lap</source>
         <translation>Beste Runde</translation>
     </message>
@@ -200,7 +200,7 @@
         <translation type="obsolete">Stopp</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="624"/>
+        <location filename="../competition.py" line="662"/>
         <source> (in)</source>
         <translation> (in)</translation>
     </message>
@@ -210,7 +210,7 @@
         <translation type="obsolete">Zurück</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="557"/>
+        <location filename="../competition.py" line="595"/>
         <source>Pits:</source>
         <translation>Boxenstopps:</translation>
     </message>
@@ -330,32 +330,32 @@
 <context>
     <name>QualifyingSeq</name>
     <message>
-        <location filename="../competition.py" line="215"/>
+        <location filename="../competition.py" line="249"/>
         <source>Qualifying Driver Change</source>
         <translation>Qualifikation Fahrerwechsel</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="219"/>
+        <location filename="../competition.py" line="253"/>
         <source>Last: </source>
         <translation>Vorheriger: </translation>
     </message>
     <message>
-        <location filename="../competition.py" line="223"/>
+        <location filename="../competition.py" line="257"/>
         <source>Next: </source>
         <translation>Nächster: </translation>
     </message>
     <message>
-        <location filename="../competition.py" line="229"/>
+        <location filename="../competition.py" line="263"/>
         <source>Start Next Driver</source>
         <translation>Nächsten Fahrer starten</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="235"/>
+        <location filename="../competition.py" line="269"/>
         <source>Last Driver (best laptime): </source>
         <translation>Vorheriger Fahrer (beste Rundenzeit): </translation>
     </message>
     <message>
-        <location filename="../competition.py" line="239"/>
+        <location filename="../competition.py" line="273"/>
         <source>Next Driver: </source>
         <translation>Nächster Fahrer: </translation>
     </message>
@@ -363,17 +363,17 @@
 <context>
     <name>QualifyingState</name>
     <message>
-        <location filename="../competition.py" line="104"/>
+        <location filename="../competition.py" line="116"/>
         <source>Qualifying</source>
         <translation>Qualifikation</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="152"/>
+        <location filename="../competition.py" line="182"/>
         <source>Qualifying: </source>
         <translation>Qualifikation: </translation>
     </message>
     <message numerus="yes">
-        <location filename="../competition.py" line="130"/>
+        <location filename="../competition.py" line="150"/>
         <source>, %n Lap(s) remaining</source>
         <translation>
             <numerusform>, %n Runde verbleibend</numerusform>
@@ -381,25 +381,41 @@
         </translation>
     </message>
     <message>
-        <location filename="../competition.py" line="150"/>
+        <location filename="../competition.py" line="180"/>
         <source>Qualifying finished</source>
         <translation>Qualifikation beendet</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../competition.py" line="156"/>
+        <source>%n Lap(s) remaining</source>
+        <translation>
+            <numerusform>%n Runde verbleibend</numerusform>
+            <numerusform>%n Runden verbleibend</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../competition.py" line="186"/>
+        <source>%n Seconds(s) remaining</source>
+        <translation>
+            <numerusform>%n Sekunde verbleibend</numerusform>
+            <numerusform>%n Sekunden verbleibend</numerusform>
+        </translation>
     </message>
 </context>
 <context>
     <name>RMS</name>
     <message>
-        <location filename="../main.py" line="303"/>
+        <location filename="../main.py" line="308"/>
         <source>Confirm Exit...</source>
         <translation>Beenden bestätigen...</translation>
     </message>
     <message>
-        <location filename="../main.py" line="303"/>
+        <location filename="../main.py" line="308"/>
         <source>Are you sure you want to exit ?</source>
         <translation>Wollen Sie wirklich beenden?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="296"/>
+        <location filename="../main.py" line="301"/>
         <source>CU version: </source>
         <translation>CU version: </translation>
     </message>
@@ -409,52 +425,52 @@
         <translation type="obsolete">, mode: </translation>
     </message>
     <message>
-        <location filename="../main.py" line="278"/>
+        <location filename="../main.py" line="283"/>
         <source>Real</source>
         <translation>Real</translation>
     </message>
     <message>
-        <location filename="../main.py" line="281"/>
+        <location filename="../main.py" line="286"/>
         <source>On</source>
         <translation>Ein</translation>
     </message>
     <message>
-        <location filename="../main.py" line="284"/>
+        <location filename="../main.py" line="289"/>
         <source>Off</source>
         <translation>Aus</translation>
     </message>
     <message>
-        <location filename="../main.py" line="293"/>
+        <location filename="../main.py" line="298"/>
         <source>Exists</source>
         <translation>Vorhanden</translation>
     </message>
     <message>
-        <location filename="../main.py" line="295"/>
+        <location filename="../main.py" line="300"/>
         <source>Missing</source>
         <translation>Fehlt</translation>
     </message>
     <message>
-        <location filename="../main.py" line="296"/>
+        <location filename="../main.py" line="301"/>
         <source>, Pitlane: </source>
         <translation>, Boxengasse: </translation>
     </message>
     <message>
-        <location filename="../main.py" line="296"/>
+        <location filename="../main.py" line="301"/>
         <source>, Fuelmode: </source>
         <translation>, Treibstoffmodus: </translation>
     </message>
     <message>
-        <location filename="../main.py" line="296"/>
+        <location filename="../main.py" line="301"/>
         <source>, Lapcounter: </source>
         <translation>, Rundenzähler: </translation>
     </message>
     <message>
-        <location filename="../main.py" line="138"/>
+        <location filename="../main.py" line="139"/>
         <source>RMS</source>
         <translation>RMS</translation>
     </message>
     <message>
-        <location filename="../main.py" line="140"/>
+        <location filename="../main.py" line="141"/>
         <source>Carrera RMS</source>
         <translation>Carrera RMS</translation>
     </message>
@@ -480,12 +496,12 @@
         <translation>Rennen</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="92"/>
+        <location filename="../competition.py" line="100"/>
         <source>Race: </source>
         <translation>Rennen: </translation>
     </message>
     <message numerus="yes">
-        <location filename="../competition.py" line="80"/>
+        <location filename="../competition.py" line="83"/>
         <source>, %n Lap(s) remaining</source>
         <translation>
             <numerusform>, %n Runde verbleibend</numerusform>
@@ -493,7 +509,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../competition.py" line="90"/>
+        <location filename="../competition.py" line="98"/>
         <source>Race finished</source>
         <translation>Rennen beendet</translation>
     </message>
@@ -502,46 +518,62 @@
         <source>Qualifying: </source>
         <translation type="obsolete">Qualifikation</translation>
     </message>
+    <message numerus="yes">
+        <location filename="../competition.py" line="89"/>
+        <source>%n Lap(s) remaining</source>
+        <translation>
+            <numerusform>%n Runde verbleibend</numerusform>
+            <numerusform>%n Runden verbleibend</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../competition.py" line="104"/>
+        <source>%n Seconds(s) remaining</source>
+        <translation>
+            <numerusform>%n Sekunde verbleibend</numerusform>
+            <numerusform>%n Sekunden  verbleibend</numerusform>
+        </translation>
+    </message>
 </context>
 <context>
     <name>ResultList</name>
     <message>
-        <location filename="../competition.py" line="260"/>
+        <location filename="../competition.py" line="294"/>
         <source>Ranking</source>
         <translation>Ergebniss</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="270"/>
+        <location filename="../competition.py" line="304"/>
         <source>Pos</source>
         <translation>Pos</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="270"/>
+        <location filename="../competition.py" line="304"/>
         <source>Driver</source>
         <translation>Fahrer</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="271"/>
+        <location filename="../competition.py" line="305"/>
         <source>Laps</source>
         <translation>Runden</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="272"/>
+        <location filename="../competition.py" line="306"/>
         <source>Time</source>
         <translation>Zeit</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="272"/>
+        <location filename="../competition.py" line="306"/>
         <source>Difference</source>
         <translation>Differenz</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="301"/>
+        <location filename="../competition.py" line="335"/>
         <source>Back</source>
         <translation>Zurück</translation>
     </message>
     <message numerus="yes">
-        <location filename="../competition.py" line="355"/>
+        <location filename="../competition.py" line="389"/>
         <source>+%n Lap(s)</source>
         <translation>
             <numerusform>+%n Runde</numerusform>
@@ -549,27 +581,27 @@
         </translation>
     </message>
     <message>
-        <location filename="../competition.py" line="411"/>
+        <location filename="../competition.py" line="445"/>
         <source>unknown</source>
         <translation>unbekannt</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="413"/>
+        <location filename="../competition.py" line="447"/>
         <source>Save Training?</source>
         <translation>Training speichern?</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="417"/>
+        <location filename="../competition.py" line="451"/>
         <source>Save Qualifying?</source>
         <translation>Qualifikation speichern?</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="419"/>
+        <location filename="../competition.py" line="453"/>
         <source>Save Race?</source>
         <translation>Rennen speichern?</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="420"/>
+        <location filename="../competition.py" line="454"/>
         <source>Title: </source>
         <translation>Titel: </translation>
     </message>
@@ -640,23 +672,28 @@
     <message>
         <location filename="../utils.py" line="23"/>
         <source>Qualifying finished!</source>
-        <translation type="unfinished">Qualifikation beendet!</translation>
+        <translation>Qualifikation beendet!</translation>
     </message>
     <message>
         <location filename="../utils.py" line="25"/>
         <source>Race finished!</source>
         <translation>Rennen beendet!</translation>
     </message>
+    <message>
+        <location filename="../utils.py" line="27"/>
+        <source>get ready!</source>
+        <translation>bereit machen!</translation>
+    </message>
 </context>
 <context>
     <name>TrainingState</name>
     <message>
-        <location filename="../competition.py" line="164"/>
+        <location filename="../competition.py" line="198"/>
         <source>Training</source>
         <translation>Training</translation>
     </message>
     <message>
-        <location filename="../competition.py" line="168"/>
+        <location filename="../competition.py" line="202"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>

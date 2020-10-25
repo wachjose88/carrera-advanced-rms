@@ -56,7 +56,8 @@ class RMS(QMainWindow):
                                selected_drivers=self.drivers, tts=self.tts,
                                threadtranslation=self.threadtranslation)
         self.start_signal = StartSignal(cu=cu, cu_instance=cu_instance)
-        self.grid = Grid(parent=self)
+        self.grid = Grid(parent=self, tts=self.tts,
+                         threadtranslation=self.threadtranslation)
         self.home = Home(parent=self, database=self.database)
         self.settings = Settings(parent=self, database=self.database)
         self.statistics = Statistics(parent=self, database=self.database)
@@ -243,16 +244,19 @@ class RMS(QMainWindow):
         elif self.comp_mode == COMP_MODE__RACE_LAPS:
             self.grid.race_state.handleUpdateLaps(rtime=rtime,
                                                   laps=self.comp_duration,
-                                                  cu_drivers=cu_drivers)
+                                                  cu_drivers=cu_drivers,
+                                                  tts=self.tts)
         elif self.comp_mode == COMP_MODE__RACE_TIME:
             self.grid.race_state.handleUpdateTime(rtime=rtime,
                                                   minutes=self.comp_duration,
-                                                  cu_drivers=cu_drivers)
+                                                  cu_drivers=cu_drivers,
+                                                  tts=self.tts)
         elif self.comp_mode == COMP_MODE__QUALIFYING_LAPS:
             self.grid.qualifying_state.handleUpdateLaps(
                 rtime=rtime,
                 laps=self.comp_duration,
-                cu_drivers=cu_drivers)
+                cu_drivers=cu_drivers,
+                tts=self.tts)
         elif self.comp_mode == COMP_MODE__QUALIFYING_TIME:
             self.grid.qualifying_state.handleUpdateTime(
                 rtime=rtime,
@@ -262,7 +266,8 @@ class RMS(QMainWindow):
             self.grid.qualifying_state.handleUpdateLapsSeq(
                 rtime=rtime,
                 laps=self.comp_duration,
-                cu_drivers=cu_drivers)
+                cu_drivers=cu_drivers,
+                tts=self.tts)
         elif self.comp_mode == COMP_MODE__QUALIFYING_TIME_SEQ:
             self.grid.qualifying_state.handleUpdateTimeSeq(
                 rtime=rtime,
