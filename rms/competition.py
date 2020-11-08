@@ -353,8 +353,12 @@ class ResultList(QWidget):
         self.final_cu_drivers = cu_drivers
         self.final_sort_mode = sort_mode
         rank = []
+        dns = []
         for addr, driver in drivers.items():
-            rank.append(cu_drivers[addr])
+            if cu_drivers[addr].time is None:
+                dns.append(cu_drivers[addr])
+            else:
+                rank.append(cu_drivers[addr])
         if sort_mode == SORT_MODE__LAPS:
             rank.sort(
                 key=lambda dr: (0, 0) if dr.bestlap is None else (-dr.laps,
@@ -435,6 +439,25 @@ class ResultList(QWidget):
                 'laps': laps,
                 'fotime': fotime,
                 'otime': otime
+            }
+            self.num_row += 1
+        for crank in dns:
+            addr = crank.num
+            driverPos = QLabel(self.tr('DNS'))
+            driverPos.setStyleSheet(self.posCss)
+            driverPos.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+            driverPos.setFont(self.posFont)
+            self.mainLayout.addWidget(driverPos, self.num_row, 0)
+            name = QLabel(
+                '<big><b>' + str(crank.name)
+                + '</b></big><br><small>' + str(drivers[addr-1]['car'])
+                + '</small>')
+            name.setStyleSheet(self.nameCss)
+            name.setTextFormat(Qt.RichText)
+            self.mainLayout.addWidget(name, self.num_row, 1)
+            self.driver_ui[addr] = {
+                'pos': driverPos,
+                'name': name
             }
             self.num_row += 1
 

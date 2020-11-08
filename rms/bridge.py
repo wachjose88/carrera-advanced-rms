@@ -107,17 +107,25 @@ class CUBridge(QThread):
 
         def newlap(self, timer):
             if self.racing:
-                if self.stopnext:
-                    self.racing = False
                 if self.time is not None:
-                    self.laptime = timer.timestamp - self.time
+                    lt = timer.timestamp - self.time
+                    if lt < 1500:
+                        return
+                    self.laptime = lt
                     if self.bestlap is None or self.laptime < self.bestlap:
                         self.bestlap = self.laptime
                     self.laps += 1
-                self.time = timer.timestamp
-                self.timestamps.append(copy.deepcopy(self.time))
-                self.fuels.append(copy.deepcopy(self.fuel))
-                self.pitslist.append(copy.deepcopy(self.pit))
+                    self.time = timer.timestamp
+                    self.timestamps.append(copy.deepcopy(timer.timestamp))
+                    self.fuels.append(copy.deepcopy(self.fuel))
+                    self.pitslist.append(copy.deepcopy(self.pit))
+                else:
+                    self.time = timer.timestamp
+                    self.timestamps.append(copy.deepcopy(timer.timestamp))
+                    self.fuels.append(copy.deepcopy(self.fuel))
+                    self.pitslist.append(copy.deepcopy(self.pit))
+                if self.stopnext:
+                    self.racing = False
 
         def dump(self):
             print('num: ' + str(self.num) + ' time: ' + str(self.time))
