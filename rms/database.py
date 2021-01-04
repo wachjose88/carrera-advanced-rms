@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, \
@@ -5,6 +6,8 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean, \
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship
 
+from utils import formattime
+from constants import SORT_MODE__LAPS, SORT_MODE__LAPTIME
 
 Base = declarative_base()
 
@@ -69,6 +72,107 @@ class Competition(Base):
         return "<Competition(title='%s', mode='%s')>" % (
             self.title, self.mode)
 
+    def get_result(self):
+        r = []
+        for p in self.racingplayer:
+            flt = None
+            if len(p.lap) < 1:
+                t = {
+                    'player': p,
+                    'laps': 0,
+                    'time': sys.maxsize,
+                    'bestlap': sys.maxsize,
+                    'diff': None,
+                    'rank': None
+                }
+                r.append(t)
+                continue
+            for i in range(1, len(p.lap)):
+                l0 = p.lap[i-1].timestamp
+                l1 = p.lap[i].timestamp
+                lt = l1 - l0
+                if flt is None or flt > lt:
+                    flt = lt
+            t = {
+                'player': p,
+                'laps': len(p.lap)-1,
+                'time': p.lap[-1].timestamp,
+                'bestlap': flt,
+                'diff': None,
+                'rank': None
+            }
+            r.append(t)
+        last_drank = '0'
+        last_bl = 0
+        last_tm = 0
+        last_lp = 0
+        if self.sortmode == SORT_MODE__LAPS:
+            r.sort(key=lambda dr: (0, 0) if dr['bestlap'] is None
+                   else (-dr['laps'], dr['time']))
+            for i in range(0, len(r)):
+                t = r[i]
+                if i == 0 or t['time'] == sys.maxsize:
+                    t['diff'] = ' '
+                else:
+                    if r[0]['time'] is not None:
+                        if r[0]['laps'] <= t['laps']:
+                            t['diff'] = '+' + formattime(
+                                t['time'] - r[0]['time'],
+                                longfmt=False)
+                        else:
+                            t['diff'] = self.tr('+%n Lap(s)', '',
+                                                r[0]['laps'] - t['laps'])
+            for i in range(0, len(r)):
+                t = r[i]
+                t['rank'] = str(i+1)
+                if int(t['laps']) == int(last_lp) and \
+                        int(t['time']) == int(last_tm):
+                    t['rank'] = str(last_drank)
+                last_drank = str(i+1)
+                last_bl = int(t['bestlap'])
+                last_lp = int(t['laps'])
+                last_tm = int(t['time'])
+                if t['time'] == sys.maxsize:
+                    t['time'] = ' '
+                    t['rank'] = str(self.tr('DNS'))
+                else:
+                    t['time'] = formattime(t['time'])
+                if t['bestlap'] == sys.maxsize:
+                    t['bestlap'] = ' '
+                else:
+                    t['bestlap'] = formattime(t['bestlap'], longfmt=False)
+        if self.sortmode == SORT_MODE__LAPTIME:
+            r.sort(key=lambda dr: 0 if dr['bestlap'] is None
+                   else dr['bestlap'])
+            for i in range(0, len(r)):
+                t = r[i]
+                if i == 0 or t['bestlap'] == sys.maxsize:
+                    t['diff'] = ' '
+                else:
+                    if r[0]['bestlap'] is not None:
+                        t['diff'] = '+' + formattime((int(t['bestlap']) -
+                                                      float(r[0]['bestlap'])),
+                                                     longfmt=False)
+            for i in range(0, len(r)):
+                t = r[i]
+                t['rank'] = str(i+1)
+                if int(t['bestlap']) == int(last_bl):
+                    t['rank'] = str(last_drank)
+                last_drank = str(i+1)
+                last_bl = int(t['bestlap'])
+                last_lp = int(t['laps'])
+                last_tm = int(t['time'])
+                if t['time'] == sys.maxsize:
+                    t['time'] = ' '
+                    t['rank'] = str('DNS')
+                else:
+                    t['time'] = formattime(t['time'])
+                if t['bestlap'] == sys.maxsize:
+                    t['bestlap'] = ' '
+                else:
+                    t['bestlap'] = formattime(t['bestlap'], longfmt=False)
+        return r
+
 
 class RacingPlayer(Base):
     __tablename__ = 'racingplayer'
@@ -83,7 +187,8 @@ class RacingPlayer(Base):
     player = relationship("Player", back_populates="racingplayer")
     car = relationship("Car", back_populates="racingplayer")
 
-    lap = relationship("Lap", back_populates="racingplayer")
+    lap = relationship("Lap", back_populates="racingplayer",
+                       order_by='Lap.timestamp.asc()')
 
     def __repr__(self):
         return "<RacingPlayer(id='%s')>" % (
@@ -164,7 +269,7 @@ class DatabaseHandler(object):
         session = self.Session()
         c = session.query(Competition).filter(
             Competition.mode.in_(mode)).order_by(Competition.time.desc()).all()
-        self.Session.remove()
+        # self.Session.remove()
         if c is not None:
             return c
         return []
