@@ -113,12 +113,12 @@
 <context>
     <name>FalseStart</name>
     <message>
-        <location filename="../competition.py" line="233"/>
+        <location filename="../competition.py" line="234"/>
         <source>False Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="237"/>
+        <location filename="../competition.py" line="238"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
@@ -126,42 +126,42 @@
 <context>
     <name>Grid</name>
     <message>
-        <location filename="../competition.py" line="495"/>
+        <location filename="../competition.py" line="519"/>
         <source>Pos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="495"/>
+        <location filename="../competition.py" line="519"/>
         <source>Driver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="495"/>
+        <location filename="../competition.py" line="519"/>
         <source>Total</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="496"/>
+        <location filename="../competition.py" line="520"/>
         <source>Laps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="497"/>
+        <location filename="../competition.py" line="521"/>
         <source>Laptime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="497"/>
+        <location filename="../competition.py" line="521"/>
         <source>Best Lap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="671"/>
+        <location filename="../competition.py" line="695"/>
         <source> (in)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="604"/>
+        <location filename="../competition.py" line="628"/>
         <source>Pits:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -217,17 +217,17 @@
 <context>
     <name>ListAll</name>
     <message>
-        <location filename="../statistics.py" line="34"/>
+        <location filename="../statistics.py" line="157"/>
         <source>Training</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="36"/>
+        <location filename="../statistics.py" line="159"/>
         <source>Qualifying</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="38"/>
+        <location filename="../statistics.py" line="161"/>
         <source>Race</source>
         <translation type="unfinished"></translation>
     </message>
@@ -276,32 +276,32 @@
 <context>
     <name>QualifyingSeq</name>
     <message>
-        <location filename="../competition.py" line="258"/>
+        <location filename="../competition.py" line="259"/>
         <source>Qualifying Driver Change</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="262"/>
+        <location filename="../competition.py" line="263"/>
         <source>Last: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="266"/>
+        <location filename="../competition.py" line="267"/>
         <source>Next: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="272"/>
+        <location filename="../competition.py" line="273"/>
         <source>Start Next Driver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="278"/>
+        <location filename="../competition.py" line="279"/>
         <source>Last Driver (best laptime): </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="282"/>
+        <location filename="../competition.py" line="283"/>
         <source>Next Driver: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -309,7 +309,7 @@
 <context>
     <name>QualifyingState</name>
     <message numerus="yes">
-        <location filename="../competition.py" line="156"/>
+        <location filename="../competition.py" line="157"/>
         <source>, %n Lap(s) remaining</source>
         <translation>
             <numerusform>, %n Lap remaining</numerusform>
@@ -317,22 +317,22 @@
         </translation>
     </message>
     <message>
-        <location filename="../competition.py" line="119"/>
+        <location filename="../competition.py" line="120"/>
         <source>Qualifying</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="191"/>
+        <location filename="../competition.py" line="192"/>
         <source>Qualifying: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="189"/>
+        <location filename="../competition.py" line="190"/>
         <source>Qualifying finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../competition.py" line="163"/>
+        <location filename="../competition.py" line="166"/>
         <source>%n Lap(s) remaining</source>
         <translation>
             <numerusform>%n Lap remaining</numerusform>
@@ -340,7 +340,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../competition.py" line="195"/>
+        <location filename="../competition.py" line="196"/>
         <source>%n Seconds(s) remaining</source>
         <translation>
             <numerusform>%n Second remaining</numerusform>
@@ -348,7 +348,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../competition.py" line="165"/>
+        <location filename="../competition.py" line="164"/>
         <source>One Lap remaining</source>
         <translation type="unfinished"></translation>
     </message>
@@ -437,17 +437,17 @@
 <context>
     <name>RaceState</name>
     <message>
-        <location filename="../competition.py" line="67"/>
+        <location filename="../competition.py" line="68"/>
         <source>Race</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="103"/>
+        <location filename="../competition.py" line="104"/>
         <source>Race: </source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../competition.py" line="83"/>
+        <location filename="../competition.py" line="84"/>
         <source>, %n Lap(s) remaining</source>
         <translation>
             <numerusform>, %n Lap remaining</numerusform>
@@ -455,12 +455,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../competition.py" line="101"/>
+        <location filename="../competition.py" line="102"/>
         <source>Race finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../competition.py" line="90"/>
+        <location filename="../competition.py" line="93"/>
         <source>%n Lap(s) remaining</source>
         <translation>
             <numerusform>%n Lap remaining</numerusform>
@@ -468,7 +468,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../competition.py" line="107"/>
+        <location filename="../competition.py" line="108"/>
         <source>%n Seconds(s) remaining</source>
         <translation>
             <numerusform>%n Second remaining</numerusform>
@@ -476,7 +476,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../competition.py" line="92"/>
+        <location filename="../competition.py" line="91"/>
         <source>One Lap remaining</source>
         <translation type="unfinished"></translation>
     </message>
@@ -484,7 +484,7 @@
 <context>
     <name>ResultList</name>
     <message numerus="yes">
-        <location filename="../competition.py" line="398"/>
+        <location filename="../competition.py" line="403"/>
         <source>+%n Lap(s)</source>
         <translation>
             <numerusform>+%n Lap</numerusform>
@@ -492,63 +492,68 @@
         </translation>
     </message>
     <message>
-        <location filename="../competition.py" line="303"/>
+        <location filename="../competition.py" line="304"/>
         <source>Ranking</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="313"/>
+        <location filename="../competition.py" line="314"/>
         <source>Pos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="313"/>
+        <location filename="../competition.py" line="314"/>
         <source>Driver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="314"/>
+        <location filename="../competition.py" line="315"/>
         <source>Laps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="315"/>
+        <location filename="../competition.py" line="316"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="315"/>
+        <location filename="../competition.py" line="316"/>
         <source>Difference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="344"/>
+        <location filename="../competition.py" line="345"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="454"/>
+        <location filename="../competition.py" line="478"/>
         <source>unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="456"/>
+        <location filename="../competition.py" line="480"/>
         <source>Save Training?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="460"/>
+        <location filename="../competition.py" line="484"/>
         <source>Save Qualifying?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="462"/>
+        <location filename="../competition.py" line="486"/>
         <source>Save Race?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="463"/>
+        <location filename="../competition.py" line="487"/>
         <source>Title: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../competition.py" line="445"/>
+        <source>DNS</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -581,14 +586,62 @@
     </message>
 </context>
 <context>
+    <name>ShowDetails</name>
+    <message>
+        <location filename="../statistics.py" line="44"/>
+        <source>Ranking</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../statistics.py" line="54"/>
+        <source>Pos</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../statistics.py" line="54"/>
+        <source>Driver</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../statistics.py" line="55"/>
+        <source>Laps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../statistics.py" line="56"/>
+        <source>Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../statistics.py" line="56"/>
+        <source>Difference</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../statistics.py" line="86"/>
+        <source>Training</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../statistics.py" line="91"/>
+        <source>Qualifying</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../statistics.py" line="94"/>
+        <source>Race</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Statistics</name>
     <message>
-        <location filename="../statistics.py" line="81"/>
+        <location filename="../statistics.py" line="214"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="90"/>
+        <location filename="../statistics.py" line="225"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
@@ -629,13 +682,29 @@
 <context>
     <name>TrainingState</name>
     <message>
-        <location filename="../competition.py" line="207"/>
+        <location filename="../competition.py" line="208"/>
         <source>Training</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../competition.py" line="211"/>
+        <location filename="../competition.py" line="212"/>
         <source>Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>widget</name>
+    <message numerus="yes">
+        <location filename="../database.py" line="123"/>
+        <source>+%n Lap(s)</source>
+        <translation>
+            <numerusform>+%n Lap</numerusform>
+            <numerusform>+%n Laps</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../database.py" line="167"/>
+        <source>DNS</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

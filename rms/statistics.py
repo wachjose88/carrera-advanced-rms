@@ -38,8 +38,11 @@ class ShowDetails(QWidget):
         self.posFont = QFont()
         self.posFont.setPointSize(30)
         self.posFont.setBold(True)
+        self.nameFont = QFont()
+        self.nameFont.setPointSize(20)
+        self.nameFont.setBold(True)
         self.headline = QLabel(self.tr('Ranking'))
-        self.headline.setFont(self.posFont)
+        self.headline.setFont(self.nameFont)
         self.vbox = QVBoxLayout()
         self.vbox.addWidget(self.headline)
         self.mainLayout = QGridLayout()
@@ -59,9 +62,6 @@ class ShowDetails(QWidget):
         self.mainLayout.setColumnStretch(1, 1)
         self.mainLayout.setColumnStretch(2, 1)
         self.mainLayout.setColumnStretch(3, 2)
-        self.nameFont = QFont()
-        self.nameFont.setPointSize(20)
-        self.nameFont.setBold(True)
         self.timeFont = QFont()
         self.timeFont.setPointSize(30)
         self.timeFont.setBold(True)
@@ -81,7 +81,19 @@ class ShowDetails(QWidget):
         self.setLayout(self.vbox)
 
     def buildDetails(self, competition):
+        modet = ''
+        if competition.mode == COMP_MODE__TRAINING:
+            modet = self.tr('Training')
+        elif competition.mode in (COMP_MODE__QUALIFYING_LAPS,
+                                  COMP_MODE__QUALIFYING_TIME,
+                                  COMP_MODE__QUALIFYING_LAPS_SEQ,
+                                  COMP_MODE__QUALIFYING_TIME_SEQ):
+            modet = self.tr('Qualifying')
+        elif competition.mode in (COMP_MODE__RACE_LAPS,
+                                  COMP_MODE__RACE_TIME):
+            modet = self.tr('Race')
         self.headline.setText(str(
+            modet + ' ' +
             format_datetime(competition.time,
                             locale=locale.getdefaultlocale()[0])
             + ': ' + competition.title))
@@ -93,7 +105,7 @@ class ShowDetails(QWidget):
         self.driver_ui = []
         self.num_row = 1
         self.update()
-        for p in competition.get_result():
+        for p in competition.get_result(self):
             driverPos = QLabel(str(p['rank']))
             driverPos.setStyleSheet(self.posCss)
             driverPos.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
@@ -101,7 +113,8 @@ class ShowDetails(QWidget):
             self.mainLayout.addWidget(driverPos, self.num_row, 0)
             name = QLabel(
                 '<big><b>' + str(p['player'].player.name)
-                + '</b></big><br><small>' + str(p['player'].car.name)
+                + '</b></big> <small>(' + str(p['player'].player.username)
+                + ')</small><br><small>' + str(p['player'].car.name)
                 + '</small>')
             name.setStyleSheet(self.nameCss)
             name.setTextFormat(Qt.RichText)

@@ -72,7 +72,7 @@ class Competition(Base):
         return "<Competition(title='%s', mode='%s')>" % (
             self.title, self.mode)
 
-    def get_result(self):
+    def get_result(self, widget):
         r = []
         for p in self.racingplayer:
             flt = None
@@ -120,8 +120,8 @@ class Competition(Base):
                                 t['time'] - r[0]['time'],
                                 longfmt=False)
                         else:
-                            t['diff'] = self.tr('+%n Lap(s)', '',
-                                                r[0]['laps'] - t['laps'])
+                            t['diff'] = widget.tr('+%n Lap(s)', '',
+                                                  r[0]['laps'] - t['laps'])
             for i in range(0, len(r)):
                 t = r[i]
                 t['rank'] = str(i+1)
@@ -134,7 +134,7 @@ class Competition(Base):
                 last_tm = int(t['time'])
                 if t['time'] == sys.maxsize:
                     t['time'] = ' '
-                    t['rank'] = str(self.tr('DNS'))
+                    t['rank'] = str(widget.tr('DNS'))
                 else:
                     t['time'] = formattime(t['time'])
                 if t['bestlap'] == sys.maxsize:
@@ -164,7 +164,7 @@ class Competition(Base):
                 last_tm = int(t['time'])
                 if t['time'] == sys.maxsize:
                     t['time'] = ' '
-                    t['rank'] = str('DNS')
+                    t['rank'] = str(widget.tr('DNS'))
                 else:
                     t['time'] = formattime(t['time'])
                 if t['bestlap'] == sys.maxsize:
