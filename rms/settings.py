@@ -1,9 +1,11 @@
 import json
+from urllib import request, error, parse
 from PyQt5.QtWidgets import QWidget, QGridLayout, QSpinBox, \
                             QLabel, QVBoxLayout, QSizePolicy, \
                             QListWidgetItem, QLineEdit, QPushButton, \
-                            QInputDialog, QTabWidget, QListWidget
-from PyQt5.QtCore import pyqtSlot
+                            QInputDialog, QTabWidget, QListWidget, \
+                            QProgressBar
+from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtGui import QFont
 
 from home import ControllerSet
@@ -256,6 +258,169 @@ class CoreSet(QWidget):
         self.database.setConfig('TRACKNAME', tn)
 
 
+class SyncSet(QWidget):
+
+    def __init__(self, parent=None, database=None):
+        super().__init__(parent)
+        self.database = database
+        self.vml = QVBoxLayout()
+        self.mgrid = QGridLayout()
+        self.apiurllbl = QLabel(self.tr('URL: '))
+        self.apiurllbl.setSizePolicy(QSizePolicy.Maximum,
+                                     QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.apiurllbl, 0, 0)
+        self.apiurl = QLineEdit()
+        apiurl = self.database.getConfigStr('APIURL')
+        if apiurl is not None:
+            self.apiurl.setText(apiurl)
+        self.apiurl.editingFinished.connect(self.apiurl_finished)
+        self.apiurl.setSizePolicy(QSizePolicy.Expanding,
+                                  QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.apiurl, 0, 1)
+        self.apiuserlbl = QLabel(self.tr('Username: '))
+        self.apiuserlbl.setSizePolicy(QSizePolicy.Maximum,
+                                      QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.apiuserlbl, 1, 0)
+        self.apiuser = QLineEdit()
+        apiuser = self.database.getConfigStr('APIUSER')
+        if apiuser is not None:
+            self.apiuser.setText(apiuser)
+        self.apiuser.editingFinished.connect(self.apiuser_finished)
+        self.apiuser.setSizePolicy(QSizePolicy.Expanding,
+                                   QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.apiuser, 1, 1)
+        self.apipwlbl = QLabel(self.tr('Password: '))
+        self.apipwlbl.setSizePolicy(QSizePolicy.Maximum,
+                                    QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.apipwlbl, 2, 0)
+        self.apipw = QLineEdit()
+        apipw = self.database.getConfigStr('APIPW')
+        if apiurl is not None:
+            self.apipw.setText(apipw)
+        self.apipw.editingFinished.connect(self.apipw_finished)
+        self.apipw.setSizePolicy(QSizePolicy.Expanding,
+                                 QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.apipw, 2, 1)
+        self.vml.addLayout(self.mgrid)
+        self.vml.addWidget(HSep())
+        self.syncprogress = QProgressBar()
+        self.syncprogress.setOrientation(Qt.Horizontal)
+        self.syncprogress.setMinimum(0)
+        self.syncprogress.setMaximum(100)
+        self.syncprogress.setValue(0)
+        self.vml.addWidget(self.syncprogress)
+        self.sync = QPushButton()
+        self.sync.setText(self.tr('Synchronize'))
+        self.sync.clicked.connect(self.sync_click)
+        self.vml.addWidget(self.sync)
+        self.vml.addStretch(1)
+        self.setLayout(self.vml)
+
+    @pyqtSlot()
+    def sync_click(self):
+        self.syncprogress.setValue(0)
+        apiurl = self.database.getConfigStr('APIURL')
+        if apiurl is None:
+            return
+        apiuser = self.database.getConfigStr('APIUSER')
+        if apiuser is None:
+            return
+        apipw = self.database.getConfigStr('APIPW')
+        if apipw is None:
+            return
+        try:
+            auth_handler = request.HTTPBasicAuthHandler()
+            auth_handler.add_password(realm='Carrera RMS Statistics',
+                                      uri=apiurl + 'upload',
+                                      user=apiuser,
+                                      passwd=apipw)
+            opener = request.build_opener(auth_handler)
+            cars = self.database.getCarsForSync()
+            self.syncprogress.setValue(10)
+            if cars is not None and len(cars) > 0:
+                params = {
+                    'cars': str(json.dumps(cars))
+                }
+                data = parse.urlencode(params)
+                data = data.encode('ascii')
+                response = opener.open(apiurl + 'upload', data)
+                response_data = response.read().decode('utf-8')
+                carsr = json.loads(response_data)
+                self.database.setCarsSync(carsr['cars'])
+                self.syncprogress.setValue(25)
+            players = self.database.getPlayersForSync()
+            # print(players)
+            self.syncprogress.setValue(30)
+            if players is not None and len(players) > 0:
+                params = {
+                    'players': str(json.dumps(players))
+                }
+                data = parse.urlencode(params)
+                data = data.encode('ascii')
+                response = opener.open(apiurl + 'upload', data)
+                response_data = response.read().decode('utf-8')
+                playersr = json.loads(response_data)
+                self.database.setPlayersSync(playersr['players'])
+                self.syncprogress.setValue(50)
+            competitions = self.database.getCompetitionsForSync()
+            # print(competitions)
+            if competitions is not None and len(competitions) > 0:
+                params = {
+                    'competitions': str(json.dumps(competitions))
+                }
+                data = parse.urlencode(params)
+                data = data.encode('ascii')
+                response = opener.open(apiurl + 'upload', data)
+                response_data = response.read().decode('utf-8')
+                competitionsr = json.loads(response_data)
+                self.database.setCompetitionsSync(competitionsr['competitions'])
+                self.syncprogress.setValue(70)
+            racingplayers = self.database.getRacingPlayersForSync()
+            # print(racingplayers)
+            if racingplayers is not None and len(racingplayers) > 0:
+                params = {
+                    'racingplayers': str(json.dumps(racingplayers))
+                }
+                data = parse.urlencode(params)
+                data = data.encode('ascii')
+                response = opener.open(apiurl + 'upload', data)
+                response_data = response.read().decode('utf-8')
+                racingplayersr = json.loads(response_data)
+                self.database.setRacingPlayersSync(racingplayersr['racingplayers'])
+                self.syncprogress.setValue(80)
+            laps = self.database.getLapsForSync()
+            # print(laps)
+            if laps is not None and len(laps) > 0:
+                params = {
+                    'laps': str(json.dumps(laps))
+                }
+                data = parse.urlencode(params)
+                data = data.encode('ascii')
+                response = opener.open(apiurl + 'upload', data)
+                response_data = response.read().decode('utf-8')
+                lapsr = json.loads(response_data)
+                self.database.setLapsSync(lapsr['laps'])
+                self.syncprogress.setValue(90)
+        except error.HTTPError as e:
+            print(e)
+        self.syncprogress.setValue(100)
+
+    @pyqtSlot()
+    def apiurl_finished(self):
+        apiurl = str(self.apiurl.text()).strip()
+        self.database.setConfig('APIURL', apiurl)
+
+    @pyqtSlot()
+    def apiuser_finished(self):
+        apiuser = str(self.apiuser.text()).strip()
+        self.database.setConfig('APIUSER', apiuser)
+
+    @pyqtSlot()
+    def apipw_finished(self):
+        apipw = str(self.apipw.text()).strip()
+        self.database.setConfig('APIPW', apipw)
+
+
 class Settings(QWidget):
 
     def __init__(self, parent=None, database=None):
@@ -276,6 +441,8 @@ class Settings(QWidget):
         self.settab.addTab(self.carset, self.tr('Cars'))
         self.playerset = PlayerSet(database=self.database)
         self.settab.addTab(self.playerset, self.tr('Drivers'))
+        self.syncset = SyncSet(database=self.database)
+        self.settab.addTab(self.syncset, self.tr('Sync'))
         self.back = QPushButton()
         self.back.setText(self.tr('Back'))
         self.back.clicked.connect(self.back_click)

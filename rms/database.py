@@ -5,6 +5,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean, \
                        ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship
+from sqlalchemy_serializer import SerializerMixin
 
 from utils import formattime
 from constants import SORT_MODE__LAPS, SORT_MODE__LAPTIME
@@ -25,7 +26,7 @@ class Config(Base):
             self.key, self.value)
 
 
-class Car(Base):
+class Car(Base, SerializerMixin):
     __tablename__ = 'car'
 
     id = Column(Integer, primary_key=True)
@@ -40,7 +41,7 @@ class Car(Base):
             self.name)
 
 
-class Player(Base):
+class Player(Base, SerializerMixin):
     __tablename__ = 'player'
 
     id = Column(Integer, primary_key=True)
@@ -55,7 +56,7 @@ class Player(Base):
             self.username)
 
 
-class Competition(Base):
+class Competition(Base, SerializerMixin):
     __tablename__ = 'competition'
 
     id = Column(Integer, primary_key=True)
@@ -174,7 +175,7 @@ class Competition(Base):
         return r
 
 
-class RacingPlayer(Base):
+class RacingPlayer(Base, SerializerMixin):
     __tablename__ = 'racingplayer'
 
     id = Column(Integer, primary_key=True)
@@ -195,7 +196,7 @@ class RacingPlayer(Base):
             self.id)
 
 
-class Lap(Base):
+class Lap(Base, SerializerMixin):
     __tablename__ = 'lap'
 
     id = Column(Integer, primary_key=True)
@@ -230,6 +231,79 @@ class DatabaseHandler(object):
             c.value = str(value)
         session.commit()
         self.Session.remove()
+
+    def getPlayersForSync(self):
+        session = self.Session()
+        cs = session.query(Player).filter_by(sync=False).all()
+        if cs is not None:
+            cas = []
+            for c in cs:
+                cas.append(c.to_dict(
+                    only=('id', 'username', 'name', 'sync')
+                ))
+            self.Session.remove()
+            return cas
+        self.Session.remove()
+        return cs
+
+    def getCarsForSync(self):
+        session = self.Session()
+        cs = session.query(Car).filter_by(sync=False).all()
+        if cs is not None:
+            cas = []
+            for c in cs:
+                cas.append(c.to_dict(
+                    only=('id', 'name', 'number', 'sync')
+                ))
+            self.Session.remove()
+            return cas
+        self.Session.remove()
+        return cs
+
+    def getCompetitionsForSync(self):
+        session = self.Session()
+        cs = session.query(Competition).filter_by(sync=False).all()
+        if cs is not None:
+            cas = []
+            for c in cs:
+                cas.append(c.to_dict(
+                    only=('id', 'title', 'time', 'mode', 'sortmode',
+                          'duration', 'sync')
+                ))
+            self.Session.remove()
+            return cas
+        self.Session.remove()
+        return cs
+
+    def getRacingPlayersForSync(self):
+        session = self.Session()
+        cs = session.query(RacingPlayer).filter_by(sync=False).all()
+        if cs is not None:
+            cas = []
+            for c in cs:
+                cas.append(c.to_dict(
+                    only=('id', 'car_id', 'player_id', 'competition_id',
+                          'sync')
+                ))
+            self.Session.remove()
+            return cas
+        self.Session.remove()
+        return cs
+
+    def getLapsForSync(self):
+        session = self.Session()
+        cs = session.query(Lap).filter_by(sync=False).all()
+        if cs is not None:
+            cas = []
+            for c in cs:
+                cas.append(c.to_dict(
+                    only=('id', 'timestamp', 'racingplayer_id', 'fuel',
+                          'pit', 'sync')
+                ))
+            self.Session.remove()
+            return cas
+        self.Session.remove()
+        return cs
 
     def getConfigStr(self, key):
         session = self.Session()
@@ -274,6 +348,46 @@ class DatabaseHandler(object):
             return c
         return []
 
+    def setPlayersSync(self, ids):
+        session = self.Session()
+        for id in ids:
+            c = session.query(Player).filter_by(id=id).first()
+            c.sync = True
+        session.commit()
+        self.Session.remove()
+
+    def setLapsSync(self, ids):
+        session = self.Session()
+        for id in ids:
+            c = session.query(Lap).filter_by(id=id).first()
+            c.sync = True
+        session.commit()
+        self.Session.remove()
+
+    def setRacingPlayersSync(self, ids):
+        session = self.Session()
+        for id in ids:
+            c = session.query(RacingPlayer).filter_by(id=id).first()
+            c.sync = True
+        session.commit()
+        self.Session.remove()
+
+    def setCompetitionsSync(self, ids):
+        session = self.Session()
+        for id in ids:
+            c = session.query(Competition).filter_by(id=id).first()
+            c.sync = True
+        session.commit()
+        self.Session.remove()
+
+    def setCarsSync(self, ids):
+        session = self.Session()
+        for id in ids:
+            c = session.query(Car).filter_by(id=id).first()
+            c.sync = True
+        session.commit()
+        self.Session.remove()
+
     def setCar(self, name, newname, number):
         session = self.Session()
         c = session.query(Car).filter_by(name=str(name)).first()
@@ -283,6 +397,7 @@ class DatabaseHandler(object):
         else:
             c.name = str(newname)
             c.number = str(number)
+            c.sync = False
         session.commit()
         self.Session.remove()
 
@@ -323,6 +438,7 @@ class DatabaseHandler(object):
         else:
             c.username = str(newusername)
             c.name = str(name)
+            c.sync = False
         session.commit()
         self.Session.remove()
 
