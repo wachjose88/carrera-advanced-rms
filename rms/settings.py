@@ -9,6 +9,7 @@ from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtGui import QFont
 
 from home import ControllerSet
+from statistics import ShowDetails
 from utils import HSep
 
 
@@ -345,12 +346,13 @@ class SyncSet(QWidget):
                 data = data.encode('ascii')
                 response = opener.open(apiurl + 'upload', data)
                 response_data = response.read().decode('utf-8')
+                print(response_data)
                 carsr = json.loads(response_data)
                 self.database.setCarsSync(carsr['cars'])
-                self.syncprogress.setValue(25)
+                self.syncprogress.setValue(15)
             players = self.database.getPlayersForSync()
             # print(players)
-            self.syncprogress.setValue(30)
+            self.syncprogress.setValue(20)
             if players is not None and len(players) > 0:
                 params = {
                     'players': str(json.dumps(players))
@@ -361,20 +363,7 @@ class SyncSet(QWidget):
                 response_data = response.read().decode('utf-8')
                 playersr = json.loads(response_data)
                 self.database.setPlayersSync(playersr['players'])
-                self.syncprogress.setValue(50)
-            competitions = self.database.getCompetitionsForSync()
-            # print(competitions)
-            if competitions is not None and len(competitions) > 0:
-                params = {
-                    'competitions': str(json.dumps(competitions))
-                }
-                data = parse.urlencode(params)
-                data = data.encode('ascii')
-                response = opener.open(apiurl + 'upload', data)
-                response_data = response.read().decode('utf-8')
-                competitionsr = json.loads(response_data)
-                self.database.setCompetitionsSync(competitionsr['competitions'])
-                self.syncprogress.setValue(70)
+                self.syncprogress.setValue(25)
             racingplayers = self.database.getRacingPlayersForSync()
             # print(racingplayers)
             if racingplayers is not None and len(racingplayers) > 0:
@@ -387,7 +376,7 @@ class SyncSet(QWidget):
                 response_data = response.read().decode('utf-8')
                 racingplayersr = json.loads(response_data)
                 self.database.setRacingPlayersSync(racingplayersr['racingplayers'])
-                self.syncprogress.setValue(80)
+                self.syncprogress.setValue(30)
             laps = self.database.getLapsForSync()
             # print(laps)
             if laps is not None and len(laps) > 0:
@@ -400,7 +389,20 @@ class SyncSet(QWidget):
                 response_data = response.read().decode('utf-8')
                 lapsr = json.loads(response_data)
                 self.database.setLapsSync(lapsr['laps'])
-                self.syncprogress.setValue(90)
+                self.syncprogress.setValue(35)
+            competitions = self.database.getCompetitionsForSync(ShowDetails())
+            print(competitions)
+            if competitions is not None and len(competitions) > 0:
+                params = {
+                    'competitions': str(json.dumps(competitions))
+                }
+                data = parse.urlencode(params)
+                data = data.encode('ascii')
+                response = opener.open(apiurl + 'upload', data)
+                response_data = response.read().decode('utf-8')
+                competitionsr = json.loads(response_data)
+                self.database.setCompetitionsSync(competitionsr['competitions'])
+                self.syncprogress.setValue(95)
         except error.HTTPError as e:
             print(e)
         self.syncprogress.setValue(100)

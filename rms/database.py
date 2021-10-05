@@ -80,6 +80,7 @@ class Competition(Base, SerializerMixin):
             if len(p.lap) < 1:
                 t = {
                     'player': p,
+                    'pid': p.id,
                     'laps': 0,
                     'time': sys.maxsize,
                     'bestlap': sys.maxsize,
@@ -96,6 +97,7 @@ class Competition(Base, SerializerMixin):
                     flt = lt
             t = {
                 'player': p,
+                'pid': p.id,
                 'laps': len(p.lap)-1,
                 'time': p.lap[-1].timestamp,
                 'bestlap': flt,
@@ -172,6 +174,7 @@ class Competition(Base, SerializerMixin):
                     t['bestlap'] = ' '
                 else:
                     t['bestlap'] = formattime(t['bestlap'], longfmt=False)
+        print(r)
         return r
 
 
@@ -260,16 +263,19 @@ class DatabaseHandler(object):
         self.Session.remove()
         return cs
 
-    def getCompetitionsForSync(self):
+    def getCompetitionsForSync(self, widget):
         session = self.Session()
         cs = session.query(Competition).filter_by(sync=False).all()
         if cs is not None:
             cas = []
             for c in cs:
-                cas.append(c.to_dict(
+                result = c.get_result(widget)
+                for re in result:
+                    re['player'] = re['player'].id
+                cas.append({'competition': c.to_dict(
                     only=('id', 'title', 'time', 'mode', 'sortmode',
                           'duration', 'sync')
-                ))
+                ), 'result': result})
             self.Session.remove()
             return cas
         self.Session.remove()
