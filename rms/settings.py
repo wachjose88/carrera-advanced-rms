@@ -331,7 +331,7 @@ class SyncSet(QWidget):
             return
         try:
             auth_handler = request.HTTPBasicAuthHandler()
-            auth_handler.add_password(realm='Carrera RMS Statistics',
+            auth_handler.add_password(realm='Wachtler - Ring RMS',
                                       uri=apiurl + 'upload',
                                       user=apiuser,
                                       passwd=apipw)
