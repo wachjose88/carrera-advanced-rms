@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, QSpinBox, \
                             QInputDialog, QTabWidget, QListWidget, \
                             QProgressBar
 from PyQt5.QtCore import pyqtSlot, Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QGuiApplication
 
 from home import ControllerSet
 from statistics import ShowDetails
@@ -108,8 +108,10 @@ class PlayerSet(QWidget):
 
 class CarItem(QListWidgetItem):
 
-    def __init__(self, name=None, number=None):
-        super().__init__(str(name + ' (' + number + ')'))
+    def __init__(self, name=None, number=None, tires=''):
+        super().__init__(str(name + ' (' + number + ') '
+                             + QGuiApplication.translate('CarItem', 'Tires: ')
+                             + str(tires)))
         self.name = name
         self.number = number
 
@@ -136,19 +138,27 @@ class CarSet(QWidget):
         self.carnumber.setSizePolicy(QSizePolicy.Expanding,
                                      QSizePolicy.Maximum)
         self.mgrid.addWidget(self.carnumber, 1, 1)
+        self.cartireslbl = QLabel(self.tr('Tires: '))
+        self.cartireslbl.setSizePolicy(QSizePolicy.Maximum,
+                                       QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.cartireslbl, 2, 0)
+        self.cartires = QLineEdit()
+        self.cartires.setSizePolicy(QSizePolicy.Expanding,
+                                    QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.cartires, 2, 1)
         self.addcar = QPushButton()
         self.addcar.setText(self.tr('Add'))
         self.addcar.clicked.connect(self.carname_finished)
         self.addcar.setSizePolicy(QSizePolicy.Maximum,
                                   QSizePolicy.Expanding)
-        self.mgrid.addWidget(self.addcar, 0, 2, 2, 1)
+        self.mgrid.addWidget(self.addcar, 0, 2, 3, 1)
         self.carlist = QListWidget()
         self.carlist.itemDoubleClicked.connect(self.carlist_itemDoubleClicked)
         i = 0
         for car in self.database.getAllCars():
-            self.carlist.insertItem(i, CarItem(car.name, car.number))
+            self.carlist.insertItem(i, CarItem(car.name, car.number, car.tires))
             i = i + 1
-        self.mgrid.addWidget(self.carlist, 2, 0, 1, 3)
+        self.mgrid.addWidget(self.carlist, 3, 0, 1, 3)
         self.setLayout(self.mgrid)
 
     @pyqtSlot(QListWidgetItem)
@@ -160,20 +170,26 @@ class CarSet(QWidget):
         number, okn = QInputDialog.getText(self, self.tr('Edit Car'),
                                            self.tr('Carnumber: '),
                                            text=c.number)
+        tires, okt = QInputDialog.getText(self, self.tr('Edit Car'),
+                                           self.tr('Tires: '),
+                                           text=c.tires)
 
-        if ok and okn:
+        if ok and okn and okt:
             cn = str(name).strip()
             if len(cn) <= 0:
                 return
             cnr = str(number).strip()
             if len(cnr) <= 0:
                 return
-            self.database.setCar(c.name, cn, cnr)
+            tires = str(tires).strip()
+            if len(tires) <= 0:
+                return
+            self.database.setCar(c.name, cn, cnr, tires)
             self.parent().parent().parent().coreset.controller.buildCarList()
             self.carlist.clear()
             i = 0
             for car in self.database.getAllCars():
-                self.carlist.insertItem(i, CarItem(car.name, car.number))
+                self.carlist.insertItem(i, CarItem(car.name, car.number, car.tires))
                 i = i + 1
 
     @pyqtSlot()
@@ -184,14 +200,18 @@ class CarSet(QWidget):
         cnr = str(self.carnumber.text()).strip()
         if len(cnr) <= 0:
             return
-        self.database.setCar(cn, cn, cnr)
+        tires = str(self.cartires.text()).strip()
+        if len(tires) <= 0:
+            return
+        self.database.setCar(cn, cn, cnr, tires)
         self.carname.setText('')
         self.carnumber.setText('')
+        self.cartires.setText('')
         self.parent().parent().parent().coreset.controller.buildCarList()
         self.carlist.clear()
         i = 0
         for car in self.database.getAllCars():
-            self.carlist.insertItem(i, CarItem(car.name, car.number))
+            self.carlist.insertItem(i, CarItem(car.name, car.number, car.tires))
             i = i + 1
 
 

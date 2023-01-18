@@ -32,6 +32,7 @@ class Car(Base, SerializerMixin):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
     number = Column(String, unique=True)
+    tires = Column(String, unique=False)
     sync = Column(Boolean, default=False)
 
     racingplayer = relationship("RacingPlayer", back_populates="car")
@@ -256,7 +257,7 @@ class DatabaseHandler(object):
             cas = []
             for c in cs:
                 cas.append(c.to_dict(
-                    only=('id', 'name', 'number', 'sync')
+                    only=('id', 'name', 'number', 'tires', 'sync')
                 ))
             self.Session.remove()
             return cas
@@ -394,15 +395,16 @@ class DatabaseHandler(object):
         session.commit()
         self.Session.remove()
 
-    def setCar(self, name, newname, number):
+    def setCar(self, name, newname, number, tires):
         session = self.Session()
         c = session.query(Car).filter_by(name=str(name)).first()
         if c is None:
-            nc = Car(name=str(newname), number=str(number))
+            nc = Car(name=str(newname), number=str(number), tires=str(tires))
             session.add(nc)
         else:
             c.name = str(newname)
             c.number = str(number)
+            c.tires = str(tires)
             c.sync = False
         session.commit()
         self.Session.remove()

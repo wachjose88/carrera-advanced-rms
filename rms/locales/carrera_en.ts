@@ -1,25 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="en" sourcelanguage="en">
+<!DOCTYPE TS>
+<TS version="2.1" language="en" sourcelanguage="en">
+<context>
+    <name>CarItem</name>
+    <message>
+        <location filename="../settings.py" line="112"/>
+        <source>Tires: </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 <context>
     <name>CarSet</name>
     <message>
-        <location filename="../settings.py" line="157"/>
+        <location filename="../settings.py" line="167"/>
         <source>Carname: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="140"/>
+        <location filename="../settings.py" line="150"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="160"/>
+        <location filename="../settings.py" line="173"/>
         <source>Edit Car</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="160"/>
+        <location filename="../settings.py" line="170"/>
         <source>Carnumber: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="173"/>
+        <source>Tires: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -90,22 +104,22 @@
 <context>
     <name>CoreSet</name>
     <message>
-        <location filename="../settings.py" line="205"/>
+        <location filename="../settings.py" line="225"/>
         <source>Trackname: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="235"/>
+        <location filename="../settings.py" line="255"/>
         <source>Default Controller Settings:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="217"/>
+        <location filename="../settings.py" line="237"/>
         <source>Tracklength: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="224"/>
+        <location filename="../settings.py" line="244"/>
         <source> mm</source>
         <translation type="unfinished"></translation>
     </message>
@@ -560,32 +574,32 @@
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../settings.py" line="435"/>
+        <location filename="../settings.py" line="455"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="441"/>
+        <location filename="../settings.py" line="461"/>
         <source>Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="443"/>
+        <location filename="../settings.py" line="463"/>
         <source>Cars</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="449"/>
+        <location filename="../settings.py" line="469"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="445"/>
+        <location filename="../settings.py" line="465"/>
         <source>Drivers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="447"/>
+        <location filename="../settings.py" line="467"/>
         <source>Sync</source>
         <translation type="unfinished"></translation>
     </message>
@@ -654,22 +668,22 @@
 <context>
     <name>SyncSet</name>
     <message>
-        <location filename="../settings.py" line="269"/>
+        <location filename="../settings.py" line="289"/>
         <source>URL: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="281"/>
+        <location filename="../settings.py" line="301"/>
         <source>Username: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="293"/>
+        <location filename="../settings.py" line="313"/>
         <source>Password: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="314"/>
+        <location filename="../settings.py" line="334"/>
         <source>Synchronize</source>
         <translation type="unfinished"></translation>
     </message>
@@ -723,7 +737,7 @@
 <context>
     <name>widget</name>
     <message numerus="yes">
-        <location filename="../database.py" line="126"/>
+        <location filename="../database.py" line="127"/>
         <source>+%n Lap(s)</source>
         <translation>
             <numerusform>+%n Lap</numerusform>
@@ -731,7 +745,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../database.py" line="170"/>
+        <location filename="../database.py" line="171"/>
         <source>DNS</source>
         <translation type="unfinished"></translation>
     </message>
