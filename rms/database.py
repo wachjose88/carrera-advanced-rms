@@ -423,6 +423,18 @@ class DatabaseHandler(object):
         session.commit()
         self.Session.remove()
 
+    def updatePlayer(self, id, name=None, username=None):
+        session = self.Session()
+        c = session.query(Player).filter_by(id=id).first()
+        if c is not None:
+            if name is not None:
+                c.name = str(name)
+            if username is not None:
+                c.username = str(username)
+            c.sync = False
+        session.commit()
+        self.Session.remove()
+
     def getCarByName(self, name):
         session = self.Session()
         c = session.query(Car).filter_by(name=name).first()
@@ -445,11 +457,35 @@ class DatabaseHandler(object):
         self.Session.remove()
         return c
 
+    def getAllCarsDetails(self):
+        session = self.Session()
+        c = session.query(Car).all()
+        details = []
+        for p in c:
+            details.append({
+                'car': p,
+                'numcompetitions': len(p.racingplayer)
+            })
+        self.Session.remove()
+        return details
+
     def getAllPlayers(self):
         session = self.Session()
         c = session.query(Player).all()
         self.Session.remove()
         return c
+
+    def getAllPlayersDetails(self):
+        session = self.Session()
+        c = session.query(Player).all()
+        details = []
+        for p in c:
+            details.append({
+                'player': p,
+                'numcompetitions': len(p.racingplayer)
+            })
+        self.Session.remove()
+        return details
 
     def setPlayer(self, username, newusername, name):
         session = self.Session()

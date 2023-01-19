@@ -2,11 +2,11 @@ import json
 from urllib import request, error, parse
 
 from PyQt5.QtCore import pyqtSlot, Qt
-from PyQt5.QtGui import QFont, QGuiApplication
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QGridLayout, QSpinBox, \
     QLabel, QVBoxLayout, QSizePolicy, \
-    QListWidgetItem, QLineEdit, QPushButton, \
-    QInputDialog, QTabWidget, QListWidget, \
+    QLineEdit, QPushButton, \
+    QTabWidget, \
     QProgressBar, QTableWidget, QTableWidgetItem, QHeaderView
 
 from home import ControllerSet
@@ -14,12 +14,15 @@ from statistics import ShowDetails
 from utils import HSep
 
 
-class PlayerItem(QListWidgetItem):
+class PlayerItem(QTableWidgetItem):
 
-    def __init__(self, username=None, name=None):
-        super().__init__(str(username + ': ' + name))
-        self.username = username
-        self.name = name
+    def __init__(self, playerid=None, text=None, type=None):
+        if text is None:
+            super().__init__('')
+        else:
+            super().__init__(str(text))
+        self.playerid = playerid
+        self.type = type
 
 
 class PlayerSet(QWidget):
@@ -50,16 +53,55 @@ class PlayerSet(QWidget):
         self.addplayer.setSizePolicy(QSizePolicy.Maximum,
                                      QSizePolicy.Expanding)
         self.mgrid.addWidget(self.addplayer, 0, 2, 2, 1)
-        self.playerlist = QListWidget()
-        self.playerlist.itemDoubleClicked.connect(
-            self.playerlist_itemDoubleClicked)
-        i = 0
-        for player in self.database.getAllPlayers():
-            self.playerlist.insertItem(i, PlayerItem(player.username,
-                                                     player.name))
-            i = i + 1
+        self.playerlist = QTableWidget()
+        self.playerlist_allowchange = True
+        self.playerlist.itemChanged.connect(self.change_player_item)
+        self.build_playerlist()
         self.mgrid.addWidget(self.playerlist, 2, 0, 1, 3)
         self.setLayout(self.mgrid)
+
+    def build_playerlist(self):
+        self.playerlist_allowchange = False
+        self.playerlist.clear()
+        self.playerlist.setColumnCount(3)
+        self.playerlist.setSortingEnabled(False)
+        self.playerlist.setHorizontalHeaderLabels([
+            self.tr('Username'), self.tr('Name'), self.tr('# Competitions')
+        ])
+        i = 0
+        players = self.database.getAllPlayersDetails()
+        self.playerlist.setRowCount(len(players))
+        self.playerlist.horizontalHeader().setSectionResizeMode(
+            0, QHeaderView.ResizeToContents)
+        self.playerlist.horizontalHeader().setSectionResizeMode(
+            1, QHeaderView.Stretch)
+        self.playerlist.horizontalHeader().setSectionResizeMode(
+            2, QHeaderView.ResizeToContents)
+
+        for player in players:
+            nameitem = PlayerItem(
+                player['player'].id, player['player'].name, 'name')
+            usernameitem = PlayerItem(
+                player['player'].id, player['player'].username, 'username')
+            numcompetitionsitem = PlayerItem(
+                player['player'].id, player['numcompetitions']
+            )
+            numcompetitionsitem.setFlags(
+                numcompetitionsitem.flags() ^ Qt.ItemIsEditable)
+            self.playerlist.setItem(i, 0, usernameitem)
+            self.playerlist.setItem(i, 1, nameitem)
+            self.playerlist.setItem(i, 2, numcompetitionsitem)
+            i = i + 1
+        self.playerlist_allowchange = True
+
+    @pyqtSlot(QTableWidgetItem)
+    def change_player_item(self, item):
+        if self.playerlist_allowchange is True:
+            if item.type == 'name':
+                self.database.updatePlayer(id=item.playerid, name=item.text())
+            if item.type == 'username':
+                self.database.updatePlayer(id=item.playerid, username=item.text())
+            self.build_playerlist()
 
     @pyqtSlot()
     def playername_finished(self):
@@ -73,38 +115,7 @@ class PlayerSet(QWidget):
         self.username.setText('')
         self.playername.setText('')
         self.parent().parent().parent().coreset.controller.buildPlayerList()
-        self.playerlist.clear()
-        i = 0
-        for player in self.database.getAllPlayers():
-            self.playerlist.insertItem(i, PlayerItem(player.username,
-                                                     player.name))
-            i = i + 1
 
-    @pyqtSlot(QListWidgetItem)
-    def playerlist_itemDoubleClicked(self, item):
-        p = self.database.getPlayer(item.username)
-        username, ok = QInputDialog.getText(self, self.tr('Edit Player'),
-                                            self.tr('Username: '),
-                                            text=p.username)
-        name, okn = QInputDialog.getText(self, self.tr('Edit Player'),
-                                         self.tr('Name: '),
-                                         text=p.name)
-
-        if ok and okn:
-            pu = str(username).strip()
-            if len(pu) <= 0:
-                return
-            pn = str(name).strip()
-            if len(pn) <= 0:
-                return
-            self.database.setPlayer(p.username, pu, pn)
-            self.parent().parent().parent().coreset.controller.buildPlayerList()
-            self.playerlist.clear()
-            i = 0
-            for player in self.database.getAllPlayers():
-                self.playerlist.insertItem(i, PlayerItem(player.username,
-                                                         player.name))
-                i = i + 1
 
 
 class CarItem(QTableWidgetItem):
@@ -155,7 +166,6 @@ class CarSet(QWidget):
                                   QSizePolicy.Expanding)
         self.mgrid.addWidget(self.addcar, 0, 2, 3, 1)
         self.carlist = QTableWidget()
-        self.carlist.setColumnCount(3)
         self.carlist_allowchange = True
         self.carlist.itemChanged.connect(self.change_car_item)
         self.build_carlist()
@@ -165,12 +175,14 @@ class CarSet(QWidget):
     def build_carlist(self):
         self.carlist_allowchange = False
         self.carlist.clear()
+        self.carlist.setColumnCount(4)
         self.carlist.setSortingEnabled(False)
         self.carlist.setHorizontalHeaderLabels([
-            self.tr('Carname'), self.tr('Carnumber'), self.tr('Tires')
+            self.tr('Carname'), self.tr('Carnumber'), self.tr('Tires'),
+            self.tr('# Competitions')
         ])
         i = 0
-        cars = self.database.getAllCars()
+        cars = self.database.getAllCarsDetails()
         self.carlist.setRowCount(len(cars))
         self.carlist.horizontalHeader().setSectionResizeMode(
             0, QHeaderView.Stretch)
@@ -178,13 +190,20 @@ class CarSet(QWidget):
             1, QHeaderView.ResizeToContents)
         self.carlist.horizontalHeader().setSectionResizeMode(
             2, QHeaderView.ResizeToContents)
+        self.carlist.horizontalHeader().setSectionResizeMode(
+            3, QHeaderView.ResizeToContents)
         for car in cars:
-            nameitem = CarItem(car.id, car.name, 'name')
-            numberitem = CarItem(car.id, car.number, 'number')
-            tiresitem = CarItem(car.id, car.tires, 'tires')
+            nameitem = CarItem(car['car'].id, car['car'].name, 'name')
+            numberitem = CarItem(car['car'].id, car['car'].number, 'number')
+            tiresitem = CarItem(car['car'].id, car['car'].tires, 'tires')
+            numcompetitionsitem = CarItem(
+                car['car'].id, car['numcompetitions'], 'numcompetitions')
+            numcompetitionsitem.setFlags(
+                numcompetitionsitem.flags() ^ Qt.ItemIsEditable)
             self.carlist.setItem(i, 0, nameitem)
             self.carlist.setItem(i, 1, numberitem)
             self.carlist.setItem(i, 2, tiresitem)
+            self.carlist.setItem(i, 3, numcompetitionsitem)
             i = i + 1
         self.carlist_allowchange = True
 

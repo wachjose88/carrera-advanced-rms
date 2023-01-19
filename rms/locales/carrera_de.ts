@@ -6,35 +6,55 @@
     <message>
         <location filename="../settings.py" line="112"/>
         <source>Tires: </source>
-        <translation>Reifen: </translation>
+        <translation type="obsolete">Reifen: </translation>
     </message>
 </context>
 <context>
     <name>CarSet</name>
     <message>
-        <location filename="../settings.py" line="167"/>
+        <location filename="../settings.py" line="138"/>
         <source>Carname: </source>
         <translation>Autoname: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="150"/>
+        <location filename="../settings.py" line="163"/>
         <source>Add</source>
         <translation>Hinzufügen</translation>
     </message>
     <message>
         <location filename="../settings.py" line="173"/>
         <source>Edit Car</source>
-        <translation>Auto bearbeiten</translation>
+        <translation type="obsolete">Auto bearbeiten</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="170"/>
+        <location filename="../settings.py" line="146"/>
         <source>Carnumber: </source>
         <translation>Autonummer: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="173"/>
+        <location filename="../settings.py" line="154"/>
         <source>Tires: </source>
         <translation>Reifen: </translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="180"/>
+        <source>Carname</source>
+        <translation>Autoname</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="180"/>
+        <source>Carnumber</source>
+        <translation>Autonummer</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="180"/>
+        <source>Tires</source>
+        <translation>Reifen</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="180"/>
+        <source># Competitions</source>
+        <translation># Rennen</translation>
     </message>
 </context>
 <context>
@@ -114,12 +134,12 @@
 <context>
     <name>CoreSet</name>
     <message>
-        <location filename="../settings.py" line="225"/>
+        <location filename="../settings.py" line="252"/>
         <source>Trackname: </source>
         <translation>Streckenname: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="255"/>
+        <location filename="../settings.py" line="282"/>
         <source>Default Controller Settings:</source>
         <translation>Standard Regler Einstellungen</translation>
     </message>
@@ -134,12 +154,12 @@
         <translation type="obsolete">Bitte geben Sie einen Streckennamen ein.</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="237"/>
+        <location filename="../settings.py" line="264"/>
         <source>Tracklength: </source>
         <translation>Streckenlänge: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="244"/>
+        <location filename="../settings.py" line="271"/>
         <source> mm</source>
         <translation> mm</translation>
     </message>
@@ -302,24 +322,39 @@
 <context>
     <name>PlayerSet</name>
     <message>
-        <location filename="../settings.py" line="85"/>
+        <location filename="../settings.py" line="34"/>
         <source>Username: </source>
         <translation>Benutzername: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="88"/>
+        <location filename="../settings.py" line="42"/>
         <source>Name: </source>
         <translation>Name: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="47"/>
+        <location filename="../settings.py" line="51"/>
         <source>Add</source>
         <translation>Hinzufügen</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="88"/>
+        <location filename="../settings.py" line="89"/>
         <source>Edit Player</source>
-        <translation>Fahrer bearbeiten</translation>
+        <translation type="obsolete">Fahrer bearbeiten</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="68"/>
+        <source>Username</source>
+        <translation>Benutzername</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="68"/>
+        <source>Name</source>
+        <translation>Name</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="68"/>
+        <source># Competitions</source>
+        <translation># Rennen</translation>
     </message>
 </context>
 <context>
@@ -637,32 +672,32 @@
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../settings.py" line="455"/>
+        <location filename="../settings.py" line="482"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="461"/>
+        <location filename="../settings.py" line="488"/>
         <source>Core</source>
         <translation>Allgemein</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="463"/>
+        <location filename="../settings.py" line="490"/>
         <source>Cars</source>
         <translation>Autos</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="469"/>
+        <location filename="../settings.py" line="496"/>
         <source>Back</source>
         <translation>Zurück</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="465"/>
+        <location filename="../settings.py" line="492"/>
         <source>Drivers</source>
         <translation>Fahrer</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="467"/>
+        <location filename="../settings.py" line="494"/>
         <source>Sync</source>
         <translation>Sync</translation>
     </message>
@@ -731,22 +766,22 @@
 <context>
     <name>SyncSet</name>
     <message>
-        <location filename="../settings.py" line="289"/>
+        <location filename="../settings.py" line="316"/>
         <source>URL: </source>
         <translation>URL: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="301"/>
+        <location filename="../settings.py" line="328"/>
         <source>Username: </source>
         <translation>Benutzername: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="313"/>
+        <location filename="../settings.py" line="340"/>
         <source>Password: </source>
         <translation>Password: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="334"/>
+        <location filename="../settings.py" line="361"/>
         <source>Synchronize</source>
         <translation>Synchronisieren</translation>
     </message>
