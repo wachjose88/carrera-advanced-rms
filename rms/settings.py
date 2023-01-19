@@ -1,12 +1,13 @@
 import json
 from urllib import request, error, parse
-from PyQt5.QtWidgets import QWidget, QGridLayout, QSpinBox, \
-                            QLabel, QVBoxLayout, QSizePolicy, \
-                            QListWidgetItem, QLineEdit, QPushButton, \
-                            QInputDialog, QTabWidget, QListWidget, \
-                            QProgressBar
+
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtGui import QFont, QGuiApplication
+from PyQt5.QtWidgets import QWidget, QGridLayout, QSpinBox, \
+    QLabel, QVBoxLayout, QSizePolicy, \
+    QListWidgetItem, QLineEdit, QPushButton, \
+    QInputDialog, QTabWidget, QListWidget, \
+    QProgressBar, QTableWidget, QTableWidgetItem, QHeaderView
 
 from home import ControllerSet
 from statistics import ShowDetails
@@ -106,14 +107,15 @@ class PlayerSet(QWidget):
                 i = i + 1
 
 
-class CarItem(QListWidgetItem):
+class CarItem(QTableWidgetItem):
 
-    def __init__(self, name=None, number=None, tires=''):
-        super().__init__(str(name + ' (' + number + ') '
-                             + QGuiApplication.translate('CarItem', 'Tires: ')
-                             + str(tires)))
-        self.name = name
-        self.number = number
+    def __init__(self, carid=None, text=None, type=None):
+        if text is None:
+            super().__init__('')
+        else:
+            super().__init__(str(text))
+        self.carid = carid
+        self.type = type
 
 
 class CarSet(QWidget):
@@ -152,45 +154,50 @@ class CarSet(QWidget):
         self.addcar.setSizePolicy(QSizePolicy.Maximum,
                                   QSizePolicy.Expanding)
         self.mgrid.addWidget(self.addcar, 0, 2, 3, 1)
-        self.carlist = QListWidget()
-        self.carlist.itemDoubleClicked.connect(self.carlist_itemDoubleClicked)
-        i = 0
-        for car in self.database.getAllCars():
-            self.carlist.insertItem(i, CarItem(car.name, car.number, car.tires))
-            i = i + 1
+        self.carlist = QTableWidget()
+        self.carlist.setColumnCount(3)
+        self.carlist_allowchange = True
+        self.carlist.itemChanged.connect(self.change_car_item)
+        self.build_carlist()
         self.mgrid.addWidget(self.carlist, 3, 0, 1, 3)
         self.setLayout(self.mgrid)
 
-    @pyqtSlot(QListWidgetItem)
-    def carlist_itemDoubleClicked(self, item):
-        c = self.database.getCarByName(item.name)
-        name, ok = QInputDialog.getText(self, self.tr('Edit Car'),
-                                        self.tr('Carname: '),
-                                        text=c.name)
-        number, okn = QInputDialog.getText(self, self.tr('Edit Car'),
-                                           self.tr('Carnumber: '),
-                                           text=c.number)
-        tires, okt = QInputDialog.getText(self, self.tr('Edit Car'),
-                                           self.tr('Tires: '),
-                                           text=c.tires)
+    def build_carlist(self):
+        self.carlist_allowchange = False
+        self.carlist.clear()
+        self.carlist.setSortingEnabled(False)
+        self.carlist.setHorizontalHeaderLabels([
+            self.tr('Carname'), self.tr('Carnumber'), self.tr('Tires')
+        ])
+        i = 0
+        cars = self.database.getAllCars()
+        self.carlist.setRowCount(len(cars))
+        self.carlist.horizontalHeader().setSectionResizeMode(
+            0, QHeaderView.Stretch)
+        self.carlist.horizontalHeader().setSectionResizeMode(
+            1, QHeaderView.ResizeToContents)
+        self.carlist.horizontalHeader().setSectionResizeMode(
+            2, QHeaderView.ResizeToContents)
+        for car in cars:
+            nameitem = CarItem(car.id, car.name, 'name')
+            numberitem = CarItem(car.id, car.number, 'number')
+            tiresitem = CarItem(car.id, car.tires, 'tires')
+            self.carlist.setItem(i, 0, nameitem)
+            self.carlist.setItem(i, 1, numberitem)
+            self.carlist.setItem(i, 2, tiresitem)
+            i = i + 1
+        self.carlist_allowchange = True
 
-        if ok and okn and okt:
-            cn = str(name).strip()
-            if len(cn) <= 0:
-                return
-            cnr = str(number).strip()
-            if len(cnr) <= 0:
-                return
-            tires = str(tires).strip()
-            if len(tires) <= 0:
-                return
-            self.database.setCar(c.name, cn, cnr, tires)
-            self.parent().parent().parent().coreset.controller.buildCarList()
-            self.carlist.clear()
-            i = 0
-            for car in self.database.getAllCars():
-                self.carlist.insertItem(i, CarItem(car.name, car.number, car.tires))
-                i = i + 1
+    @pyqtSlot(QTableWidgetItem)
+    def change_car_item(self, item):
+        if self.carlist_allowchange is True:
+            if item.type == 'name':
+                self.database.updateCar(id=item.carid, name=item.text())
+            if item.type == 'number':
+                self.database.updateCar(id=item.carid, number=item.text())
+            if item.type == 'tires':
+                self.database.updateCar(id=item.carid, tires=item.text())
+            self.build_carlist()
 
     @pyqtSlot()
     def carname_finished(self):
@@ -208,11 +215,12 @@ class CarSet(QWidget):
         self.carnumber.setText('')
         self.cartires.setText('')
         self.parent().parent().parent().coreset.controller.buildCarList()
-        self.carlist.clear()
-        i = 0
-        for car in self.database.getAllCars():
-            self.carlist.insertItem(i, CarItem(car.name, car.number, car.tires))
-            i = i + 1
+        self.build_carlist()
+        # self.carlist.clear()
+        # i = 0
+        # for car in self.database.getAllCars():
+        #     self.carlist.insertItem(i, CarItem(car.name, car.number, car.tires))
+        #     i = i + 1
 
 
 class CoreSet(QWidget):

@@ -409,6 +409,20 @@ class DatabaseHandler(object):
         session.commit()
         self.Session.remove()
 
+    def updateCar(self, id, name=None, number=None, tires=None):
+        session = self.Session()
+        c = session.query(Car).filter_by(id=id).first()
+        if c is not None:
+            if name is not None:
+                c.name = str(name)
+            if number is not None:
+                c.number = str(number)
+            if tires is not None:
+                c.tires = str(tires)
+            c.sync = False
+        session.commit()
+        self.Session.remove()
+
     def getCarByName(self, name):
         session = self.Session()
         c = session.query(Car).filter_by(name=name).first()
