@@ -105,7 +105,7 @@ class ShowDetails(QWidget):
         self.driver_ui = []
         self.num_row = 1
         self.update()
-        for p in competition.get_result(self):
+        for p in competition.get_result():
             driverPos = QLabel(str(p['rank']))
             driverPos.setStyleSheet(self.posCss)
             driverPos.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)

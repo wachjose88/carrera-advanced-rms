@@ -7,11 +7,32 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, QSpinBox, \
     QLabel, QVBoxLayout, QSizePolicy, \
     QLineEdit, QPushButton, \
     QTabWidget, \
-    QProgressBar, QTableWidget, QTableWidgetItem, QHeaderView
+    QProgressBar, QTableWidget, QTableWidgetItem, QHeaderView, QComboBox
 
 from home import ControllerSet
 from statistics import ShowDetails
 from utils import HSep
+
+
+class ScaleBox(QComboBox):
+
+    CARRERA_124 = 'Carrera 124'
+    CARRERA_132 = 'Carrera 132'
+
+    def __init__(self, parent, carid, database):
+        super().__init__(parent)
+        self.carid = carid
+        self.database = database
+        self.currentTextChanged.connect(self.update_car)
+
+    def update_car(self, scale):
+        if len(scale) <= 0:
+            return
+        elif scale == self.CARRERA_132:
+            scale = int(32)
+        elif scale == self.CARRERA_124:
+            scale = int(24)
+        self.database.updateCar(id=self.carid, scale=scale)
 
 
 class PlayerItem(QTableWidgetItem):
@@ -54,6 +75,7 @@ class PlayerSet(QWidget):
                                      QSizePolicy.Expanding)
         self.mgrid.addWidget(self.addplayer, 0, 2, 2, 1)
         self.playerlist = QTableWidget()
+        self.playerlist.setSortingEnabled(True)
         self.playerlist_allowchange = True
         self.playerlist.itemChanged.connect(self.change_player_item)
         self.build_playerlist()
@@ -63,10 +85,12 @@ class PlayerSet(QWidget):
     def build_playerlist(self):
         self.playerlist_allowchange = False
         self.playerlist.clear()
-        self.playerlist.setColumnCount(3)
         self.playerlist.setSortingEnabled(False)
+        self.playerlist.setColumnCount(5)
         self.playerlist.setHorizontalHeaderLabels([
-            self.tr('Username'), self.tr('Name'), self.tr('# Competitions')
+            self.tr('Username'), self.tr('Name'),
+            self.tr('# Trainings'), self.tr('# Qualifyings'),
+            self.tr('# Races')
         ])
         i = 0
         players = self.database.getAllPlayersDetails()
@@ -77,22 +101,42 @@ class PlayerSet(QWidget):
             1, QHeaderView.Stretch)
         self.playerlist.horizontalHeader().setSectionResizeMode(
             2, QHeaderView.ResizeToContents)
+        self.playerlist.horizontalHeader().setSectionResizeMode(
+            3, QHeaderView.ResizeToContents)
+        self.playerlist.horizontalHeader().setSectionResizeMode(
+            4, QHeaderView.ResizeToContents)
 
         for player in players:
             nameitem = PlayerItem(
                 player['player'].id, player['player'].name, 'name')
             usernameitem = PlayerItem(
                 player['player'].id, player['player'].username, 'username')
-            numcompetitionsitem = PlayerItem(
-                player['player'].id, player['numcompetitions']
-            )
-            numcompetitionsitem.setFlags(
-                numcompetitionsitem.flags() ^ Qt.ItemIsEditable)
+            numtrainingsitem = PlayerItem(
+                player['player'].id,
+                "{:04d} / {:04d}".format(player['numtrainingwins'], player['numtrainings']),
+                'numtrainings')
+            numtrainingsitem.setFlags(
+                numtrainingsitem.flags() ^ Qt.ItemIsEditable)
+            numqualifyingsitem = PlayerItem(
+                player['player'].id,
+                "{:04d} / {:04d}".format(player['numqualifyingwins'], player['numqualifyings']),
+                'numqualifyings')
+            numqualifyingsitem.setFlags(
+                numqualifyingsitem.flags() ^ Qt.ItemIsEditable)
+            numracesitem = PlayerItem(
+                player['player'].id,
+                "{:04d} / {:04d}".format(player['numracewins'], player['numraces']),
+                'numraces')
+            numracesitem.setFlags(
+                numracesitem.flags() ^ Qt.ItemIsEditable)
             self.playerlist.setItem(i, 0, usernameitem)
             self.playerlist.setItem(i, 1, nameitem)
-            self.playerlist.setItem(i, 2, numcompetitionsitem)
+            self.playerlist.setItem(i, 2, numtrainingsitem)
+            self.playerlist.setItem(i, 3, numqualifyingsitem)
+            self.playerlist.setItem(i, 4, numracesitem)
             i = i + 1
         self.playerlist_allowchange = True
+        self.playerlist.setSortingEnabled(True)
 
     @pyqtSlot(QTableWidgetItem)
     def change_player_item(self, item):
@@ -159,27 +203,40 @@ class CarSet(QWidget):
         self.cartires.setSizePolicy(QSizePolicy.Expanding,
                                     QSizePolicy.Maximum)
         self.mgrid.addWidget(self.cartires, 2, 1)
+        self.carscalelbl = QLabel(self.tr('Scale: '))
+        self.carscalelbl.setSizePolicy(QSizePolicy.Maximum,
+                                       QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.carscalelbl, 3, 0)
+        self.carscale = QComboBox()
+        self.carscale.setSizePolicy(QSizePolicy.Expanding,
+                                    QSizePolicy.Maximum)
+        self.carscale.addItem(ScaleBox.CARRERA_124)
+        self.carscale.addItem(ScaleBox.CARRERA_132)
+        self.mgrid.addWidget(self.carscale, 3, 1)
         self.addcar = QPushButton()
         self.addcar.setText(self.tr('Add'))
         self.addcar.clicked.connect(self.carname_finished)
         self.addcar.setSizePolicy(QSizePolicy.Maximum,
                                   QSizePolicy.Expanding)
-        self.mgrid.addWidget(self.addcar, 0, 2, 3, 1)
+        self.mgrid.addWidget(self.addcar, 0, 2, 4, 1)
         self.carlist = QTableWidget()
         self.carlist_allowchange = True
+        self.carlist.setSortingEnabled(True)
         self.carlist.itemChanged.connect(self.change_car_item)
         self.build_carlist()
-        self.mgrid.addWidget(self.carlist, 3, 0, 1, 3)
+        self.mgrid.addWidget(self.carlist, 4, 0, 1, 3)
         self.setLayout(self.mgrid)
 
     def build_carlist(self):
         self.carlist_allowchange = False
         self.carlist.clear()
-        self.carlist.setColumnCount(4)
         self.carlist.setSortingEnabled(False)
+        self.carlist.setColumnCount(7)
         self.carlist.setHorizontalHeaderLabels([
             self.tr('Carname'), self.tr('Carnumber'), self.tr('Tires'),
-            self.tr('# Competitions')
+            self.tr('Scale'),
+            self.tr('# Trainings'), self.tr('# Qualifyings'),
+            self.tr('# Races')
         ])
         i = 0
         cars = self.database.getAllCarsDetails()
@@ -192,20 +249,54 @@ class CarSet(QWidget):
             2, QHeaderView.ResizeToContents)
         self.carlist.horizontalHeader().setSectionResizeMode(
             3, QHeaderView.ResizeToContents)
+        self.carlist.horizontalHeader().setSectionResizeMode(
+            4, QHeaderView.ResizeToContents)
+        self.carlist.horizontalHeader().setSectionResizeMode(
+            5, QHeaderView.ResizeToContents)
+        self.carlist.horizontalHeader().setSectionResizeMode(
+            6, QHeaderView.ResizeToContents)
         for car in cars:
             nameitem = CarItem(car['car'].id, car['car'].name, 'name')
             numberitem = CarItem(car['car'].id, car['car'].number, 'number')
             tiresitem = CarItem(car['car'].id, car['car'].tires, 'tires')
-            numcompetitionsitem = CarItem(
-                car['car'].id, car['numcompetitions'], 'numcompetitions')
-            numcompetitionsitem.setFlags(
-                numcompetitionsitem.flags() ^ Qt.ItemIsEditable)
+            carscaleitem = ScaleBox(self.carlist, car['car'].id, self.database)
+            carscaleitem.addItem('')
+            carscaleitem.addItem(ScaleBox.CARRERA_124)
+            carscaleitem.addItem(ScaleBox.CARRERA_132)
+            if car['car'].scale == None:
+                carscaleitem.setCurrentIndex(0)
+            elif car['car'].scale == 24:
+                carscaleitem.setCurrentIndex(1)
+            elif car['car'].scale == 32:
+                carscaleitem.setCurrentIndex(2)
+            numtrainingsitem = CarItem(
+                car['car'].id,
+                "{:04d} / {:04d}".format(car['numtrainingwins'], car['numtrainings']),
+                'numtrainings')
+            numtrainingsitem.setFlags(
+                numtrainingsitem.flags() ^ Qt.ItemIsEditable)
+            numqualifyingsitem = CarItem(
+                car['car'].id,
+                "{:04d} / {:04d}".format(car['numqualifyingwins'], car['numqualifyings']),
+                'numqualifyings')
+            numqualifyingsitem.setFlags(
+                numqualifyingsitem.flags() ^ Qt.ItemIsEditable)
+            numracesitem = CarItem(
+                car['car'].id,
+                "{:04d} / {:04d}".format(car['numracewins'], car['numraces']),
+                'numraces')
+            numracesitem.setFlags(
+                numracesitem.flags() ^ Qt.ItemIsEditable)
             self.carlist.setItem(i, 0, nameitem)
             self.carlist.setItem(i, 1, numberitem)
             self.carlist.setItem(i, 2, tiresitem)
-            self.carlist.setItem(i, 3, numcompetitionsitem)
+            self.carlist.setCellWidget(i, 3, carscaleitem)
+            self.carlist.setItem(i, 4, numtrainingsitem)
+            self.carlist.setItem(i, 5, numqualifyingsitem)
+            self.carlist.setItem(i, 6, numracesitem)
             i = i + 1
         self.carlist_allowchange = True
+        self.carlist.setSortingEnabled(True)
 
     @pyqtSlot(QTableWidgetItem)
     def change_car_item(self, item):
@@ -229,7 +320,14 @@ class CarSet(QWidget):
         tires = str(self.cartires.text()).strip()
         if len(tires) <= 0:
             return
-        self.database.setCar(cn, cn, cnr, tires)
+        scale = str(self.carscale.currentText()).strip()
+        if len(scale) <= 0:
+            return
+        elif scale == ScaleBox.CARRERA_132:
+            scale = int(32)
+        elif scale == ScaleBox.CARRERA_124:
+            scale = int(24)
+        self.database.setCar(cn, cn, cnr, tires, scale)
         self.carname.setText('')
         self.carnumber.setText('')
         self.cartires.setText('')
@@ -349,6 +447,18 @@ class SyncSet(QWidget):
         self.apipw.setSizePolicy(QSizePolicy.Expanding,
                                  QSizePolicy.Maximum)
         self.mgrid.addWidget(self.apipw, 2, 1)
+        self.apirealmlbl = QLabel(self.tr('Realm: '))
+        self.apirealmlbl.setSizePolicy(QSizePolicy.Maximum,
+                                       QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.apirealmlbl, 3, 0)
+        self.apirealm = QLineEdit()
+        apirealm = self.database.getConfigStr('APIREALM')
+        if apirealm is not None:
+            self.apirealm.setText(apirealm)
+        self.apirealm.editingFinished.connect(self.apirealm_finished)
+        self.apirealm.setSizePolicy(QSizePolicy.Expanding,
+                                    QSizePolicy.Maximum)
+        self.mgrid.addWidget(self.apirealm, 3, 1)
         self.vml.addLayout(self.mgrid)
         self.vml.addWidget(HSep())
         self.syncprogress = QProgressBar()
@@ -376,9 +486,12 @@ class SyncSet(QWidget):
         apipw = self.database.getConfigStr('APIPW')
         if apipw is None:
             return
+        apirealm = self.database.getConfigStr('APIREALM')
+        if apirealm is None:
+            return
         try:
             auth_handler = request.HTTPBasicAuthHandler()
-            auth_handler.add_password(realm='Wachtler - Ring RMS',
+            auth_handler.add_password(realm=apirealm,
                                       uri=apiurl + 'upload',
                                       user=apiuser,
                                       passwd=apipw)
@@ -468,6 +581,11 @@ class SyncSet(QWidget):
     def apipw_finished(self):
         apipw = str(self.apipw.text()).strip()
         self.database.setConfig('APIPW', apipw)
+
+    @pyqtSlot()
+    def apirealm_finished(self):
+        apirealm = str(self.apirealm.text()).strip()
+        self.database.setConfig('APIREALM', apirealm)
 
 
 class Settings(QWidget):

@@ -4,43 +4,63 @@
 <context>
     <name>CarSet</name>
     <message>
-        <location filename="../settings.py" line="138"/>
+        <location filename="../settings.py" line="182"/>
         <source>Carname: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="163"/>
+        <location filename="../settings.py" line="217"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="146"/>
+        <location filename="../settings.py" line="190"/>
         <source>Carnumber: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="154"/>
+        <location filename="../settings.py" line="198"/>
         <source>Tires: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="180"/>
+        <location filename="../settings.py" line="235"/>
         <source>Carname</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="180"/>
+        <location filename="../settings.py" line="235"/>
         <source>Carnumber</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="180"/>
+        <location filename="../settings.py" line="235"/>
         <source>Tires</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="180"/>
-        <source># Competitions</source>
+        <location filename="../settings.py" line="206"/>
+        <source>Scale: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="235"/>
+        <source>Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="235"/>
+        <source># Trainings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="235"/>
+        <source># Qualifyings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="235"/>
+        <source># Races</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -111,22 +131,22 @@
 <context>
     <name>CoreSet</name>
     <message>
-        <location filename="../settings.py" line="252"/>
+        <location filename="../settings.py" line="350"/>
         <source>Trackname: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="282"/>
+        <location filename="../settings.py" line="380"/>
         <source>Default Controller Settings:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="264"/>
+        <location filename="../settings.py" line="362"/>
         <source>Tracklength: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="271"/>
+        <location filename="../settings.py" line="369"/>
         <source> mm</source>
         <translation type="unfinished"></translation>
     </message>
@@ -256,33 +276,43 @@
 <context>
     <name>PlayerSet</name>
     <message>
-        <location filename="../settings.py" line="34"/>
+        <location filename="../settings.py" line="55"/>
         <source>Username: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="42"/>
+        <location filename="../settings.py" line="63"/>
         <source>Name: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="51"/>
+        <location filename="../settings.py" line="72"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="68"/>
+        <location filename="../settings.py" line="90"/>
         <source>Username</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="68"/>
+        <location filename="../settings.py" line="90"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="68"/>
-        <source># Competitions</source>
+        <location filename="../settings.py" line="90"/>
+        <source># Trainings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="90"/>
+        <source># Qualifyings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="90"/>
+        <source># Races</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -591,32 +621,32 @@
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../settings.py" line="482"/>
+        <location filename="../settings.py" line="600"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="488"/>
+        <location filename="../settings.py" line="606"/>
         <source>Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="490"/>
+        <location filename="../settings.py" line="608"/>
         <source>Cars</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="496"/>
+        <location filename="../settings.py" line="614"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="492"/>
+        <location filename="../settings.py" line="610"/>
         <source>Drivers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="494"/>
+        <location filename="../settings.py" line="612"/>
         <source>Sync</source>
         <translation type="unfinished"></translation>
     </message>
@@ -685,23 +715,28 @@
 <context>
     <name>SyncSet</name>
     <message>
-        <location filename="../settings.py" line="316"/>
+        <location filename="../settings.py" line="414"/>
         <source>URL: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="328"/>
+        <location filename="../settings.py" line="426"/>
         <source>Username: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="340"/>
+        <location filename="../settings.py" line="438"/>
         <source>Password: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings.py" line="361"/>
+        <location filename="../settings.py" line="471"/>
         <source>Synchronize</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="450"/>
+        <source>Realm: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -756,13 +791,13 @@
     <message numerus="yes">
         <location filename="../database.py" line="127"/>
         <source>+%n Lap(s)</source>
-        <translation>
+        <translation type="obsolete">
             <numerusform>+%n Lap</numerusform>
             <numerusform>+%n Laps</numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../database.py" line="171"/>
+        <location filename="../database.py" line="148"/>
         <source>DNS</source>
         <translation type="unfinished"></translation>
     </message>

@@ -7,8 +7,13 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship
 from sqlalchemy_serializer import SerializerMixin
 
+from PyQt5.QtCore import QCoreApplication
+
 from utils import formattime
-from constants import SORT_MODE__LAPS, SORT_MODE__LAPTIME
+from constants import SORT_MODE__LAPS, SORT_MODE__LAPTIME, \
+    COMP_MODE__RACE_LAPS, COMP_MODE__RACE_TIME, COMP_MODE__QUALIFYING_TIME, \
+    COMP_MODE__QUALIFYING_LAPS_SEQ, COMP_MODE__QUALIFYING_TIME_SEQ, \
+    COMP_MODE__TRAINING, COMP_MODE__QUALIFYING_LAPS
 
 Base = declarative_base()
 
@@ -33,6 +38,7 @@ class Car(Base, SerializerMixin):
     name = Column(String, unique=True)
     number = Column(String, unique=True)
     tires = Column(String, unique=False)
+    scale = Column(Integer, unique=False)
     sync = Column(Boolean, default=False)
 
     racingplayer = relationship("RacingPlayer", back_populates="car")
@@ -74,7 +80,7 @@ class Competition(Base, SerializerMixin):
         return "<Competition(title='%s', mode='%s')>" % (
             self.title, self.mode)
 
-    def get_result(self, widget):
+    def get_result(self):
         r = []
         for p in self.racingplayer:
             flt = None
@@ -124,8 +130,9 @@ class Competition(Base, SerializerMixin):
                                 t['time'] - r[0]['time'],
                                 longfmt=False)
                         else:
-                            t['diff'] = widget.tr('+%n Lap(s)', '',
-                                                  r[0]['laps'] - t['laps'])
+                            t['diff'] = QCoreApplication.translate(
+                                '+%n Lap(s)', '',
+                                r[0]['laps'] - t['laps'])
             for i in range(0, len(r)):
                 t = r[i]
                 t['rank'] = str(i+1)
@@ -168,7 +175,7 @@ class Competition(Base, SerializerMixin):
                 last_tm = int(t['time'])
                 if t['time'] == sys.maxsize:
                     t['time'] = ' '
-                    t['rank'] = str(widget.tr('DNS'))
+                    t['rank'] = str(QCoreApplication.translate('DNS'))
                 else:
                     t['time'] = formattime(t['time'])
                 if t['bestlap'] == sys.maxsize:
@@ -257,7 +264,7 @@ class DatabaseHandler(object):
             cas = []
             for c in cs:
                 cas.append(c.to_dict(
-                    only=('id', 'name', 'number', 'tires', 'sync')
+                    only=('id', 'name', 'number', 'tires', 'scale', 'sync')
                 ))
             self.Session.remove()
             return cas
@@ -270,7 +277,7 @@ class DatabaseHandler(object):
         if cs is not None:
             cas = []
             for c in cs:
-                result = c.get_result(widget)
+                result = c.get_result()
                 for re in result:
                     re['player'] = re['player'].id
                 cas.append({'competition': c.to_dict(
@@ -395,21 +402,23 @@ class DatabaseHandler(object):
         session.commit()
         self.Session.remove()
 
-    def setCar(self, name, newname, number, tires):
+    def setCar(self, name, newname, number, tires, scale):
         session = self.Session()
         c = session.query(Car).filter_by(name=str(name)).first()
         if c is None:
-            nc = Car(name=str(newname), number=str(number), tires=str(tires))
+            nc = Car(name=str(newname), number=str(number), tires=str(tires),
+                     scale=str(scale))
             session.add(nc)
         else:
             c.name = str(newname)
             c.number = str(number)
             c.tires = str(tires)
+            c.scale = str(scale)
             c.sync = False
         session.commit()
         self.Session.remove()
 
-    def updateCar(self, id, name=None, number=None, tires=None):
+    def updateCar(self, id, name=None, number=None, tires=None, scale=None):
         session = self.Session()
         c = session.query(Car).filter_by(id=id).first()
         if c is not None:
@@ -419,6 +428,8 @@ class DatabaseHandler(object):
                 c.number = str(number)
             if tires is not None:
                 c.tires = str(tires)
+            if scale is not None:
+                c.scale = str(scale)
             c.sync = False
         session.commit()
         self.Session.remove()
@@ -462,10 +473,47 @@ class DatabaseHandler(object):
         c = session.query(Car).all()
         details = []
         for p in c:
+            numtrainings = 0
+            numtrainingwins = 0
+            numqualifyings = 0
+            numqualifyingwins = 0
+            numraces = 0
+            numracewins = 0
+            for rp in p.racingplayer:
+                results = rp.competition.get_result()
+                for result in results:
+                    if rp.id == result['pid']:
+                        if rp.competition.mode == COMP_MODE__TRAINING:
+                            numtrainings += 1
+                            if result['rank'] == '1':
+                                numtrainingwins += 1
+                        if rp.competition.mode in [
+                                    COMP_MODE__QUALIFYING_LAPS,
+                                    COMP_MODE__QUALIFYING_TIME,
+                                    COMP_MODE__QUALIFYING_LAPS_SEQ,
+                                    COMP_MODE__QUALIFYING_TIME_SEQ
+                                ]:
+                            numqualifyings += 1
+                            if result['rank'] == '1':
+                                numqualifyingwins += 1
+                        if rp.competition.mode in [
+                                    COMP_MODE__RACE_TIME,
+                                    COMP_MODE__RACE_LAPS
+                                ]:
+                            numraces += 1
+                            if result['rank'] == '1':
+                                numracewins += 1
             details.append({
                 'car': p,
-                'numcompetitions': len(p.racingplayer)
+                'numcompetitions': len(p.racingplayer),
+                'numtrainings': numtrainings,
+                'numtrainingwins': numtrainingwins,
+                'numqualifyings': numqualifyings,
+                'numqualifyingwins': numqualifyingwins,
+                'numraces': numraces,
+                'numracewins': numracewins
             })
+            print('testnums', p.number, numraces, numracewins)
         self.Session.remove()
         return details
 
@@ -480,9 +528,45 @@ class DatabaseHandler(object):
         c = session.query(Player).all()
         details = []
         for p in c:
+            numtrainings = 0
+            numtrainingwins = 0
+            numqualifyings = 0
+            numqualifyingwins = 0
+            numraces = 0
+            numracewins = 0
+            for rp in p.racingplayer:
+                results = rp.competition.get_result()
+                for result in results:
+                    if rp.id == result['pid']:
+                        if rp.competition.mode == COMP_MODE__TRAINING:
+                            numtrainings += 1
+                            if result['rank'] == '1':
+                                numtrainingwins += 1
+                        if rp.competition.mode in [
+                                    COMP_MODE__QUALIFYING_LAPS,
+                                    COMP_MODE__QUALIFYING_TIME,
+                                    COMP_MODE__QUALIFYING_LAPS_SEQ,
+                                    COMP_MODE__QUALIFYING_TIME_SEQ
+                                ]:
+                            numqualifyings += 1
+                            if result['rank'] == '1':
+                                numqualifyingwins += 1
+                        if rp.competition.mode in [
+                                    COMP_MODE__RACE_TIME,
+                                    COMP_MODE__RACE_LAPS
+                                ]:
+                            numraces += 1
+                            if result['rank'] == '1':
+                                numracewins += 1
             details.append({
                 'player': p,
-                'numcompetitions': len(p.racingplayer)
+                'numcompetitions': len(p.racingplayer),
+                'numtrainings': numtrainings,
+                'numtrainingwins': numtrainingwins,
+                'numqualifyings': numqualifyings,
+                'numqualifyingwins': numqualifyingwins,
+                'numraces': numraces,
+                'numracewins': numracewins
             })
         self.Session.remove()
         return details
