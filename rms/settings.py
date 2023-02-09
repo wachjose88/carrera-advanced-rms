@@ -562,6 +562,19 @@ class SyncSet(QWidget):
                 response_data = response.read().decode('utf-8')
                 competitionsr = json.loads(response_data)
                 self.database.setCompetitionsSync(competitionsr['competitions'])
+                self.syncprogress.setValue(80)
+
+            tracklength = self.database.getConfigStr('TRACKLENGTH')
+            if tracklength is not None:
+                params = {
+                    'tracklength': str(tracklength)
+                }
+                data = parse.urlencode(params)
+                data = data.encode('ascii')
+                response = opener.open(apiurl + 'upload', data)
+                response_data = response.read().decode('utf-8')
+                tracklengthr = json.loads(response_data)
+                print(tracklengthr)
                 self.syncprogress.setValue(95)
         except error.HTTPError as e:
             print(e)
