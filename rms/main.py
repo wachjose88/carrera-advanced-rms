@@ -124,6 +124,10 @@ class RMS(QMainWindow):
             self.start_signal.wait()
 
     def showSettings(self):
+        self.setEnabled(False)
+        self.settings.playerset.build_playerlist()
+        self.settings.carset.build_carlist()
+        self.setEnabled(True)
         self.main_stack.setCurrentWidget(self.settings)
         self.stopAllThreads()
         self.startIdleThread()

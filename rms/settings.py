@@ -1,7 +1,8 @@
 import json
+from json import JSONDecodeError
 from urllib import request, error, parse
 
-from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtCore import pyqtSlot, Qt, QCoreApplication
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QGridLayout, QSpinBox, \
     QLabel, QVBoxLayout, QSizePolicy, \
@@ -10,8 +11,8 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, QSpinBox, \
     QProgressBar, QTableWidget, QTableWidgetItem, QHeaderView, QComboBox
 
 from home import ControllerSet
+from rms.utils import HSep
 from statistics import ShowDetails
-from utils import HSep
 
 
 class ScaleBox(QComboBox):
@@ -78,11 +79,12 @@ class PlayerSet(QWidget):
         self.playerlist.setSortingEnabled(True)
         self.playerlist_allowchange = True
         self.playerlist.itemChanged.connect(self.change_player_item)
-        self.build_playerlist()
+        #self.build_playerlist()
         self.mgrid.addWidget(self.playerlist, 2, 0, 1, 3)
         self.setLayout(self.mgrid)
 
     def build_playerlist(self):
+        self.setEnabled(False)
         self.playerlist_allowchange = False
         self.playerlist.clear()
         self.playerlist.setSortingEnabled(False)
@@ -137,6 +139,7 @@ class PlayerSet(QWidget):
             i = i + 1
         self.playerlist_allowchange = True
         self.playerlist.setSortingEnabled(True)
+        self.setEnabled(True)
 
     @pyqtSlot(QTableWidgetItem)
     def change_player_item(self, item):
@@ -223,11 +226,12 @@ class CarSet(QWidget):
         self.carlist_allowchange = True
         self.carlist.setSortingEnabled(True)
         self.carlist.itemChanged.connect(self.change_car_item)
-        self.build_carlist()
+        #self.build_carlist()
         self.mgrid.addWidget(self.carlist, 4, 0, 1, 3)
         self.setLayout(self.mgrid)
 
     def build_carlist(self):
+        self.setEnabled(False)
         self.carlist_allowchange = False
         self.carlist.clear()
         self.carlist.setSortingEnabled(False)
@@ -297,6 +301,7 @@ class CarSet(QWidget):
             i = i + 1
         self.carlist_allowchange = True
         self.carlist.setSortingEnabled(True)
+        self.setEnabled(True)
 
     @pyqtSlot(QTableWidgetItem)
     def change_car_item(self, item):
@@ -469,13 +474,16 @@ class SyncSet(QWidget):
         self.vml.addWidget(self.syncprogress)
         self.sync = QPushButton()
         self.sync.setText(self.tr('Synchronize'))
-        self.sync.clicked.connect(self.sync_click)
         self.vml.addWidget(self.sync)
+        self.sync.clicked.connect(self.sync_click)
+        self.statuslbl = QLabel('')
+        self.vml.addWidget(self.statuslbl)
         self.vml.addStretch(1)
         self.setLayout(self.vml)
 
     @pyqtSlot()
     def sync_click(self):
+        self.statuslbl.setText(self.tr('Synchronization started'))
         self.syncprogress.setValue(0)
         apiurl = self.database.getConfigStr('APIURL')
         if apiurl is None:
@@ -489,6 +497,7 @@ class SyncSet(QWidget):
         apirealm = self.database.getConfigStr('APIREALM')
         if apirealm is None:
             return
+        syncstatus = True
         try:
             auth_handler = request.HTTPBasicAuthHandler()
             auth_handler.add_password(realm=apirealm,
@@ -496,6 +505,7 @@ class SyncSet(QWidget):
                                       user=apiuser,
                                       passwd=apipw)
             opener = request.build_opener(auth_handler)
+            self.statuslbl.setText(self.tr('Synchronizing cars'))
             cars = self.database.getCarsForSync()
             self.syncprogress.setValue(10)
             if cars is not None and len(cars) > 0:
@@ -504,12 +514,13 @@ class SyncSet(QWidget):
                 }
                 data = parse.urlencode(params)
                 data = data.encode('ascii')
-                response = opener.open(apiurl + 'upload', data)
+                response = opener.open(apiurl + 'upload', data, 15.0)
                 response_data = response.read().decode('utf-8')
                 print(response_data)
                 carsr = json.loads(response_data)
                 self.database.setCarsSync(carsr['cars'])
                 self.syncprogress.setValue(15)
+            self.statuslbl.setText(self.tr('Synchronizing players'))
             players = self.database.getPlayersForSync()
             # print(players)
             self.syncprogress.setValue(20)
@@ -519,11 +530,12 @@ class SyncSet(QWidget):
                 }
                 data = parse.urlencode(params)
                 data = data.encode('ascii')
-                response = opener.open(apiurl + 'upload', data)
+                response = opener.open(apiurl + 'upload', data, 15.0)
                 response_data = response.read().decode('utf-8')
                 playersr = json.loads(response_data)
                 self.database.setPlayersSync(playersr['players'])
                 self.syncprogress.setValue(25)
+            self.statuslbl.setText(self.tr('Synchronizing racing players'))
             racingplayers = self.database.getRacingPlayersForSync()
             # print(racingplayers)
             if racingplayers is not None and len(racingplayers) > 0:
@@ -532,11 +544,12 @@ class SyncSet(QWidget):
                 }
                 data = parse.urlencode(params)
                 data = data.encode('ascii')
-                response = opener.open(apiurl + 'upload', data)
+                response = opener.open(apiurl + 'upload', data, 15.0)
                 response_data = response.read().decode('utf-8')
                 racingplayersr = json.loads(response_data)
                 self.database.setRacingPlayersSync(racingplayersr['racingplayers'])
                 self.syncprogress.setValue(30)
+            self.statuslbl.setText(self.tr('Synchronizing laps'))
             laps = self.database.getLapsForSync()
             # print(laps)
             if laps is not None and len(laps) > 0:
@@ -545,11 +558,12 @@ class SyncSet(QWidget):
                 }
                 data = parse.urlencode(params)
                 data = data.encode('ascii')
-                response = opener.open(apiurl + 'upload', data)
+                response = opener.open(apiurl + 'upload', data, 15.0)
                 response_data = response.read().decode('utf-8')
                 lapsr = json.loads(response_data)
                 self.database.setLapsSync(lapsr['laps'])
                 self.syncprogress.setValue(35)
+            self.statuslbl.setText(self.tr('Synchronizing competitions'))
             competitions = self.database.getCompetitionsForSync(ShowDetails())
             print(competitions)
             if competitions is not None and len(competitions) > 0:
@@ -558,12 +572,13 @@ class SyncSet(QWidget):
                 }
                 data = parse.urlencode(params)
                 data = data.encode('ascii')
-                response = opener.open(apiurl + 'upload', data)
+                response = opener.open(apiurl + 'upload', data, 15.0)
                 response_data = response.read().decode('utf-8')
                 competitionsr = json.loads(response_data)
                 self.database.setCompetitionsSync(competitionsr['competitions'])
                 self.syncprogress.setValue(80)
 
+            self.statuslbl.setText(self.tr('Synchronizing settings'))
             tracklength = self.database.getConfigStr('TRACKLENGTH')
             if tracklength is not None:
                 params = {
@@ -571,14 +586,22 @@ class SyncSet(QWidget):
                 }
                 data = parse.urlencode(params)
                 data = data.encode('ascii')
-                response = opener.open(apiurl + 'upload', data)
+                response = opener.open(apiurl + 'upload', data, 15.0)
                 response_data = response.read().decode('utf-8')
                 tracklengthr = json.loads(response_data)
                 print(tracklengthr)
                 self.syncprogress.setValue(95)
-        except error.HTTPError as e:
+        except (error.HTTPError, error.URLError, JSONDecodeError) as e:
+            syncstatus = False
+            self.statuslbl.setText(
+                self.tr('Synchronization failed: ') + str(e))
             print(e)
-        self.syncprogress.setValue(100)
+        if syncstatus:
+            self.syncprogress.setValue(100)
+            self.statuslbl.setText(
+                self.tr('Synchronization successfully finished'))
+        else:
+            self.syncprogress.setValue(0)
 
     @pyqtSlot()
     def apiurl_finished(self):

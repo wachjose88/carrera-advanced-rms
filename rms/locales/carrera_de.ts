@@ -12,12 +12,12 @@
 <context>
     <name>CarSet</name>
     <message>
-        <location filename="../settings.py" line="182"/>
+        <location filename="../settings.py" line="185"/>
         <source>Carname: </source>
         <translation>Autoname: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="217"/>
+        <location filename="../settings.py" line="220"/>
         <source>Add</source>
         <translation>Hinzufügen</translation>
     </message>
@@ -27,27 +27,27 @@
         <translation type="obsolete">Auto bearbeiten</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="190"/>
+        <location filename="../settings.py" line="193"/>
         <source>Carnumber: </source>
         <translation>Autonummer: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="198"/>
+        <location filename="../settings.py" line="201"/>
         <source>Tires: </source>
         <translation>Reifen: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="235"/>
+        <location filename="../settings.py" line="239"/>
         <source>Carname</source>
         <translation>Autoname</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="235"/>
+        <location filename="../settings.py" line="239"/>
         <source>Carnumber</source>
         <translation>Autonummer</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="235"/>
+        <location filename="../settings.py" line="239"/>
         <source>Tires</source>
         <translation>Reifen</translation>
     </message>
@@ -57,27 +57,27 @@
         <translation type="obsolete"># Bewerbe</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="206"/>
+        <location filename="../settings.py" line="209"/>
         <source>Scale: </source>
         <translation>Maßstab: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="235"/>
+        <location filename="../settings.py" line="239"/>
         <source>Scale</source>
         <translation>Maßstab</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="235"/>
+        <location filename="../settings.py" line="239"/>
         <source># Trainings</source>
         <translation># Trainings</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="235"/>
+        <location filename="../settings.py" line="239"/>
         <source># Qualifyings</source>
         <translation># Qualifyings</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="235"/>
+        <location filename="../settings.py" line="239"/>
         <source># Races</source>
         <translation># Rennen</translation>
     </message>
@@ -116,27 +116,27 @@
         <translation type="obsolete">Auto</translation>
     </message>
     <message>
-        <location filename="../home.py" line="125"/>
+        <location filename="../home.py" line="126"/>
         <source>Controller </source>
         <translation>Regler</translation>
     </message>
     <message>
-        <location filename="../home.py" line="116"/>
+        <location filename="../home.py" line="117"/>
         <source>Select Car</source>
         <translation>Auto auswählen</translation>
     </message>
     <message>
-        <location filename="../home.py" line="153"/>
+        <location filename="../home.py" line="154"/>
         <source>No car selected</source>
         <translation>Kein Auto ausgewählt</translation>
     </message>
     <message>
-        <location filename="../home.py" line="153"/>
+        <location filename="../home.py" line="154"/>
         <source>Please select a car for Controller </source>
         <translation>Bitte wählen Sie ein Auto für den Regler </translation>
     </message>
     <message>
-        <location filename="../home.py" line="168"/>
+        <location filename="../home.py" line="169"/>
         <source>Driver name missing</source>
         <translation>Fahrername fehlt</translation>
     </message>
@@ -146,12 +146,12 @@
         <translation type="obsolete">Bitte geben Sie einen Fahrernamen ein für den Regler </translation>
     </message>
     <message>
-        <location filename="../home.py" line="119"/>
+        <location filename="../home.py" line="120"/>
         <source>Select Driver</source>
         <translation>Fahrer auswählen</translation>
     </message>
     <message>
-        <location filename="../home.py" line="168"/>
+        <location filename="../home.py" line="169"/>
         <source>Please select a driver name for Controller </source>
         <translation>Bitte wählen Sie einen Fahrer für den Regler </translation>
     </message>
@@ -159,12 +159,12 @@
 <context>
     <name>CoreSet</name>
     <message>
-        <location filename="../settings.py" line="350"/>
+        <location filename="../settings.py" line="355"/>
         <source>Trackname: </source>
         <translation>Streckenname: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="380"/>
+        <location filename="../settings.py" line="385"/>
         <source>Default Controller Settings:</source>
         <translation>Standard Regler Einstellungen</translation>
     </message>
@@ -179,12 +179,12 @@
         <translation type="obsolete">Bitte geben Sie einen Streckennamen ein.</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="362"/>
+        <location filename="../settings.py" line="367"/>
         <source>Tracklength: </source>
         <translation>Streckenlänge: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="369"/>
+        <location filename="../settings.py" line="374"/>
         <source> mm</source>
         <translation> mm</translation>
     </message>
@@ -281,47 +281,47 @@
         <translation type="obsolete">Regler</translation>
     </message>
     <message>
-        <location filename="../home.py" line="233"/>
+        <location filename="../home.py" line="234"/>
         <source>Carrera RMS</source>
         <translation>Carrera RMS</translation>
     </message>
     <message>
-        <location filename="../home.py" line="243"/>
+        <location filename="../home.py" line="244"/>
         <source>Training</source>
         <translation>Training</translation>
     </message>
     <message>
-        <location filename="../home.py" line="255"/>
+        <location filename="../home.py" line="256"/>
         <source>Qualifying</source>
         <translation>Qualifikation</translation>
     </message>
     <message>
-        <location filename="../home.py" line="268"/>
+        <location filename="../home.py" line="269"/>
         <source>Race</source>
         <translation>Rennen</translation>
     </message>
     <message>
-        <location filename="../home.py" line="314"/>
+        <location filename="../home.py" line="315"/>
         <source>Fullscreen</source>
         <translation>Vollbild</translation>
     </message>
     <message>
-        <location filename="../home.py" line="280"/>
+        <location filename="../home.py" line="281"/>
         <source>Statistics</source>
         <translation>Statistik</translation>
     </message>
     <message>
-        <location filename="../home.py" line="284"/>
+        <location filename="../home.py" line="285"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../home.py" line="317"/>
+        <location filename="../home.py" line="318"/>
         <source>Exit Fullscreen</source>
         <translation>Vollbild beenden</translation>
     </message>
     <message>
-        <location filename="../home.py" line="289"/>
+        <location filename="../home.py" line="290"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -347,17 +347,17 @@
 <context>
     <name>PlayerSet</name>
     <message>
-        <location filename="../settings.py" line="55"/>
+        <location filename="../settings.py" line="56"/>
         <source>Username: </source>
         <translation>Benutzername: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="63"/>
+        <location filename="../settings.py" line="64"/>
         <source>Name: </source>
         <translation>Name: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="72"/>
+        <location filename="../settings.py" line="73"/>
         <source>Add</source>
         <translation>Hinzufügen</translation>
     </message>
@@ -367,12 +367,12 @@
         <translation type="obsolete">Fahrer bearbeiten</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="90"/>
+        <location filename="../settings.py" line="92"/>
         <source>Username</source>
         <translation>Benutzername</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="90"/>
+        <location filename="../settings.py" line="92"/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
@@ -382,17 +382,17 @@
         <translation type="obsolete"># Bewerbe</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="90"/>
+        <location filename="../settings.py" line="92"/>
         <source># Trainings</source>
         <translation># Trainings</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="90"/>
+        <location filename="../settings.py" line="92"/>
         <source># Qualifyings</source>
         <translation># Qualifyings</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="90"/>
+        <location filename="../settings.py" line="92"/>
         <source># Races</source>
         <translation># Rennen</translation>
     </message>
@@ -498,17 +498,17 @@
 <context>
     <name>RMS</name>
     <message>
-        <location filename="../main.py" line="310"/>
+        <location filename="../main.py" line="314"/>
         <source>Confirm Exit...</source>
         <translation>Beenden bestätigen...</translation>
     </message>
     <message>
-        <location filename="../main.py" line="310"/>
+        <location filename="../main.py" line="314"/>
         <source>Are you sure you want to exit ?</source>
         <translation>Wollen Sie wirklich beenden?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="303"/>
+        <location filename="../main.py" line="307"/>
         <source>CU version: </source>
         <translation>CU version: </translation>
     </message>
@@ -518,52 +518,52 @@
         <translation type="obsolete">, mode: </translation>
     </message>
     <message>
-        <location filename="../main.py" line="285"/>
+        <location filename="../main.py" line="289"/>
         <source>Real</source>
         <translation>Real</translation>
     </message>
     <message>
-        <location filename="../main.py" line="288"/>
+        <location filename="../main.py" line="292"/>
         <source>On</source>
         <translation>Ein</translation>
     </message>
     <message>
-        <location filename="../main.py" line="291"/>
+        <location filename="../main.py" line="295"/>
         <source>Off</source>
         <translation>Aus</translation>
     </message>
     <message>
-        <location filename="../main.py" line="300"/>
+        <location filename="../main.py" line="304"/>
         <source>Exists</source>
         <translation>Vorhanden</translation>
     </message>
     <message>
-        <location filename="../main.py" line="302"/>
+        <location filename="../main.py" line="306"/>
         <source>Missing</source>
         <translation>Fehlt</translation>
     </message>
     <message>
-        <location filename="../main.py" line="303"/>
+        <location filename="../main.py" line="307"/>
         <source>, Pitlane: </source>
         <translation>, Boxengasse: </translation>
     </message>
     <message>
-        <location filename="../main.py" line="303"/>
+        <location filename="../main.py" line="307"/>
         <source>, Fuelmode: </source>
         <translation>, Treibstoffmodus: </translation>
     </message>
     <message>
-        <location filename="../main.py" line="303"/>
+        <location filename="../main.py" line="307"/>
         <source>, Lapcounter: </source>
         <translation>, Rundenzähler: </translation>
     </message>
     <message>
-        <location filename="../main.py" line="139"/>
+        <location filename="../main.py" line="143"/>
         <source>RMS</source>
         <translation>RMS</translation>
     </message>
     <message>
-        <location filename="../main.py" line="141"/>
+        <location filename="../main.py" line="145"/>
         <source>Carrera RMS</source>
         <translation>Carrera RMS</translation>
     </message>
@@ -712,32 +712,32 @@
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../settings.py" line="600"/>
+        <location filename="../settings.py" line="636"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="606"/>
+        <location filename="../settings.py" line="642"/>
         <source>Core</source>
         <translation>Allgemein</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="608"/>
+        <location filename="../settings.py" line="644"/>
         <source>Cars</source>
         <translation>Autos</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="614"/>
+        <location filename="../settings.py" line="650"/>
         <source>Back</source>
         <translation>Zurück</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="610"/>
+        <location filename="../settings.py" line="646"/>
         <source>Drivers</source>
         <translation>Fahrer</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="612"/>
+        <location filename="../settings.py" line="648"/>
         <source>Sync</source>
         <translation>Sync</translation>
     </message>
@@ -806,29 +806,74 @@
 <context>
     <name>SyncSet</name>
     <message>
-        <location filename="../settings.py" line="414"/>
+        <location filename="../settings.py" line="419"/>
         <source>URL: </source>
         <translation>URL: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="426"/>
+        <location filename="../settings.py" line="431"/>
         <source>Username: </source>
         <translation>Benutzername: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="438"/>
+        <location filename="../settings.py" line="443"/>
         <source>Password: </source>
         <translation>Passwort: </translation>
     </message>
     <message>
-        <location filename="../settings.py" line="471"/>
+        <location filename="../settings.py" line="476"/>
         <source>Synchronize</source>
         <translation>Synchronisieren</translation>
     </message>
     <message>
-        <location filename="../settings.py" line="450"/>
+        <location filename="../settings.py" line="455"/>
         <source>Realm: </source>
         <translation>Realm: </translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="486"/>
+        <source>Synchronization started</source>
+        <translation>Synchronisation gestartet</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="508"/>
+        <source>Synchronizing cars</source>
+        <translation>Synchronisiere Autos</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="523"/>
+        <source>Synchronizing players</source>
+        <translation>Synchronisiere Fahrer</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="538"/>
+        <source>Synchronizing racing players</source>
+        <translation>Synchronisiere Fahrer bei Bewerben</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="552"/>
+        <source>Synchronizing laps</source>
+        <translation>Synchronisiere Runden</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="566"/>
+        <source>Synchronizing competitions</source>
+        <translation>Synchronisiere Bewerbe</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="581"/>
+        <source>Synchronizing settings</source>
+        <translation>Synchronisiere Einstellungen</translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="596"/>
+        <source>Synchronization failed: </source>
+        <translation>Synchronisation fehlgeschlagen: </translation>
+    </message>
+    <message>
+        <location filename="../settings.py" line="601"/>
+        <source>Synchronization successfully finished</source>
+        <translation>Synchronisation erfolgreich abgeschlossen</translation>
     </message>
 </context>
 <context>
@@ -903,7 +948,7 @@
     <message>
         <location filename="../database.py" line="148"/>
         <source>DNS</source>
-        <translation>DNS</translation>
+        <translation type="obsolete">DNS</translation>
     </message>
 </context>
 </TS>
