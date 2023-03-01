@@ -84,6 +84,7 @@ class QualifyingParams(QWidget):
         self.modetab.addTab(self.comptime, self.tr('Time'))
         self.sequential = QCheckBox()
         self.sequential.setText(self.tr('Sequential'))
+        self.sequential.setChecked(True)
         self.vbox.addWidget(self.sequential)
         self.setLayout(self.vbox)
 

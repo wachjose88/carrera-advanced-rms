@@ -210,8 +210,8 @@ class CarSet(QWidget):
         self.carscale = QComboBox()
         self.carscale.setSizePolicy(QSizePolicy.Expanding,
                                     QSizePolicy.Maximum)
-        self.carscale.addItem(ScaleBox.CARRERA_124)
         self.carscale.addItem(ScaleBox.CARRERA_132)
+        self.carscale.addItem(ScaleBox.CARRERA_124)
         self.mgrid.addWidget(self.carscale, 3, 1)
         self.addcar = QPushButton()
         self.addcar.setText(self.tr('Add'))
@@ -261,8 +261,8 @@ class CarSet(QWidget):
             tiresitem = CarItem(car['car'].id, car['car'].tires, 'tires')
             carscaleitem = ScaleBox(self.carlist, car['car'].id, self.database)
             carscaleitem.addItem('')
-            carscaleitem.addItem(ScaleBox.CARRERA_124)
             carscaleitem.addItem(ScaleBox.CARRERA_132)
+            carscaleitem.addItem(ScaleBox.CARRERA_124)
             if car['car'].scale == None:
                 carscaleitem.setCurrentIndex(0)
             elif car['car'].scale == 24:
