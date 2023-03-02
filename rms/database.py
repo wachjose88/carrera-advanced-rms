@@ -77,11 +77,18 @@ class Competition(Base, SerializerMixin):
 
     racingplayer = relationship("RacingPlayer", back_populates="competition")
 
+    resultcache = {}
+
     def __repr__(self):
         return "<Competition(title='%s', mode='%s')>" % (
             self.title, self.mode)
 
     def get_result(self):
+        try:
+            cached = Competition.resultcache[self.id]
+            return cached
+        except (KeyError, IndexError):
+            pass
         r = []
         for p in self.racingplayer:
             flt = None
@@ -184,6 +191,7 @@ class Competition(Base, SerializerMixin):
                 else:
                     t['bestlap'] = formattime(t['bestlap'], longfmt=False)
         print(r)
+        Competition.resultcache[self.id] = r
         return r
 
 
