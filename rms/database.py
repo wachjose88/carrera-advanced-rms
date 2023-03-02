@@ -3,6 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, \
                        ForeignKey, DateTime
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship
 from sqlalchemy_serializer import SerializerMixin
@@ -402,49 +403,59 @@ class DatabaseHandler(object):
         session.commit()
         self.Session.remove()
 
-    def setCar(self, name, newname, number, tires, scale):
+    def setCar(self, name, number, tires, scale):
         session = self.Session()
-        c = session.query(Car).filter_by(name=str(name)).first()
-        if c is None:
-            nc = Car(name=str(newname), number=str(number), tires=str(tires),
+        try:
+            nc = Car(name=str(name), number=str(number), tires=str(tires),
                      scale=str(scale))
             session.add(nc)
-        else:
-            c.name = str(newname)
-            c.number = str(number)
-            c.tires = str(tires)
-            c.scale = str(scale)
-            c.sync = False
-        session.commit()
+            session.commit()
+        except IntegrityError:
+            self.Session.remove()
+            return False
         self.Session.remove()
+        return True
 
     def updateCar(self, id, name=None, number=None, tires=None, scale=None):
         session = self.Session()
-        c = session.query(Car).filter_by(id=id).first()
-        if c is not None:
-            if name is not None:
-                c.name = str(name)
-            if number is not None:
-                c.number = str(number)
-            if tires is not None:
-                c.tires = str(tires)
-            if scale is not None:
-                c.scale = str(scale)
-            c.sync = False
-        session.commit()
+        try:
+            c = session.query(Car).filter_by(id=id).first()
+            if c is not None:
+                if name is not None:
+                    c.name = str(name)
+                if number is not None:
+                    c.number = str(number)
+                if tires is not None:
+                    c.tires = str(tires)
+                if scale is not None:
+                    if scale == 'null':
+                        c.scale = None
+                    else:
+                        c.scale = str(scale)
+                c.sync = False
+            session.commit()
+        except IntegrityError:
+            self.Session.remove()
+            return False
         self.Session.remove()
+        return True
 
     def updatePlayer(self, id, name=None, username=None):
         session = self.Session()
-        c = session.query(Player).filter_by(id=id).first()
-        if c is not None:
-            if name is not None:
-                c.name = str(name)
-            if username is not None:
-                c.username = str(username)
-            c.sync = False
-        session.commit()
+        try:
+            c = session.query(Player).filter_by(id=id).first()
+            if c is not None:
+                if name is not None:
+                    c.name = str(name)
+                if username is not None:
+                    c.username = str(username)
+                c.sync = False
+            session.commit()
+        except IntegrityError:
+            self.Session.remove()
+            return False
         self.Session.remove()
+        return True
 
     def getCarByName(self, name):
         session = self.Session()
@@ -571,18 +582,17 @@ class DatabaseHandler(object):
         self.Session.remove()
         return details
 
-    def setPlayer(self, username, newusername, name):
+    def setPlayer(self, username, name):
         session = self.Session()
-        c = session.query(Player).filter_by(username=str(username)).first()
-        if c is None:
-            nc = Player(username=str(newusername), name=str(name))
+        try:
+            nc = Player(username=str(username), name=str(name))
             session.add(nc)
-        else:
-            c.username = str(newusername)
-            c.name = str(name)
-            c.sync = False
-        session.commit()
+            session.commit()
+        except IntegrityError:
+            self.Session.remove()
+            return False
         self.Session.remove()
+        return True
 
     def getPlayer(self, username):
         session = self.Session()

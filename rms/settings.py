@@ -2,16 +2,18 @@ import json
 from json import JSONDecodeError
 from urllib import request, error, parse
 
-from PyQt5.QtCore import pyqtSlot, Qt, QCoreApplication
+from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QGridLayout, QSpinBox, \
     QLabel, QVBoxLayout, QSizePolicy, \
     QLineEdit, QPushButton, \
     QTabWidget, \
-    QProgressBar, QTableWidget, QTableWidgetItem, QHeaderView, QComboBox
+    QProgressBar, QTableWidget, QTableWidgetItem, QHeaderView, QComboBox, \
+    QMessageBox
+from sqlalchemy.exc import IntegrityError
 
 from home import ControllerSet
-from rms.utils import HSep
+from utils import HSep
 from statistics import ShowDetails
 
 
@@ -28,6 +30,7 @@ class ScaleBox(QComboBox):
 
     def update_car(self, scale):
         if len(scale) <= 0:
+            self.database.updateCar(id=self.carid, scale='null')
             return
         elif scale == self.CARRERA_132:
             scale = int(32)
@@ -147,20 +150,33 @@ class PlayerSet(QWidget):
             if item.type == 'name':
                 self.database.updatePlayer(id=item.playerid, name=item.text())
             if item.type == 'username':
-                self.database.updatePlayer(id=item.playerid, username=item.text())
+                saved = self.database.updatePlayer(id=item.playerid,
+                                                   username=item.text())
+                if not saved:
+                    QMessageBox.warning(self, self.tr('Add player error'),
+                                        self.tr('The username must be unique.'))
             self.build_playerlist()
 
     @pyqtSlot()
     def playername_finished(self):
         pn = str(self.playername.text()).strip()
         if len(pn) <= 0:
+            QMessageBox.warning(self, self.tr('Add player error'),
+                                self.tr('The playername is required.'))
             return
         pun = str(self.username.text()).strip()
         if len(pun) <= 0:
+            QMessageBox.warning(self, self.tr('Add player error'),
+                                self.tr('The username is required.'))
             return
-        self.database.setPlayer(pun, pun, pn)
+        saved = self.database.setPlayer(pun, pn)
+        if not saved:
+            QMessageBox.warning(self, self.tr('Add player error'),
+                                self.tr('The username must be unique.'))
+            return
         self.username.setText('')
         self.playername.setText('')
+        self.build_playerlist()
         self.parent().parent().parent().coreset.controller.buildPlayerList()
 
 
@@ -270,9 +286,9 @@ class CarSet(QWidget):
             if car['car'].scale == None:
                 carscaleitem.setCurrentIndex(0)
             elif car['car'].scale == 24:
-                carscaleitem.setCurrentIndex(1)
-            elif car['car'].scale == 32:
                 carscaleitem.setCurrentIndex(2)
+            elif car['car'].scale == 32:
+                carscaleitem.setCurrentIndex(1)
             numtrainingsitem = CarItem(
                 car['car'].id,
                 "{:04d} / {:04d}".format(car['numtrainingwins'], car['numtrainings']),
@@ -307,9 +323,15 @@ class CarSet(QWidget):
     def change_car_item(self, item):
         if self.carlist_allowchange is True:
             if item.type == 'name':
-                self.database.updateCar(id=item.carid, name=item.text())
+                saved = self.database.updateCar(id=item.carid, name=item.text())
+                if not saved:
+                    QMessageBox.warning(self, self.tr('Add car error'),
+                                        self.tr('The carname and carnumber must be unique.'))
             if item.type == 'number':
-                self.database.updateCar(id=item.carid, number=item.text())
+                saved = self.database.updateCar(id=item.carid, number=item.text())
+                if not saved:
+                    QMessageBox.warning(self, self.tr('Add car error'),
+                                        self.tr('The carname and carnumber must be unique.'))
             if item.type == 'tires':
                 self.database.updateCar(id=item.carid, tires=item.text())
             self.build_carlist()
@@ -318,13 +340,15 @@ class CarSet(QWidget):
     def carname_finished(self):
         cn = str(self.carname.text()).strip()
         if len(cn) <= 0:
+            QMessageBox.warning(self, self.tr('Add car error'),
+                                self.tr('The carname is required.'))
             return
         cnr = str(self.carnumber.text()).strip()
         if len(cnr) <= 0:
+            QMessageBox.warning(self, self.tr('Add car error'),
+                                self.tr('The carnumber is required.'))
             return
         tires = str(self.cartires.text()).strip()
-        if len(tires) <= 0:
-            return
         scale = str(self.carscale.currentText()).strip()
         if len(scale) <= 0:
             return
@@ -332,7 +356,11 @@ class CarSet(QWidget):
             scale = int(32)
         elif scale == ScaleBox.CARRERA_124:
             scale = int(24)
-        self.database.setCar(cn, cn, cnr, tires, scale)
+        saved = self.database.setCar(cn, cnr, tires, scale)
+        if not saved:
+            QMessageBox.warning(self, self.tr('Add car error'),
+                                self.tr('The carname and carnumber must be unique.'))
+            return
         self.carname.setText('')
         self.carnumber.setText('')
         self.cartires.setText('')
