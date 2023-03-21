@@ -1,8 +1,9 @@
 import sys
 from datetime import datetime
+import json
 
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, \
-                       ForeignKey, DateTime
+                       ForeignKey, DateTime, Text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship
@@ -73,6 +74,7 @@ class Competition(Base, SerializerMixin):
     mode = Column(Integer)
     sortmode = Column(Integer)
     duration = Column(Integer)
+    result = Column(Text, unique=False)
     sync = Column(Boolean, default=False)
 
     racingplayer = relationship("RacingPlayer", back_populates="competition")
@@ -89,12 +91,22 @@ class Competition(Base, SerializerMixin):
             return cached
         except (KeyError, IndexError):
             pass
+        if self.result is not None:
+            try:
+                saved_result = json.loads(self.result)
+                for sresult in saved_result:
+                    for rp in self.racingplayer:
+                        if rp.id == sresult['pid']:
+                            sresult['player'] = rp
+                return saved_result
+            except json.JSONDecodeError:
+                pass
         r = []
         for p in self.racingplayer:
             flt = None
             if len(p.lap) < 1:
                 t = {
-                    'player': p,
+                    'player': None,
                     'pid': p.id,
                     'laps': 0,
                     'time': sys.maxsize,
@@ -111,7 +123,7 @@ class Competition(Base, SerializerMixin):
                 if flt is None or flt > lt:
                     flt = lt
             t = {
-                'player': p,
+                'player': None,
                 'pid': p.id,
                 'laps': len(p.lap)-1,
                 'time': p.lap[-1].timestamp,
@@ -190,8 +202,14 @@ class Competition(Base, SerializerMixin):
                     t['bestlap'] = ' '
                 else:
                     t['bestlap'] = formattime(t['bestlap'], longfmt=False)
-        print(r)
         Competition.resultcache[self.id] = r
+        self.result = json.dumps(r)
+        for result in r:
+            for rp in self.racingplayer:
+                if rp.id == result['pid']:
+                    result['player'] = rp
+        print(r)
+
         return r
 
 
@@ -240,49 +258,41 @@ class DatabaseHandler(object):
         self.engine = create_engine('sqlite:///carrera.db', echo=debug)
         Base.metadata.create_all(self.engine)
         self.Session = scoped_session(sessionmaker(bind=self.engine))
+        self.session = self.Session()
 
     def setConfig(self, key, value):
-        session = self.Session()
-        c = session.query(Config).filter_by(key=key).first()
+        c = self.session.query(Config).filter_by(key=key).first()
         if c is None:
             nc = Config(key=key, value=str(value))
-            session.add(nc)
+            self.session.add(nc)
         else:
             c.value = str(value)
-        session.commit()
-        self.Session.remove()
+        self.session.commit()
 
     def getPlayersForSync(self):
-        session = self.Session()
-        cs = session.query(Player).filter_by(sync=False).all()
+        cs = self.session.query(Player).filter_by(sync=False).all()
         if cs is not None:
             cas = []
             for c in cs:
                 cas.append(c.to_dict(
                     only=('id', 'username', 'name', 'sync')
                 ))
-            self.Session.remove()
             return cas
-        self.Session.remove()
         return cs
 
     def getCarsForSync(self):
-        session = self.Session()
-        cs = session.query(Car).filter_by(sync=False).all()
+        cs = self.session.query(Car).filter_by(sync=False).all()
         if cs is not None:
             cas = []
             for c in cs:
                 cas.append(c.to_dict(
                     only=('id', 'name', 'number', 'tires', 'scale', 'sync')
                 ))
-            self.Session.remove()
             return cas
-        self.Session.remove()
         return cs
 
     def getCompetitionsForSync(self, widget):
-        session = self.Session()
-        cs = session.query(Competition).filter_by(sync=False).all()
+        cs = self.session.query(Competition).filter_by(sync=False).all()
         if cs is not None:
             cas = []
             for c in cs:
@@ -293,14 +303,11 @@ class DatabaseHandler(object):
                     only=('id', 'title', 'time', 'mode', 'sortmode',
                           'duration', 'sync')
                 ), 'result': result})
-            self.Session.remove()
             return cas
-        self.Session.remove()
         return cs
 
     def getRacingPlayersForSync(self):
-        session = self.Session()
-        cs = session.query(RacingPlayer).filter_by(sync=False).all()
+        cs = self.session.query(RacingPlayer).filter_by(sync=False).all()
         if cs is not None:
             cas = []
             for c in cs:
@@ -308,14 +315,11 @@ class DatabaseHandler(object):
                     only=('id', 'car_id', 'player_id', 'competition_id',
                           'sync')
                 ))
-            self.Session.remove()
             return cas
-        self.Session.remove()
         return cs
 
     def getLapsForSync(self):
-        session = self.Session()
-        cs = session.query(Lap).filter_by(sync=False).all()
+        cs = self.session.query(Lap).filter_by(sync=False).all()
         if cs is not None:
             cas = []
             for c in cs:
@@ -323,22 +327,17 @@ class DatabaseHandler(object):
                     only=('id', 'timestamp', 'racingplayer_id', 'fuel',
                           'pit', 'sync')
                 ))
-            self.Session.remove()
             return cas
-        self.Session.remove()
         return cs
 
     def getConfigStr(self, key):
-        session = self.Session()
-        c = session.query(Config).filter_by(key=key).first()
-        self.Session.remove()
+        c = self.session.query(Config).filter_by(key=key).first()
         if c is not None:
             return str(c.value)
         return c
 
     def saveResult(self, title, time, mode, sort_mode, duration,
                    drivers, cu_drivers):
-        session = self.Session()
         comp = Competition(title=title,
                            time=time,
                            mode=mode,
@@ -346,8 +345,8 @@ class DatabaseHandler(object):
                            duration=duration)
         for addr, driver in drivers.items():
             cu_driver = cu_drivers[addr]
-            car = session.query(Car).filter_by(name=driver['car']).first()
-            player = session.query(Player).filter_by(
+            car = self.session.query(Car).filter_by(name=driver['car']).first()
+            player = self.session.query(Player).filter_by(
                 username=cu_driver.name).first()
             racingplayer = RacingPlayer()
             racingplayer.player = player
@@ -358,76 +357,59 @@ class DatabaseHandler(object):
                           fuel=cu_driver.fuels[i],
                           pit=cu_driver.pitslist[i])
                 racingplayer.lap.append(lap)
-        session.add(comp)
-        session.commit()
-        self.Session.remove()
+        self.session.add(comp)
+        self.session.commit()
 
     def getCompetitions(self, mode):
-        session = self.Session()
-        c = session.query(Competition).filter(
+        c = self.session.query(Competition).filter(
             Competition.mode.in_(mode)).order_by(Competition.time.desc()).all()
-        # self.Session.remove()
         if c is not None:
             return c
         return []
 
     def setPlayersSync(self, ids):
-        session = self.Session()
         for id in ids:
-            c = session.query(Player).filter_by(id=id).first()
+            c = self.session.query(Player).filter_by(id=id).first()
             c.sync = True
-        session.commit()
-        self.Session.remove()
+        self.session.commit()
 
     def setLapsSync(self, ids):
-        session = self.Session()
         for id in ids:
-            c = session.query(Lap).filter_by(id=id).first()
+            c = self.session.query(Lap).filter_by(id=id).first()
             c.sync = True
-        session.commit()
-        self.Session.remove()
+        self.session.commit()
 
     def setRacingPlayersSync(self, ids):
-        session = self.Session()
         for id in ids:
-            c = session.query(RacingPlayer).filter_by(id=id).first()
+            c = self.session.query(RacingPlayer).filter_by(id=id).first()
             c.sync = True
-        session.commit()
-        self.Session.remove()
+        self.session.commit()
 
     def setCompetitionsSync(self, ids):
-        session = self.Session()
         for id in ids:
-            c = session.query(Competition).filter_by(id=id).first()
+            c = self.session.query(Competition).filter_by(id=id).first()
             c.sync = True
-        session.commit()
-        self.Session.remove()
+        self.session.commit()
 
     def setCarsSync(self, ids):
-        session = self.Session()
         for id in ids:
-            c = session.query(Car).filter_by(id=id).first()
+            c = self.session.query(Car).filter_by(id=id).first()
             c.sync = True
-        session.commit()
-        self.Session.remove()
+        self.session.commit()
 
     def setCar(self, name, number, tires, scale):
-        session = self.Session()
         try:
             nc = Car(name=str(name), number=str(number), tires=str(tires),
                      scale=str(scale))
-            session.add(nc)
-            session.commit()
+            self.session.add(nc)
+            self.session.commit()
         except IntegrityError:
-            self.Session.remove()
             return False
-        self.Session.remove()
         return True
 
     def updateCar(self, id, name=None, number=None, tires=None, scale=None):
-        session = self.Session()
         try:
-            c = session.query(Car).filter_by(id=id).first()
+            c = self.session.query(Car).filter_by(id=id).first()
             if c is not None:
                 if name is not None:
                     c.name = str(name)
@@ -441,55 +423,43 @@ class DatabaseHandler(object):
                     else:
                         c.scale = str(scale)
                 c.sync = False
-            session.commit()
+            self.session.commit()
         except IntegrityError:
-            self.Session.remove()
             return False
-        self.Session.remove()
         return True
 
     def updatePlayer(self, id, name=None, username=None):
-        session = self.Session()
         try:
-            c = session.query(Player).filter_by(id=id).first()
+            c = self.session.query(Player).filter_by(id=id).first()
             if c is not None:
                 if name is not None:
                     c.name = str(name)
                 if username is not None:
                     c.username = str(username)
                 c.sync = False
-            session.commit()
+            self.session.commit()
         except IntegrityError:
-            self.Session.remove()
             return False
-        self.Session.remove()
         return True
 
     def getCarByName(self, name):
-        session = self.Session()
-        c = session.query(Car).filter_by(name=name).first()
-        self.Session.remove()
+        c = self.session.query(Car).filter_by(name=name).first()
         if c is not None:
             return c
         return c
 
     def getCar(self, id):
-        session = self.Session()
-        c = session.query(Car).filter_by(id=id).first()
-        self.Session.remove()
+        c = self.session.query(Car).filter_by(id=id).first()
         if c is not None:
             return c
         return c
 
     def getAllCars(self):
-        session = self.Session()
-        c = session.query(Car).all()
-        self.Session.remove()
+        c = self.session.query(Car).all()
         return c
 
     def getAllCarsDetails(self):
-        session = self.Session()
-        c = session.query(Car).all()
+        c = self.session.query(Car).all()
         details = []
         for p in c:
             numtrainings = 0
@@ -533,18 +503,14 @@ class DatabaseHandler(object):
                 'numracewins': numracewins
             })
             print('testnums', p.number, numraces, numracewins)
-        self.Session.remove()
         return details
 
     def getAllPlayers(self):
-        session = self.Session()
-        c = session.query(Player).all()
-        self.Session.remove()
+        c = self.session.query(Player).all()
         return c
 
     def getAllPlayersDetails(self):
-        session = self.Session()
-        c = session.query(Player).all()
+        c = self.session.query(Player).all()
         details = []
         for p in c:
             numtrainings = 0
@@ -587,25 +553,22 @@ class DatabaseHandler(object):
                 'numraces': numraces,
                 'numracewins': numracewins
             })
-        self.Session.remove()
         return details
 
     def setPlayer(self, username, name):
-        session = self.Session()
         try:
             nc = Player(username=str(username), name=str(name))
-            session.add(nc)
-            session.commit()
+            self.session.add(nc)
+            self.session.commit()
         except IntegrityError:
-            self.Session.remove()
             return False
-        self.Session.remove()
         return True
 
     def getPlayer(self, username):
-        session = self.Session()
-        c = session.query(Player).filter_by(username=username).first()
-        self.Session.remove()
+        c = self.session.query(Player).filter_by(username=username).first()
         if c is not None:
             return c
         return c
+
+    def removeSession(self):
+        self.Session.remove()

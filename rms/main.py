@@ -320,6 +320,7 @@ class RMS(QMainWindow):
         event.ignore()
 
         if result == QMessageBox.Yes:
+            self.database.removeSession()
             event.accept()
             self.stopAllThreads()
             self.ttsthread.stop = True
