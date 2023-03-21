@@ -153,7 +153,7 @@ class Competition(Base, SerializerMixin):
                 last_tm = int(t['time'])
                 if t['time'] == sys.maxsize:
                     t['time'] = ' '
-                    t['rank'] = str(QCoreApplication.translate('DNS'))
+                    t['rank'] = str(QCoreApplication.translate('DNS', 'DNS'))
                 else:
                     t['time'] = formattime(t['time'])
                 if t['bestlap'] == sys.maxsize:
@@ -183,7 +183,7 @@ class Competition(Base, SerializerMixin):
                 last_tm = int(t['time'])
                 if t['time'] == sys.maxsize:
                     t['time'] = ' '
-                    t['rank'] = str(QCoreApplication.translate('DNS'))
+                    t['rank'] = str(QCoreApplication.translate('DNS', 'DNS'))
                 else:
                     t['time'] = formattime(t['time'])
                 if t['bestlap'] == sys.maxsize:
