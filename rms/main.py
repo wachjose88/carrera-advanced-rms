@@ -161,6 +161,7 @@ class RMS(QMainWindow):
         self.main_stack.setCurrentWidget(self.home)
         self.stopAllThreads()
         self.startIdleThread()
+        self.database.updateStatistic()
 
     def showResultList(self, cu_drivers):
         self.stopAllThreads()
@@ -324,6 +325,7 @@ class RMS(QMainWindow):
             self.stopAllThreads()
             self.ttsthread.stop = True
             self.ttsthread.wait()
+            self.database.removeSession()
 
 
 if __name__ == '__main__':
