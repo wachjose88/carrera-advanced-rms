@@ -210,6 +210,14 @@
     </message>
 </context>
 <context>
+    <name>DNS</name>
+    <message>
+        <location filename="../database.py" line="190"/>
+        <source>DNS</source>
+        <translation>DNS</translation>
+    </message>
+</context>
+<context>
     <name>Driver</name>
     <message>
         <location filename="../bridge.py" line="132"/>
@@ -538,17 +546,17 @@
 <context>
     <name>RMS</name>
     <message>
-        <location filename="../main.py" line="314"/>
+        <location filename="../main.py" line="315"/>
         <source>Confirm Exit...</source>
         <translation>Beenden bestätigen...</translation>
     </message>
     <message>
-        <location filename="../main.py" line="314"/>
+        <location filename="../main.py" line="315"/>
         <source>Are you sure you want to exit ?</source>
         <translation>Wollen Sie wirklich beenden?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="307"/>
+        <location filename="../main.py" line="308"/>
         <source>CU version: </source>
         <translation>CU version: </translation>
     </message>
@@ -558,42 +566,42 @@
         <translation type="obsolete">, mode: </translation>
     </message>
     <message>
-        <location filename="../main.py" line="289"/>
+        <location filename="../main.py" line="290"/>
         <source>Real</source>
         <translation>Real</translation>
     </message>
     <message>
-        <location filename="../main.py" line="292"/>
+        <location filename="../main.py" line="293"/>
         <source>On</source>
         <translation>Ein</translation>
     </message>
     <message>
-        <location filename="../main.py" line="295"/>
+        <location filename="../main.py" line="296"/>
         <source>Off</source>
         <translation>Aus</translation>
     </message>
     <message>
-        <location filename="../main.py" line="304"/>
+        <location filename="../main.py" line="305"/>
         <source>Exists</source>
         <translation>Vorhanden</translation>
     </message>
     <message>
-        <location filename="../main.py" line="306"/>
+        <location filename="../main.py" line="307"/>
         <source>Missing</source>
         <translation>Fehlt</translation>
     </message>
     <message>
-        <location filename="../main.py" line="307"/>
+        <location filename="../main.py" line="308"/>
         <source>, Pitlane: </source>
         <translation>, Boxengasse: </translation>
     </message>
     <message>
-        <location filename="../main.py" line="307"/>
+        <location filename="../main.py" line="308"/>
         <source>, Fuelmode: </source>
         <translation>, Treibstoffmodus: </translation>
     </message>
     <message>
-        <location filename="../main.py" line="307"/>
+        <location filename="../main.py" line="308"/>
         <source>, Lapcounter: </source>
         <translation>, Rundenzähler: </translation>
     </message>
@@ -678,7 +686,7 @@
     <message>
         <location filename="../competition.py" line="304"/>
         <source>Ranking</source>
-        <translation>Ergebniss</translation>
+        <translation>Ergebnis</translation>
     </message>
     <message>
         <location filename="../competition.py" line="314"/>

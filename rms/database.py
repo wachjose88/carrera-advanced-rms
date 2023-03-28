@@ -442,7 +442,7 @@ class DatabaseHandler(object):
         return c
 
     def getAllCars(self):
-        c = self.session.query(Car).all()
+        c = self.session.query(Car).order_by(Car.name).all()
         return c
 
     def getAllCarsDetails(self):
@@ -515,7 +515,7 @@ class DatabaseHandler(object):
         return details
 
     def getAllPlayers(self):
-        c = self.session.query(Player).all()
+        c = self.session.query(Player).order_by(Player.username).all()
         return c
 
     def getAllPlayersDetails(self):

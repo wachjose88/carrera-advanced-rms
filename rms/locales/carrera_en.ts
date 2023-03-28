@@ -172,6 +172,14 @@
     </message>
 </context>
 <context>
+    <name>DNS</name>
+    <message>
+        <location filename="../database.py" line="190"/>
+        <source>DNS</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FalseStart</name>
     <message>
         <location filename="../competition.py" line="234"/>
@@ -457,57 +465,57 @@
 <context>
     <name>RMS</name>
     <message>
-        <location filename="../main.py" line="307"/>
+        <location filename="../main.py" line="308"/>
         <source>CU version: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="314"/>
+        <location filename="../main.py" line="315"/>
         <source>Confirm Exit...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="314"/>
+        <location filename="../main.py" line="315"/>
         <source>Are you sure you want to exit ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="289"/>
+        <location filename="../main.py" line="290"/>
         <source>Real</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="292"/>
+        <location filename="../main.py" line="293"/>
         <source>On</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="295"/>
+        <location filename="../main.py" line="296"/>
         <source>Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="304"/>
+        <location filename="../main.py" line="305"/>
         <source>Exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="306"/>
+        <location filename="../main.py" line="307"/>
         <source>Missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="307"/>
+        <location filename="../main.py" line="308"/>
         <source>, Pitlane: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="307"/>
+        <location filename="../main.py" line="308"/>
         <source>, Fuelmode: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.py" line="307"/>
+        <location filename="../main.py" line="308"/>
         <source>, Lapcounter: </source>
         <translation type="unfinished"></translation>
     </message>
