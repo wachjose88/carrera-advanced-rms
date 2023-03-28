@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, \
                             QLabel, QVBoxLayout, \
                             QListWidgetItem, QPushButton, \
                             QListWidget, \
-                            QStackedWidget, QSizePolicy
+                            QStackedWidget, QSizePolicy, QScrollArea
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtGui import QFont, QColor
 from babel.dates import format_datetime
@@ -14,6 +14,8 @@ from constants import COMP_MODE__TRAINING, COMP_MODE__QUALIFYING_LAPS, \
                       COMP_MODE__QUALIFYING_TIME_SEQ, \
                       COMP_MODE__RACE_LAPS, \
                       COMP_MODE__RACE_TIME
+from database import Competition, RacingPlayer
+from utils import formattime
 
 
 class CompetitionItem(QListWidgetItem):
@@ -24,6 +26,137 @@ class CompetitionItem(QListWidgetItem):
                             locale=locale.getdefaultlocale()[0])
             + ': ' + competition.title))
         self.competition = competition
+
+
+class PlayerDetails(QWidget):
+
+    def __init__(self, parent=None, database=None):
+        super().__init__(parent)
+        self.driver_ui = []
+        self.database = database
+        self.initUI()
+        self.competition = None
+        self.racingplayer = None
+        self.num_row = 0
+
+    def initUI(self):
+        self.posFont = QFont()
+        self.posFont.setPointSize(30)
+        self.posFont.setBold(True)
+        self.nameFont = QFont()
+        self.nameFont.setPointSize(20)
+        self.nameFont.setBold(True)
+        self.headline = QLabel(self.tr('Ranking'))
+        self.headline.setFont(self.nameFont)
+        self.vbox = QVBoxLayout()
+        self.vbox.addWidget(self.headline)
+        self.scrollarea = QScrollArea(self)
+        self.scrollarea.setWidgetResizable(True)
+        self.scrollwidget = QWidget()
+        self.mainLayout = QGridLayout(self.scrollwidget)
+        self.scrollarea.setWidget(self.scrollwidget)
+        self.mainLayout.setSpacing(10)
+        self.mainLayout.setHorizontalSpacing(10)
+        self.headerFont = QFont()
+        self.headerFont.setPointSize(14)
+        self.headerFont.setBold(True)
+        self.labelArr = [self.tr('Lap'), self.tr('Time'),
+                         self.tr('Laptime'),
+                         self.tr('Fuel'), self.tr('Pit')]
+        for index, label in enumerate(self.labelArr):
+            self.headerLabel = QLabel(label)
+            self.headerLabel.setFont(self.headerFont)
+            self.mainLayout.addWidget(self.headerLabel, 0,
+                                      index, Qt.AlignHCenter)
+        self.mainLayout.setColumnStretch(1, 1)
+        self.mainLayout.setColumnStretch(2, 1)
+        self.mainLayout.setColumnStretch(3, 2)
+        self.timeFont = QFont()
+        self.timeFont.setPointSize(30)
+        self.timeFont.setBold(True)
+        self.timeFont.setStyleHint(QFont.TypeWriter)
+        self.timeFont.setFamily('monospace')
+        self.posCss = "QLabel{ border-radius: 10px; border-color: black; " \
+            + "border: 3px solid black; background-color: white}"
+        self.nameCss = "QLabel{ border-radius: 10px; border-color: black; " \
+            + "border: 3px solid black; background-color: white; " \
+            + "font-size: 20pt}"
+        self.lcdCss = "QLCDNumber{ border-radius: 10px; " \
+            + "background-color: black}"
+        self.lcdColor = QColor(255, 0, 0)
+        self.num_row = 1
+        self.vbox.addWidget(self.scrollarea)
+        #self.vbox.addStretch(1)
+        self.setLayout(self.vbox)
+
+
+    def buildDetails(self, competition, racingplayer):
+        self.competition = competition
+        self.racingplayer = racingplayer
+        modet = ''
+        if competition.mode == COMP_MODE__TRAINING:
+            modet = self.tr('Training')
+        elif competition.mode in (COMP_MODE__QUALIFYING_LAPS,
+                                  COMP_MODE__QUALIFYING_TIME,
+                                  COMP_MODE__QUALIFYING_LAPS_SEQ,
+                                  COMP_MODE__QUALIFYING_TIME_SEQ):
+            modet = self.tr('Qualifying')
+        elif competition.mode in (COMP_MODE__RACE_LAPS,
+                                  COMP_MODE__RACE_TIME):
+            modet = self.tr('Race')
+        self.headline.setText(str(
+            modet + ' ' +
+            format_datetime(competition.time,
+                            locale=locale.getdefaultlocale()[0])
+            + ': ' + competition.title + ' ' + racingplayer.player.name))
+        for row in self.driver_ui:
+            for name, widget in row.items():
+                self.mainLayout.removeWidget(widget)
+                widget.deleteLater()
+                del widget
+        self.driver_ui = []
+        self.num_row = 1
+        self.update()
+        last_time = 0
+        for lap in racingplayer.lap:
+            lapnum = QLabel(str(self.num_row - 1))
+            lapnum.setStyleSheet(self.posCss)
+            lapnum.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+            lapnum.setFont(self.posFont)
+            self.mainLayout.addWidget(lapnum, self.num_row, 0)
+            time = QLabel(str(formattime(lap.timestamp)))
+            time.setStyleSheet(self.posCss)
+            time.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+            time.setFont(self.timeFont)
+            self.mainLayout.addWidget(time, self.num_row, 1)
+            laptime = QLabel(str(formattime(lap.timestamp - last_time, False)))
+            last_time = lap.timestamp
+            laptime.setStyleSheet(self.posCss)
+            laptime.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+            laptime.setFont(self.timeFont)
+            self.mainLayout.addWidget(laptime, self.num_row, 2)
+            fuel = QLabel(str(round(100.0 / 15.0 * float(lap.fuel), 2)) + '%')
+            fuel.setStyleSheet(self.posCss)
+            fuel.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+            fuel.setFont(self.posFont)
+            self.mainLayout.addWidget(fuel, self.num_row, 3)
+            pit = QLabel(self.tr('Yes'))
+            if lap.pit is False:
+                pit.setText(self.tr('No'))
+            pit.setStyleSheet(self.posCss)
+            pit.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+            pit.setFont(self.posFont)
+            self.mainLayout.addWidget(pit, self.num_row, 4)
+            self.driver_ui.append({
+                'lapnum': lapnum,
+                'time': time,
+                'laptime': laptime,
+                'fuel': fuel,
+                'pit': pit
+            })
+            self.num_row += 1
+        scrollmin = self.scrollarea.verticalScrollBar().minimum()
+        self.scrollarea.verticalScrollBar().setValue(scrollmin)
 
 
 class ShowDetails(QWidget):
@@ -138,14 +271,23 @@ class ShowDetails(QWidget):
             otime.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
             otime.setFont(self.timeFont)
             self.mainLayout.addWidget(otime, self.num_row, 4)
+            showmore = QPushButton(self.tr('>>'))
+            showmore.clicked.connect(
+                lambda state, comp = competition, rp = p['player']: self.showMore(comp, rp))
+            self.mainLayout.addWidget(showmore, self.num_row, 5)
             self.driver_ui.append({
                 'pos': driverPos,
                 'name': name,
                 'laps': laps,
                 'fotime': fotime,
-                'otime': otime
+                'otime': otime,
+                'showmore': showmore
             })
             self.num_row += 1
+
+    @pyqtSlot(Competition, RacingPlayer)
+    def showMore(self, competition, racingplayer):
+        self.parent().parent().showPlayerDetails(competition, racingplayer)
 
 
 class ListAll(QWidget):
@@ -219,6 +361,8 @@ class Statistics(QWidget):
         self.stack.addWidget(self.listall)
         self.showdetails = ShowDetails(parent=self, database=self.database)
         self.stack.addWidget(self.showdetails)
+        self.playerdetails = PlayerDetails(parent=self, database=self.database)
+        self.stack.addWidget(self.playerdetails)
         self.stack.setCurrentWidget(self.listall)
         self.vbox.addWidget(self.stack)
         self.back = QPushButton()
@@ -235,9 +379,15 @@ class Statistics(QWidget):
         self.showdetails.buildDetails(competition)
         self.stack.setCurrentWidget(self.showdetails)
 
+    def showPlayerDetails(self, competition, racingplayer):
+        self.playerdetails.buildDetails(competition, racingplayer)
+        self.stack.setCurrentWidget(self.playerdetails)
+
     @pyqtSlot()
     def back_click(self):
         if self.stack.currentWidget() == self.showdetails:
             self.showLists()
+        elif self.stack.currentWidget() == self.playerdetails:
+            self.showDetails(self.playerdetails.competition)
         else:
             self.parent().parent().showHome()
