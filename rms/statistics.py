@@ -53,7 +53,10 @@ class PlayerDetails(QWidget):
         self.scrollarea = QScrollArea(self)
         self.scrollarea.setWidgetResizable(True)
         self.scrollwidget = QWidget()
-        self.mainLayout = QGridLayout(self.scrollwidget)
+        self.scrollvbox = QVBoxLayout(self.scrollwidget)
+        self.mainLayout = QGridLayout()
+        self.scrollvbox.addLayout(self.mainLayout)
+        self.scrollvbox.addStretch(1)
         self.scrollarea.setWidget(self.scrollwidget)
         self.mainLayout.setSpacing(10)
         self.mainLayout.setHorizontalSpacing(10)
@@ -61,16 +64,16 @@ class PlayerDetails(QWidget):
         self.headerFont.setPointSize(14)
         self.headerFont.setBold(True)
         self.labelArr = [self.tr('Lap'), self.tr('Time'),
-                         self.tr('Laptime'),
-                         self.tr('Fuel'), self.tr('Pit')]
+                         self.tr('Laptime'), self.tr('Avg speed'),
+                         self.tr('Fuel')]
         for index, label in enumerate(self.labelArr):
             self.headerLabel = QLabel(label)
             self.headerLabel.setFont(self.headerFont)
             self.mainLayout.addWidget(self.headerLabel, 0,
                                       index, Qt.AlignHCenter)
-        self.mainLayout.setColumnStretch(1, 1)
+        self.mainLayout.setColumnStretch(1, 2)
         self.mainLayout.setColumnStretch(2, 1)
-        self.mainLayout.setColumnStretch(3, 2)
+        self.mainLayout.setColumnStretch(3, 1)
         self.timeFont = QFont()
         self.timeFont.setPointSize(30)
         self.timeFont.setBold(True)
@@ -129,30 +132,40 @@ class PlayerDetails(QWidget):
             time.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
             time.setFont(self.timeFont)
             self.mainLayout.addWidget(time, self.num_row, 1)
-            laptime = QLabel(str(formattime(lap.timestamp - last_time, False)))
+            laptimev = lap.timestamp - last_time
+            laptime = QLabel(str(formattime(laptimev, False)))
             last_time = lap.timestamp
             laptime.setStyleSheet(self.posCss)
             laptime.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
             laptime.setFont(self.timeFont)
             self.mainLayout.addWidget(laptime, self.num_row, 2)
-            fuel = QLabel(str(round(100.0 / 15.0 * float(lap.fuel), 2)) + '%')
+            avgreal = self.database.calcAvgSpeed(laptimev)
+            avgspeedtext = '<small>' + self.tr('real: ') \
+                           + str(round(avgreal, 2)) + ' km/h</small>'
+            if racingplayer.car.scale is not None:
+                avgscaled = self.database.calcAvgSpeed(laptimev, 1.0,
+                                                       racingplayer.car.scale)
+                avgspeedtext += '<br><small>' + self.tr('scaled: ') \
+                                + str(round(avgscaled, 2)) + ' km/h</small>'
+            avgspeed = QLabel(avgspeedtext)
+            avgspeed.setStyleSheet(self.nameCss)
+            avgspeed.setTextFormat(Qt.RichText)
+            avgspeed.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+            self.mainLayout.addWidget(avgspeed, self.num_row, 3)
+            pit = ' X'
+            if lap.pit is False:
+                pit = ''
+            fuel = QLabel(str(round(100.0 / 15.0 * float(lap.fuel), 2)) + '%' + pit)
             fuel.setStyleSheet(self.posCss)
             fuel.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
             fuel.setFont(self.posFont)
-            self.mainLayout.addWidget(fuel, self.num_row, 3)
-            pit = QLabel(self.tr('Yes'))
-            if lap.pit is False:
-                pit.setText(self.tr('No'))
-            pit.setStyleSheet(self.posCss)
-            pit.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
-            pit.setFont(self.posFont)
-            self.mainLayout.addWidget(pit, self.num_row, 4)
+            self.mainLayout.addWidget(fuel, self.num_row, 4)
             self.driver_ui.append({
                 'lapnum': lapnum,
                 'time': time,
                 'laptime': laptime,
                 'fuel': fuel,
-                'pit': pit
+                'avgspeed': avgspeed
             })
             self.num_row += 1
         scrollmin = self.scrollarea.verticalScrollBar().minimum()
@@ -178,7 +191,14 @@ class ShowDetails(QWidget):
         self.headline.setFont(self.nameFont)
         self.vbox = QVBoxLayout()
         self.vbox.addWidget(self.headline)
+        self.scrollarea = QScrollArea(self)
+        self.scrollarea.setWidgetResizable(True)
+        self.scrollwidget = QWidget()
+        self.scrollvbox = QVBoxLayout(self.scrollwidget)
         self.mainLayout = QGridLayout()
+        self.scrollvbox.addLayout(self.mainLayout)
+        self.scrollvbox.addStretch(1)
+        self.scrollarea.setWidget(self.scrollwidget)
         self.mainLayout.setSpacing(10)
         self.mainLayout.setHorizontalSpacing(10)
         self.headerFont = QFont()
@@ -209,8 +229,8 @@ class ShowDetails(QWidget):
             + "background-color: black}"
         self.lcdColor = QColor(255, 0, 0)
         self.num_row = 1
-        self.vbox.addLayout(self.mainLayout)
-        self.vbox.addStretch(1)
+        self.vbox.addWidget(self.scrollarea)
+        # self.vbox.addStretch(1)
         self.setLayout(self.vbox)
 
     def buildDetails(self, competition):
@@ -272,18 +292,61 @@ class ShowDetails(QWidget):
             otime.setFont(self.timeFont)
             self.mainLayout.addWidget(otime, self.num_row, 4)
             showmore = QPushButton(self.tr('>>'))
+            showmore.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
             showmore.clicked.connect(
                 lambda state, comp = competition, rp = p['player']: self.showMore(comp, rp))
             self.mainLayout.addWidget(showmore, self.num_row, 5)
-            self.driver_ui.append({
+            avgreallbl = QLabel(self.tr('average speed (real):'))
+            avgreallbl.setFont(self.headerFont)
+            self.mainLayout.addWidget(avgreallbl, self.num_row + 1, 1, Qt.AlignRight)
+            avgrealv = 0.0
+            if competition.sortmode == SORT_MODE__LAPS:
+                avgrealv = self.database.calcAvgSpeed(
+                    p['rawtime'],
+                    len(p['player'].lap) - 1)
+            if competition.sortmode == SORT_MODE__LAPTIME:
+                avgrealv = self.database.calcAvgSpeed(p['rawbestlap'])
+            avgreal = QLabel(str(round(avgrealv, 2)) + ' km/h')
+            avgreal.setFont(self.headerFont)
+            self.mainLayout.addWidget(avgreal, self.num_row + 1, 3,
+                                      Qt.AlignRight)
+            steps = 2
+            uis = {
                 'pos': driverPos,
                 'name': name,
                 'laps': laps,
                 'fotime': fotime,
                 'otime': otime,
-                'showmore': showmore
-            })
-            self.num_row += 1
+                'showmore': showmore,
+                'avgreallbl': avgreallbl,
+                'avgreal': avgreal
+            }
+            if p['player'].car.scale is not None:
+                avgscalelbl = QLabel(self.tr('average speed (scaled):'))
+                avgscalelbl.setFont(self.headerFont)
+                self.mainLayout.addWidget(avgscalelbl, self.num_row + 2, 1, Qt.AlignRight)
+                uis['avgscalelbl'] = avgscalelbl
+                avgscalev = 0.0
+                if competition.sortmode == SORT_MODE__LAPS:
+                    avgscalev = self.database.calcAvgSpeed(
+                        p['rawtime'],
+                        len(p['player'].lap) - 1,
+                        p['player'].car.scale)
+                if competition.sortmode == SORT_MODE__LAPTIME:
+                    avgscalev = self.database.calcAvgSpeed(
+                        p['rawbestlap'],
+                        1.0,
+                        p['player'].car.scale)
+                avgscale = QLabel(str(round(avgscalev, 2)) + ' km/h')
+                avgscale.setFont(self.headerFont)
+                self.mainLayout.addWidget(avgscale, self.num_row + 2, 3,
+                                          Qt.AlignRight)
+                uis['avgscale'] = avgscale
+                steps += 1
+            self.driver_ui.append(uis)
+            self.num_row += steps
+        scrollmin = self.scrollarea.verticalScrollBar().minimum()
+        self.scrollarea.verticalScrollBar().setValue(scrollmin)
 
     @pyqtSlot(Competition, RacingPlayer)
     def showMore(self, competition, racingplayer):

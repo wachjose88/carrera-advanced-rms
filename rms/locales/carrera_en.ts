@@ -174,7 +174,7 @@
 <context>
     <name>DNS</name>
     <message>
-        <location filename="../database.py" line="190"/>
+        <location filename="../database.py" line="199"/>
         <source>DNS</source>
         <translation type="unfinished"></translation>
     </message>
@@ -286,17 +286,17 @@
 <context>
     <name>ListAll</name>
     <message>
-        <location filename="../statistics.py" line="299"/>
+        <location filename="../statistics.py" line="362"/>
         <source>Training</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="301"/>
+        <location filename="../statistics.py" line="364"/>
         <source>Qualifying</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="303"/>
+        <location filename="../statistics.py" line="366"/>
         <source>Race</source>
         <translation type="unfinished"></translation>
     </message>
@@ -309,53 +309,53 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="63"/>
+        <location filename="../statistics.py" line="66"/>
         <source>Lap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="63"/>
+        <location filename="../statistics.py" line="66"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="64"/>
+        <location filename="../statistics.py" line="67"/>
         <source>Laptime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="65"/>
+        <location filename="../statistics.py" line="68"/>
         <source>Fuel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="98"/>
+        <location filename="../statistics.py" line="101"/>
         <source>Training</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="103"/>
+        <location filename="../statistics.py" line="106"/>
         <source>Qualifying</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="106"/>
+        <location filename="../statistics.py" line="109"/>
         <source>Race</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../statistics.py" line="67"/>
+        <source>Avg speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../statistics.py" line="143"/>
-        <source>Yes</source>
+        <source>real: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="145"/>
-        <source>No</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../statistics.py" line="65"/>
-        <source>Pit</source>
+        <location filename="../statistics.py" line="148"/>
+        <source>scaled: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -760,65 +760,75 @@
 <context>
     <name>ShowDetails</name>
     <message>
-        <location filename="../statistics.py" line="177"/>
+        <location filename="../statistics.py" line="190"/>
         <source>Ranking</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="187"/>
+        <location filename="../statistics.py" line="207"/>
         <source>Pos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="187"/>
+        <location filename="../statistics.py" line="207"/>
         <source>Driver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="188"/>
+        <location filename="../statistics.py" line="208"/>
         <source>Laps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="189"/>
+        <location filename="../statistics.py" line="209"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="189"/>
+        <location filename="../statistics.py" line="209"/>
         <source>Difference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="219"/>
+        <location filename="../statistics.py" line="239"/>
         <source>Training</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="224"/>
+        <location filename="../statistics.py" line="244"/>
         <source>Qualifying</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="227"/>
+        <location filename="../statistics.py" line="247"/>
         <source>Race</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="274"/>
+        <location filename="../statistics.py" line="294"/>
         <source>&gt;&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../statistics.py" line="299"/>
+        <source>average speed (real):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../statistics.py" line="325"/>
+        <source>average speed (scaled):</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Statistics</name>
     <message>
-        <location filename="../statistics.py" line="356"/>
+        <location filename="../statistics.py" line="419"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../statistics.py" line="369"/>
+        <location filename="../statistics.py" line="432"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>

@@ -103,6 +103,8 @@ class Competition(Base, SerializerMixin):
                     'laps': 0,
                     'time': sys.maxsize,
                     'bestlap': sys.maxsize,
+                    'rawtime': sys.maxsize,
+                    'rawbestlap': sys.maxsize,
                     'diff': None,
                     'rank': None
                 }
@@ -120,6 +122,8 @@ class Competition(Base, SerializerMixin):
                 'laps': len(p.lap)-1,
                 'time': p.lap[-1].timestamp,
                 'bestlap': flt,
+                'rawtime': sys.maxsize,
+                'rawbestlap': sys.maxsize,
                 'diff': None,
                 'rank': None
             }
@@ -157,12 +161,16 @@ class Competition(Base, SerializerMixin):
                 last_tm = int(t['time'])
                 if t['time'] == sys.maxsize:
                     t['time'] = ' '
+                    t['rawtime'] = 0
                     t['rank'] = str(QCoreApplication.translate('DNS', 'DNS'))
                 else:
+                    t['rawtime'] = t['time']
                     t['time'] = formattime(t['time'])
                 if t['bestlap'] == sys.maxsize:
                     t['bestlap'] = ' '
+                    t['rawbestlap'] = 0
                 else:
+                    t['rawbestlap'] = t['bestlap']
                     t['bestlap'] = formattime(t['bestlap'], longfmt=False)
         if self.sortmode == SORT_MODE__LAPTIME:
             r.sort(key=lambda dr: 0 if dr['bestlap'] is None
@@ -187,12 +195,16 @@ class Competition(Base, SerializerMixin):
                 last_tm = int(t['time'])
                 if t['time'] == sys.maxsize:
                     t['time'] = ' '
+                    t['rawtime'] = 0
                     t['rank'] = str(QCoreApplication.translate('DNS', 'DNS'))
                 else:
+                    t['rawtime'] = t['time']
                     t['time'] = formattime(t['time'])
                 if t['bestlap'] == sys.maxsize:
                     t['bestlap'] = ' '
+                    t['rawbestlap'] = 0
                 else:
+                    t['rawbestlap'] = t['bestlap']
                     t['bestlap'] = formattime(t['bestlap'], longfmt=False)
         print(r)
         Competition.resultcache[self.id] = r
@@ -322,6 +334,16 @@ class DatabaseHandler(object):
         if c is not None:
             return str(c.value)
         return c
+
+    def getConfigInt(self, key):
+        c = self.session.query(Config).filter_by(key=key).first()
+        if c is not None:
+            return int(c.value)
+        return c
+
+    def calcAvgSpeed(self, time, laps=1.0, scale=1.0):
+        tracklength = self.getConfigInt('TRACKLENGTH')
+        return (tracklength * laps) / time * 3.6 * scale
 
     def saveResult(self, title, time, mode, sort_mode, duration,
                    drivers, cu_drivers):
