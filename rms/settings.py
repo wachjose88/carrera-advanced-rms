@@ -24,6 +24,9 @@ class ScaleBox(QComboBox):
 
     def __init__(self, parent, carid, database):
         super().__init__(parent)
+        self.addItem('')
+        self.addItem(ScaleBox.CARRERA_132)
+        self.addItem(ScaleBox.CARRERA_124)
         self.carid = carid
         self.database = database
         self.currentTextChanged.connect(self.update_car)
@@ -280,9 +283,6 @@ class CarSet(QWidget):
             numberitem = CarItem(car['car'].id, car['car'].number, 'number')
             tiresitem = CarItem(car['car'].id, car['car'].tires, 'tires')
             carscaleitem = ScaleBox(self.carlist, car['car'].id, self.database)
-            carscaleitem.addItem('')
-            carscaleitem.addItem(ScaleBox.CARRERA_132)
-            carscaleitem.addItem(ScaleBox.CARRERA_124)
             if car['car'].scale == None:
                 carscaleitem.setCurrentIndex(0)
             elif car['car'].scale == 24:
