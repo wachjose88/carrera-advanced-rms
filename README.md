@@ -20,3 +20,10 @@ CUADDRESS should be replaced by the adress of your Carrera Control Unit. This co
 ![Homescreen](/screenshots/home.png)
 
 ![Racemode](/screenshots/race.png)
+
+## Web Statistic
+
+It is possible to upload the data to a web app in order to view different types of
+statistics online. 
+
+Source code of the web app: https://github.com/wachjose88/carrera-advanced-rms-statistic
