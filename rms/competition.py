@@ -501,11 +501,13 @@ class ResultList(QWidget):
 
 class Grid(QWidget):
 
-    def __init__(self, parent=None, tts=None, threadtranslation=None):
+    def __init__(self, parent=None, tts=None, threadtranslation=None,
+                 signals=None):
         super().__init__(parent)
         self.sort_mode = SORT_MODE__LAPS
         self.tts = tts
         self.threadtranslation = threadtranslation
+        self.rms_signals = signals
         self.driver_ui = {}
         self.initUI()
         self.initDriverUI()
@@ -737,6 +739,7 @@ class Grid(QWidget):
     @pyqtSlot(int)
     def showLight(self, number):
         self.stateStack.setCurrentWidget(self.start_signal)
+        self.rms_signals.start_sequence.emit(number)
         if number == 2:
             self.start_signal.lightOne.setOn()
         elif number == 3:

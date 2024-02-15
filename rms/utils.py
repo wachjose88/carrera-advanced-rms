@@ -74,3 +74,11 @@ def formattime(time, longfmt=True):
         sms = float(str(s % 60) + '.' + str('%03d' % (ms)))
         t = '%d:%02d:' % (s // 3600, (s // 60) % 60)
         return t + locale.format_string('%06.3f', sms)
+
+def get_by_py_path(py_path):
+    parts = py_path.split('.')
+    module = ".".join(parts[:-1])
+    m = __import__(module)
+    for comp in parts[1:]:
+        m = getattr(m, comp)
+    return m

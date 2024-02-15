@@ -17,7 +17,8 @@ from settings import Settings
 from statistics import Statistics
 from database import DatabaseHandler
 from tts import TTSHandler, TTSThread
-from utils import ThreadTranslation
+from utils import ThreadTranslation, get_by_py_path
+from signals import RMSSignals
 from constants import COMP_MODE__TRAINING, COMP_MODE__QUALIFYING_LAPS, \
                       COMP_MODE__QUALIFYING_TIME, \
                       COMP_MODE__QUALIFYING_LAPS_SEQ, \
@@ -30,7 +31,7 @@ from constants import COMP_MODE__TRAINING, COMP_MODE__QUALIFYING_LAPS, \
 
 class RMS(QMainWindow):
 
-    def __init__(self, cu, cu_instance):
+    def __init__(self, cu, cu_instance, rms_slots):
         super().__init__()
         self.cuv = cu.version()
         self.show_pits = True
@@ -38,6 +39,9 @@ class RMS(QMainWindow):
         self.database = DatabaseHandler(
             debug=True if self.cuv in DUMMY_IDS else False
         )
+        self.rms_signals = RMSSignals()
+        self.rms_slots = rms_slots(rms_signals=self.rms_signals)
+        self.rms_slots.connect_slots()
         self.drivers = {}
         self.setDefaultDrivers()
         self.comp_mode = COMP_MODE__TRAINING
@@ -57,7 +61,8 @@ class RMS(QMainWindow):
                                threadtranslation=self.threadtranslation)
         self.start_signal = StartSignal(cu=cu, cu_instance=cu_instance)
         self.grid = Grid(parent=self, tts=self.tts,
-                         threadtranslation=self.threadtranslation)
+                         threadtranslation=self.threadtranslation,
+                         signals=self.rms_signals)
         self.home = Home(parent=self, database=self.database)
         self.settings = Settings(parent=self, database=self.database)
         self.statistics = Statistics(parent=self, database=self.database)
@@ -347,7 +352,11 @@ if __name__ == '__main__':
         description='Advanced Race Management for Carrera Digital')
     parser.add_argument('-cu', '--controlunit',
                         help='cu address or dummy', required=True)
+    parser.add_argument('-s', '--slots',
+                        help='classname to use for the slots',
+                        default='slots.console.Console')
     args = parser.parse_args()
+    RMSSlots = get_by_py_path(args.slots)
     if args.controlunit in ['d', 'dummy']:
         from dummy import ControlUnit
     else:
@@ -356,5 +365,5 @@ if __name__ == '__main__':
     with contextlib.closing(ControlUnit(str(args.controlunit),
                                         timeout=3.0)) as cu:
         print('CU version %s' % cu.version())
-        ex = RMS(cu, ControlUnit)
+        ex = RMS(cu, ControlUnit, RMSSlots)
         sys.exit(app.exec_())
