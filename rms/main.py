@@ -146,9 +146,16 @@ class RMS(QMainWindow):
     def showHome(self):
         tn = self.database.getConfigStr('TRACKNAME')
         if tn is not None and len(tn) > 0:
-            self.home.headline.setText(tn + ' ' + self.tr('RMS'))
+            track_name = tn + ' ' + self.tr('RMS')
         else:
-            self.home.headline.setText(self.tr('Carrera RMS'))
+            track_name = self.tr('Carrera RMS')
+        tl = self.database.getConfigStr('TRACKLENGTH')
+        if tl is not None and len(tl) > 0:
+            track_length = int(tl)
+        else:
+            track_length = 0
+        self.home.headline.setText(track_name)
+        self.rms_signals.home.emit(track_name, track_length)
         self.home.buildCarList()
         self.home.buildPlayerList()
         for i in range(0, 6):
