@@ -1,5 +1,8 @@
+from random import randint
 from PyQt5.QtCore import pyqtSlot
 from . import Slots
+from constants import SORT_MODE__LAPTIME
+
 
 class Console(Slots):
 
@@ -9,6 +12,18 @@ class Console(Slots):
         length = self.LINE_LENGTH - 4
         end = ' ' * (length - len(text))
         print(f'# {text[:length]}{end} #')
+
+    @pyqtSlot()
+    def idle_slot(self):
+        tn = self.database.getConfigStr('TRACKNAME')
+        tl = self.database.getConfigStr('TRACKLENGTH')
+        print('#' * self.LINE_LENGTH)
+        self._build_text(tn)
+        choices = [
+            f'{tl} mm', 'GO GO GO', 'RACE TIME IS NOW'
+        ]
+        self._build_text(choices[randint(0, len(choices) - 1)])
+        print('#' * self.LINE_LENGTH)
 
     @pyqtSlot(str, int)
     def home_slot(self, track_name, track_length):
@@ -37,4 +52,37 @@ class Console(Slots):
             self._build_text(self.tr('False start'))
         elif number == 100:
             self._build_text(self.tr('GO GO GO!'))
+        print('#' * self.LINE_LENGTH)
+
+    @pyqtSlot(dict, int)
+    def competition_progress_slot(self, results, mode):
+        print('#' * self.LINE_LENGTH)
+        line_1 = ''
+        line_2 = ''
+        num_1 = 0
+        second_1 = None
+        second_time = None
+        
+        for addr, result in results.items():
+            time = result['time']
+            if mode == SORT_MODE__LAPTIME:
+                time = result['bestlap']
+            if result['rank'] == 1:
+                num_1 = num_1 + 1
+                if num_1 > 1:
+                    second_1 = result
+                    second_time = time
+                line_1 = f'1: {result["driver"]["name"]} {time}'
+            if result['rank'] == 2:
+                line_2 = f'2: {result["driver"]["name"]} {time}'
+        if second_1 is not None:
+            line_2 = f'1: {second_1["driver"]["name"]} {second_time}'
+        self._build_text(line_1)
+        self._build_text(line_2)
+        print('#' * self.LINE_LENGTH)
+
+    @pyqtSlot(str)
+    def competition_finished_slot(self, mode):
+        print('#' * self.LINE_LENGTH)
+        self._build_text(str(mode))
         print('#' * self.LINE_LENGTH)

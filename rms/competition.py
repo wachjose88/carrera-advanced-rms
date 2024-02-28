@@ -509,6 +509,7 @@ class Grid(QWidget):
         self.threadtranslation = threadtranslation
         self.rms_signals = signals
         self.driver_ui = {}
+        self.drivers = {}
         self.initUI()
         self.initDriverUI()
 
@@ -649,6 +650,7 @@ class Grid(QWidget):
             'pits': pits,
             'pitslbl': pitslbl
         }
+        self.drivers[addr] = driver
         self.num_row += 2
 
     def resetDrivers(self, show_fuel, show_pits):
@@ -658,6 +660,7 @@ class Grid(QWidget):
                 widget.deleteLater()
                 del widget
         self.driver_ui = {}
+        self.driver = {}
         self.num_row = 1
 
     @pyqtSlot(list)
@@ -690,6 +693,7 @@ class Grid(QWidget):
                             rank[i].bestlap == rank[dposm1].bestlap:
                         pos = posl[dposm1]
             posl.append(pos)
+        result_list = {}
         for addr, driver in self.driver_ui.items():
             try:
                 di = cu_drivers[addr]
@@ -697,6 +701,14 @@ class Grid(QWidget):
                 if di.pit:
                     p += self.tr(' (in)')
                 dpos = posl[rank.index(di)]
+                result_list[addr] = {
+                    'rank': dpos,
+                    'driver': self.drivers[addr],
+                    'time': formattime(di.time),
+                    'laps': di.laps,
+                    'laptime': formattime(di.laptime, longfmt=False),
+                    'bestlap': formattime(di.bestlap, longfmt=False)
+                }
                 self.updateDriver(
                     addr=addr,
                     pos=dpos,
@@ -710,6 +722,8 @@ class Grid(QWidget):
                 pass
             except ValueError:
                 pass
+        self.rms_signals.competition_progress.emit(
+            result_list, self.sort_mode)
 
     def updateDriver(self, addr, pos=None, name=None, total=None,
                      laps=None, laptime=None, bestlaptime=None,

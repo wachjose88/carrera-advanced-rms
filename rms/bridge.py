@@ -10,17 +10,23 @@ class IdleMonitor(QThread):
 
     update_state = pyqtSignal(int)
 
-    def __init__(self, cu, cu_instance):
+    def __init__(self, cu, cu_instance, rms_signals):
         QThread.__init__(self)
         self.cu = cu
         self.cu_instance = cu_instance
         self.stop = False
+        self.rms_signals = rms_signals
 
     def run(self):
         last = None
+        last_time = time.time()
         while not self.stop:
             try:
                 time.sleep(0.01)
+                now = time.time()
+                if now - last_time > 5.0:
+                    self.rms_signals.idle.emit()
+                    last_time = now
                 data = self.cu.request()
 
                 # print('IdleMonitor: ', data)

@@ -40,7 +40,8 @@ class RMS(QMainWindow):
             debug=True if self.cuv in DUMMY_IDS else False
         )
         self.rms_signals = RMSSignals()
-        self.rms_slots = rms_slots(rms_signals=self.rms_signals)
+        self.rms_slots = rms_slots(rms_signals=self.rms_signals,
+                                   database=self.database)
         self.rms_slots.connect_slots()
         self.drivers = {}
         self.setDefaultDrivers()
@@ -55,7 +56,8 @@ class RMS(QMainWindow):
         self.main_stack.addWidget(self.qualifyingseq)
         self.threadtranslation = ThreadTranslation()
         self.main_stack.addWidget(self.threadtranslation)
-        self.idle = IdleMonitor(cu=cu, cu_instance=cu_instance)
+        self.idle = IdleMonitor(cu=cu, cu_instance=cu_instance,
+                                rms_signals=self.rms_signals)
         self.bridge = CUBridge(cu=cu, cu_instance=cu_instance,
                                selected_drivers=self.drivers, tts=self.tts,
                                threadtranslation=self.threadtranslation)
@@ -181,6 +183,8 @@ class RMS(QMainWindow):
         self.resultlist.addDrivers(self.drivers, cu_drivers,
                                    self.grid.sort_mode)
         self.main_stack.setCurrentWidget(self.resultlist)
+        self.rms_signals.competition_finished.emit(
+            self.threadtranslation.finished())
 
     def showGrid(self):
         self.grid.resetDrivers(self.show_fuel, self.show_pits)
